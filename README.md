@@ -1,5 +1,5 @@
 # Website
-<a href="https://sdp-team-22.github.io/website/"><h3>Link to website</h3></a>
+<h3><a href="https://sdp-team-22.github.io/website/">Link to website</a></h3>
 <p>
   So, website hosting works. We can host from sdp repository directly too.
 </p>
