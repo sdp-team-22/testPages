@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="../css/styles.css">
+        <title>Solubility Data Management</title>
+    </head>
+    <body>
+        <header>
+            <div>
+                <div style="width:calc(50%);">
+                    Boehringer Ingelheim: Solubility Data Management
+                </div>
+                <div style="width:calc(50%/3);">
+                    <a href="solubility-inputdata.html">Input Data</a>
+                </div>
+                <div style="width:calc(50%/3);">
+                    <a href="solubility-viewdata.html">View Data</a>
+                </div>
+                <div style="width:calc(50%/3)">
+                    <a href="solubility-statistics.html">Statistics</a>
+                </div>
+            </div>
+        </header>
+        <div style="background-color:beige;">
+            <p>home page, not sure if we want anything here, or go straight to inputdata page.</p>
+        </div>
+        <div style="background-color: beige;">
+            <p>add divs</p>
+            <form>
+                <input type="button" onclick="testAddDiv();" value="add div at end of doc">
+            </form>
+        </div>
+        <div style="background-color:beige;">
+            <p>add divs after element</p>
+            <form>
+                <input type="button" id="addDivAfterButton" onclick="testAddDivAfter(this);" value="add div after element">
+            </form>
+        </div>
+        <div style="background-color: beige;">
+            <p>Link <a href="https://www.w3schools.com/howto/howto_js_autocomplete.asp">here</a> has autocomplete code, not efficient though. will need to integrate with database with sql or other data query language</p>
+        </div>
+
+        <script src="../jss/index.js"></script>
+    </body>
+</html>
