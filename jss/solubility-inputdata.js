@@ -65,7 +65,7 @@ function readFiles() {
  * @param {JSON of any sheet} jsonDataIn 
  */
 function filterSheet(sheetName, jsonDataIn) {
-    console.log("filterSheet() method called");
+    console.log("filterSheet() called");
     // console.log(jsonDataIn);
     switch (sheetName) {
         case 'Indata':
@@ -87,7 +87,7 @@ function filterSheet(sheetName, jsonDataIn) {
  * @param {JSON of filtered sheet} jsonDataIn 
  */
 function grabData(jsonDataIn) {
-    console.log("grabData(jsonDataIn) method called");
+    console.log("grabData(jsonDataIn) called");
     data = {}
     for (rowIndex in jsonDataIn) {
         // console.log(row + "-->" + jsonDataIn[row]);
@@ -188,7 +188,7 @@ function grabData(jsonDataIn) {
             }
         }
     }
-    console.log(data);
+    // console.log(data);
     createTable(data);
 }
 
@@ -199,14 +199,18 @@ function grabData(jsonDataIn) {
  * @param {Sheet information object} data 
  */
 function createTable(data) {
+    // console.log("createTable(data) called");
     const tableDiv = document.createElement('div');
     var table = document.createElement('table');
     createHead(table);
     tableDiv.appendChild(table);
+    // style div
+    tableDiv.style.backgroundColor = "beige";
     document.body.appendChild(tableDiv);
 }
 
 function createHead(table) {
+    // console.log("createHead(table) called");
     var thead = document.createElement('thead');
     // creates column labels
     var row1 = document.createElement('tr');
@@ -244,7 +248,7 @@ function createHead(table) {
 }
 
 function createSelection(parentparent, parent, options) {
-    console.log("createSelection() called");
+    // console.log("createSelection() called");
     var select = document.createElement('select');
     for (index in options) {
         var option = document.createElement('option');
@@ -259,7 +263,7 @@ function createSelection(parentparent, parent, options) {
 }
 
 function updateHead(parent) {
-    console.log("updateHead() called");
+    // console.log("updateHead() called");
     var thList = parent.children;
     var selection;
     // set index 4-5 same as index 3 (solv frac)
@@ -272,11 +276,7 @@ function updateHead(parent) {
     selection = selection.options[selection.selectedIndex].text;
     options = structuredClone(colLabelsDropdown[2]);
     options.splice(options.indexOf(selection), 1);
-    console.log("options:" + options);
     thList[9].innerText = options.pop();
-    console.log("options:" + options);
     thList[10].innerText = options.pop();
-    console.log("options:" + options);
     thList[11].innerText = options.pop();
-    console.log("options:" + options);
 }
