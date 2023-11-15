@@ -243,8 +243,14 @@ function createTable(data) {
     tableDiv.style.backgroundColor = "beige";
     tableDiv.style.marginBottom = "1rem";
     table.style.borderCollapse = "collapse";
-    table.style.width = "150%";
     table.style.tableLayout = "fixed";
+    table.style.border = "solid black";
+
+    var tableCells = table.querySelectorAll('th, td');
+    tableCells.forEach(function(cell) {
+        cell.style.padding = '5px';
+    });
+
     // add to body
     document.body.appendChild(tableDiv);
 }
@@ -315,6 +321,8 @@ function createHead(table) {
         var th = document.createElement('th');
         th.innerText = colLabels[i];
         // style th
+        th.style.whiteSpace = "nowrap";
+        th.style.overflow = "hidden";
         if (i != 8 && i != 9 && i != 10 && i != 11) {
             // this eliminates borders in solubility* boxes
             th.style.borderStyle = "solid";
