@@ -2,7 +2,14 @@
  * This js file is made for solubility-inputdata.html
  */
 
-// hard-coded column labels
+// hard-coded labels
+const projectLabels = [
+    "name",
+    "mw",
+    "solidForm",
+    "tmelt",
+    "nhfus"
+]
 const colLabels = [
     "Solvent 1", 
     "Solvent 2", 
@@ -26,6 +33,24 @@ const colLabelsDropdown = [
     ["mg/g soln.", "mg/g solv", "mg/mL solv."], // for :1 columns under solubility
     ["wt%", "mg/g soln.", "mg/g solv", "mg/mL solv."] // for 1:4 columns under solubility*
 ]
+const dataLabels = [
+    "solvent1", 
+    "solvent2", 
+    "solvent3", 
+    "solvFrac1", 
+    "solvFrac2", 
+    "solvFrac3", 
+    "t", 
+    "xrpd",
+    "solubility1",
+    "solubility2",
+    "solubility3",
+    "solubility4", 
+    "lotNum", 
+    "eln", 
+    "measurementMethod",
+    "comments", 
+];
 
 /**
  * void readFiles()
@@ -196,18 +221,81 @@ function grabData(jsonDataIn) {
  * createTable(data)
  * - Creates table for sheet data
  * - Provides visualization
+ * - Calls createTable()
  * - Calls createHead()
+ * - Calls createBody()
  * @param {Sheet information object} data 
  */
 function createTable(data) {
     // console.log("createTable(data) called");
     const tableDiv = document.createElement('div');
+    var titleDiv = document.createElement('div');
+    var dataDiv = document.createElement('div');
     var table = document.createElement('table');
+    createTitle(titleDiv, data);
     createHead(table);
-    tableDiv.appendChild(table);
-    // style div
+    createBody(table, data);
+    tableDiv.appendChild(titleDiv);
+    tableDiv.appendChild(dataDiv);
+    dataDiv.appendChild(table);
+    // styling
+    dataDiv.style.overflow = "scroll";
     tableDiv.style.backgroundColor = "beige";
+    tableDiv.style.marginBottom = "1rem";
+    table.style.borderCollapse = "collapse";
+    table.style.width = "150%";
+    table.style.tableLayout = "fixed";
+    // add to body
     document.body.appendChild(tableDiv);
+}
+
+/**
+ * createTitle(titleDiv, data)
+ * - Creates title with important compound information, such as name, mv, etc.
+ * @param {divider to put title table} titleDiv 
+ * @param {sheet json data} data 
+ */
+function createTitle(titleDiv, data) {
+    console.log("createTitle(titleDiv, data) called");
+    console.log(data);
+    // instantiate elements
+    var titleTable = document.createElement('table');
+    var titleTableHead = document.createElement('thead');
+    var titleTableRow = document.createElement('tr');
+    // append rows to table
+    titleTable.appendChild(titleTableHead);
+    titleTable.appendChild(titleTableRow);
+    for (let i = 0; i < projectLabels.length; i++) {
+        // instantiate data boxes
+        var titleTh = document.createElement('th');
+        var titleTd = document.createElement('td');
+        var titleTdDiv = document.createElement('div');
+        // set text
+        titleTh.innerText = projectLabels[i];
+        tempText = data[projectLabels[i]];
+        if (typeof(tempText) == "string") {
+            titleTdDiv.innerText = tempText;
+        } else {
+            titleTdDiv.innerText = tempText[0];
+        }
+        // style boxes
+        titleTh.style.border = "solid";
+        titleTd.style.border = "solid";
+        titleTd.style.textAlign = "center";
+        titleTdDiv.style.textAlign = "center";
+        titleTdDiv.contentEditable = "true";
+        // append to parent row
+        titleTd.appendChild(titleTdDiv);
+        titleTableHead.appendChild(titleTh);
+        titleTableRow.appendChild(titleTd);
+    }
+    // style table
+    titleTable.style.borderCollapse = "collapse";
+    titleTable.style.width = "100%";
+    titleTable.style.marginBottom = "1px";
+    titleTable.style.tableLayout = "fixed";
+    // append table to parent div
+    titleDiv.appendChild(titleTable);
 }
 
 /**
@@ -226,6 +314,14 @@ function createHead(table) {
     for (let i = 0; i < colLabels.length; i++) {
         var th = document.createElement('th');
         th.innerText = colLabels[i];
+        // style th
+        if (i != 8 && i != 9 && i != 10 && i != 11) {
+            // this eliminates borders in solubility* boxes
+            th.style.borderStyle = "solid";
+        } else {
+            th.style.borderBottomStyle = "solid";
+        }
+        // add to row
         row1.appendChild(th);
     }
     thead.appendChild(row1);
@@ -233,6 +329,7 @@ function createHead(table) {
     var row2 = document.createElement('tr');
     for (i in colLabels) {
         var th = document.createElement('th');
+        th.style.borderStyle = "solid";
         switch (colLabels[i]) {
             case "Solv Frac 1 (solute-free)":
                 createSelection(row2, th, colLabelsDropdown[0]);
@@ -247,11 +344,15 @@ function createHead(table) {
                 row2.appendChild(th);
                 break;
             default:
+                th.style.borderStyle = "none";
                 row2.appendChild(th);
                 break;
         }
     }
     thead.appendChild(row2);
+    // style thead
+    thead.style.borderStyle = "solid";
+    thead.style.borderColor = "black";
     // add head to table
     table.appendChild(thead);
 }
@@ -301,4 +402,35 @@ function updateHead(parent) {
     thList[9].innerText = options.pop();
     thList[10].innerText = options.pop();
     thList[11].innerText = options.pop();
+    indices = [4, 5, 9, 10, 11]
+    for (index in indices) {
+        thList[indices[index]].style.borderStyle = "solid";
+    }
+}
+
+/**
+ * createBody(table, data)
+ * - Fills in table using data from json file
+ * - Makes every box contenteditable = true using inner-dividers
+ * @param {parent table} table 
+ * @param {sheet json data} data 
+ */
+function createBody(table, data) {
+    console.log("createBody() called");
+    // iterate through rows of data, create and fill in boxes
+    for (let i = 1; i < data["data"].length; i++) {
+        var tr = document.createElement('tr');
+        for (let j = 0; j < dataLabels.length; j++) {
+            var td = document.createElement('td');
+            var tdDiv = document.createElement('div');
+            td.style.border = "1px solid black";
+            tdDiv.contentEditable = "true";
+            td.appendChild(tdDiv);
+            if (data["data"][i][dataLabels[j]]) {
+                tdDiv.innerText = data["data"][i][dataLabels[j]];
+            }
+            tr.appendChild(td);
+        }
+        table.appendChild(tr);
+    }
 }
