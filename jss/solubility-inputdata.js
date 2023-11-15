@@ -196,6 +196,7 @@ function grabData(jsonDataIn) {
  * createTable(data)
  * - Creates table for sheet data
  * - Provides visualization
+ * - Calls createHead()
  * @param {Sheet information object} data 
  */
 function createTable(data) {
@@ -209,6 +210,14 @@ function createTable(data) {
     document.body.appendChild(tableDiv);
 }
 
+/**
+ * createHead(table)
+ * - Creates head part of the table
+ * - In this case, this is column label and occasional column label units
+ * - Bolded in table visual
+ * - Calls createSelection() to create unit selections
+ * @param {table element} table 
+ */
 function createHead(table) {
     // console.log("createHead(table) called");
     var thead = document.createElement('thead');
@@ -247,6 +256,14 @@ function createHead(table) {
     table.appendChild(thead);
 }
 
+/**
+ * createSelection(parentparent, parent, options)
+ * - Creates selection elements in 2nd row of header
+ * - Calls updateHead() whenever selection is changed
+ * @param {this would be the row that selection is on} parentparent 
+ * @param {this is the th selection is in} parent 
+ * @param {these are the dropdown options, different for each select element} options 
+ */
 function createSelection(parentparent, parent, options) {
     // console.log("createSelection() called");
     var select = document.createElement('select');
@@ -262,6 +279,11 @@ function createSelection(parentparent, parent, options) {
     parent.appendChild(select);
 }
 
+/**
+ * updateHead(parent)
+ * - Updates all unit labels in the 2nd row to match selections
+ * @param {2nd row of head} parent 
+ */
 function updateHead(parent) {
     // console.log("updateHead() called");
     var thList = parent.children;
