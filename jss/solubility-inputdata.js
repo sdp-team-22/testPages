@@ -2,6 +2,31 @@
  * This js file is made for solubility-inputdata.html
  */
 
+// hard-coded column labels
+const colLabels = [
+    "Solvent 1", 
+    "Solvent 2", 
+    "Solvent 3", 
+    "Solv Frac 1 (solute-free)", 
+    "Solv Frac 2 (solute-free)", 
+    "Solv Frac 3 (solute-free)", 
+    "T", 
+    "XRPD",
+    "Solubility*",
+    "",
+    "",
+    "", 
+    "Solute Lot #", 
+    "ELN/Sample # of Measurement", 
+    "Measurement Method",
+    "Comments", 
+];
+const colLabelsDropdown = [
+    ["wt frac", "vol frac"], // for solv frac 1 (2-3 become the same as selection)
+    ["mg/g soln.", "mg/g solv", "mg/mL solv."], // for :1 columns under solubility
+    ["wt%", "mg/g soln.", "mg/g solv", "mg/mL solv."] // for 1:4 columns under solubility*
+]
+
 /**
  * void readFiles()
  * - Separates file uploads from solubility-inputdata.html into individual files
@@ -13,7 +38,6 @@ function readFiles() {
     const fileInput = document.getElementById('fileInput');
     const selectedFiles = [...fileInput.files];
     // console.log(selectedFiles.length + " files: " + selectedFiles)
-
     for (index in selectedFiles) {
         // console.log(selectedFiles[index])
         const reader = new FileReader();
@@ -175,5 +199,84 @@ function grabData(jsonDataIn) {
  * @param {Sheet information object} data 
  */
 function createTable(data) {
+    const tableDiv = document.createElement('div');
+    var table = document.createElement('table');
+    createHead(table);
+    tableDiv.appendChild(table);
+    document.body.appendChild(tableDiv);
+}
 
+function createHead(table) {
+    var thead = document.createElement('thead');
+    // creates column labels
+    var row1 = document.createElement('tr');
+    for (let i = 0; i < colLabels.length; i++) {
+        var th = document.createElement('th');
+        th.innerText = colLabels[i];
+        row1.appendChild(th);
+    }
+    thead.appendChild(row1);
+    // creates secondary labels (allow for choosing options)
+    var row2 = document.createElement('tr');
+    for (i in colLabels) {
+        var th = document.createElement('th');
+        switch (colLabels[i]) {
+            case "Solv Frac 1 (solute-free)":
+                createSelection(row2, th, colLabelsDropdown[0]);
+                row2.appendChild(th);
+                break;
+            case "T":
+                th.innerText = "\u00B0C";
+                row2.appendChild(th);
+                break;
+            case "Solubility*":
+                createSelection(row2, th, colLabelsDropdown[1]);
+                row2.appendChild(th);
+                break;
+            default:
+                row2.appendChild(th);
+                break;
+        }
+    }
+    thead.appendChild(row2);
+    // add head to table
+    table.appendChild(thead);
+}
+
+function createSelection(parentparent, parent, options) {
+    console.log("createSelection() called");
+    var select = document.createElement('select');
+    for (index in options) {
+        var option = document.createElement('option');
+        option.value = options[index];
+        option.innerText = options[index];
+        select.appendChild(option);
+        select.onchange = function () {
+            updateHead(parentparent);
+        };
+    }
+    parent.appendChild(select);
+}
+
+function updateHead(parent) {
+    console.log("updateHead() called");
+    var thList = parent.children;
+    var selection;
+    // set index 4-5 same as index 3 (solv frac)
+    selection = thList[3].children[0];
+    selection = selection.options[selection.selectedIndex].text;
+    thList[4].innerText = selection;
+    thList[5].innerText = selection;
+    // set index 9-11 correct (solubility*)
+    selection = thList[8].children[0];
+    selection = selection.options[selection.selectedIndex].text;
+    options = structuredClone(colLabelsDropdown[2]);
+    options.splice(options.indexOf(selection), 1);
+    console.log("options:" + options);
+    thList[9].innerText = options.pop();
+    console.log("options:" + options);
+    thList[10].innerText = options.pop();
+    console.log("options:" + options);
+    thList[11].innerText = options.pop();
+    console.log("options:" + options);
 }
