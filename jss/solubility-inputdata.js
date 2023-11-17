@@ -250,7 +250,8 @@ function createTable(data) {
     tableCells.forEach(function(cell) {
         cell.style.padding = '5px';
     });
-
+    // update head
+    console.log(table.children);
     // add to body
     document.body.appendChild(tableDiv);
 }
