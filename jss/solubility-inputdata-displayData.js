@@ -2,22 +2,22 @@
  * formData, solubilityData, and data are already global variables
  */
 
-function displayData() {
+function displayData(data) {
     //console.log("displayData() called");
-    createTable();
+    createTable(data);
 }
 
-function createTable() {
+function createTable(data) {
     //console.log("createTable() called");
     const tableDiv = document.createElement('div');
     tableDiv.style.backgroundColor = "beige";
     tableDiv.style.marginBottom = "1rem";
-    createTitleTable(tableDiv);
-    createDataTable(tableDiv);
+    createTitleTable(data, tableDiv);
+    createDataTable(data, tableDiv);
     document.body.appendChild(tableDiv);
 }
 
-function createTitleTable(tableDiv) {
+function createTitleTable(data, tableDiv) {
     //console.log("createTitle() called");
     // instantiate containers
     const titleDiv = document.createElement('div');
@@ -57,7 +57,7 @@ function createTitleTable(tableDiv) {
     titleTable.style.borderCollapse = "collapse";
 }
 
-function createDataTable(tableDiv) {
+function createDataTable(data, tableDiv) {
     //console.log("createTitle() called");
     // instantiate containers
     const bodyDiv = document.createElement('div');

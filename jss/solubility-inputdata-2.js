@@ -69,8 +69,6 @@ const colRules = [
 ]
 const fileInput = document.getElementById('fileInput');
 
-var data = {}
-
 /*
 function filterFiles() {
     //console.log("[Upload data] clicked")
@@ -101,8 +99,8 @@ function filterFiles() {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = function(e) {
-                var data = e.target.result;
-                var workbook = XLSX.read(data, { type: 'binary' });
+                var fileData = e.target.result;
+                var workbook = XLSX.read(fileData, { type: 'binary' });
                 for (let j = 0; j < workbook.SheetNames.length; j++) {
                     if (inputSheetNames.has(workbook.SheetNames[j])) {
                         const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[j]], { header: 1 });
@@ -127,11 +125,12 @@ function filterFiles() {
 
 function parseData(jsonData) {
     //console.log("parseData()");
-    categorizeData(jsonData);
-    displayData();
+    var data = {}
+    categorizeData(data, jsonData);
+    displayData(data);
 }
 
-function categorizeData(jsonData) {
+function categorizeData(data, jsonData) {
     //console.log("categorizeData()");
     // iterates through json rows
     var formDataFound = 0;
