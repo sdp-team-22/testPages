@@ -1,63 +1,33 @@
-createMenuIcon();
-createMenu();
-
-function createMenuIcon() {
-    // Define variables
-    const image_path = 'assets/images/menu_icon';
-    // Instantiate elements
-    const outerDiv = document.createElement('div');
-    const innerDiv = document.createElement('div');
-    const menuIcon = document.createElement('img');
-    // Connect elements
-    outerDiv.appendChild(innerDiv);
-    innerDiv.appendChild(menuIcon);
-    document.body.appendChild(outerDiv);
-    // Style elements
-    outerDiv.id = 'menu-icon';
-    // Link image to element
-    menuIcon.src = image_path;
-    menuIcon.onmouseenter = openMenu;
-    menuIcon.onmousedown = toggleMenu();
+const menuItems = {
+    'Upload Files':'assets/images/upload.png',
+    'View Data':'assets/images/graph.png',
+    'Statistics':'assets/images/statistics.png',
 }
 
+createMenu();
+createController();
+
 function createMenu() {
-    // Define variables
-    const menuTitle = 'Statistics';
-    const menuSections = ['Database Utilization', 'Total Uploads/Downloads', 'Test', 'Test', 'Test', 'Test'];
-    // Instantiate elements
     const menu = document.createElement('div');
-    const innerMenu = document.createElement('div');
-    for (let i = 0; i < menuSections.length; i++) {
-        const section = document.createElement('div');
-        const label = document.createElement('h3');
-        const dataDiv = document.createElement('div');
-        label.innerText = menuSections[i];
-        dataDiv.innerText = 'Example statistic: 50%';
-        section.appendChild(label);
-        section.appendChild(dataDiv);
-        innerMenu.appendChild(section);
+    for (let i = 0; i < Object.keys(menuItems).length; i++) {
+        const menuItem = document.createElement('div')
+        const menuImage = document.createElement('img');
+        const itemLabel = document.createElement('div');
+        itemLabel.innerText = Object.keys(menuItems)[i];
+        console.log('added' + itemLabel.innerText);
+        menuImage.setAttribute('src', menuItems[Object.keys(menuItems)[i]]);
+        menuItem.appendChild(menuImage);
+        menuItem.appendChild(itemLabel);
+        menu.appendChild(menuItem);
     }
-    // Connect elements
-    menu.appendChild(innerMenu);
-    // Style elements
+
     menu.id = 'menu';
+
     document.body.appendChild(menu);
 }
 
-function openMenu() {
-    const menu = document.getElementById('menu');
-    if (menu.style.visibility == 'visible') {
-        menu.style.visibility = 'hidden';
-    } else {
-        menu.style.visibility = 'visible';   
-    }
-}
-
-function toggleMenu() {
-    const menu = document.getElementById('menu');
-    // if (menu.style.visibility == 'visible') {
-    //     menu.style.visibility = 'hidden';
-    // } else {
-    //     menu.style.visibility = 'visible';
-    // }
+function createController() {
+    const controller = document.createElement('div');
+    controller.id = 'menu-control';
+    document.body.appendChild(controller);
 }
