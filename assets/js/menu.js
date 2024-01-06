@@ -1,7 +1,7 @@
 const menuItems = {
+    'Statistics':'assets/images/statistics.png',
     'Upload Files':'assets/images/upload.png',
     'View Data':'assets/images/graph.png',
-    'Statistics':'assets/images/statistics.png',
 }
 
 createMenu();
@@ -29,5 +29,19 @@ function createMenu() {
 function createController() {
     const controller = document.createElement('div');
     controller.id = 'menu-control';
+    controller.onmousedown = toggleMenu;
+    controller.onmouseenter = toggleMenu;
     document.body.appendChild(controller);
+}
+
+function toggleMenu() {
+    const menu = document.getElementById('menu');
+    const controller = document.getElementById('menu-control');
+    if (menu.style.visibility != 'visible') {
+        menu.style.visibility = 'visible';
+        controller.style.marginLeft = 'calc(200px + 10px)';
+    } else {
+        menu.style.visibility = 'hidden';
+        controller.style.marginLeft = '10px';
+    }
 }

@@ -1,21 +1,24 @@
 #menu {
-    width: 150px;
+    width: 200px;
     height: 100%;
     position: fixed;
-    background-color: grey;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     overflow-y: scroll;
     justify-content: center;
-    align-items:start;
+    align-items:center;
+    background-color:cornsilk;
+    border-right: solid 3px;
+    visibility: hidden;
+    z-index: 1;
 }
 
 #menu > div {
-    width: 100%;
+    width: 80%;
     height: auto;
-    background-color: blueviolet;
-    border-style: solid;
+    background-color: lightgoldenrodyellow;
+    border: solid 3px;
     display: flex;
     flex-direction: column;
     border-radius: 1rem;
@@ -37,10 +40,12 @@
 }
 
 #menu-control {
-    width: 15px;
-    height: 100%;
+    width: 0.5%;
+    height: 100px;
+    top: 50%;
+    margin-left: 10px;
     position: fixed;
-    z-index: 2;
-    background-color: blue;
-    padding-right: 
+    z-index: 1;
+    background-color: black;
+    transform: translateY(-50%); /* Center the element vertically */
 }
