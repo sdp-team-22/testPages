@@ -10,6 +10,6 @@ Database and PHPs | https://www.youtube.com/watch?v=IagGGcC95Ig |
 # website style options
 --- | --- |
 v1 | file:///Users/walsonli/Desktop/sdp/website/previous/v1/index.html |
-v1.1 | |
+v1.1 | file:///Users/walsonli/Desktop/sdp/website/previous/v1.1/index.html |
 v2 | file:///Users/walsonli/Desktop/sdp/website/previous/v2/index.html |
 v3 | file:///Users/walsonli/Desktop/sdp/website/previous/v3/index.html |
