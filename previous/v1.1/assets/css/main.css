@@ -49,10 +49,9 @@ header {
 }
 
 .content {
-    margin: 0.2rem 0.2rem 0rem 0.2rem;
-    background-color: white;
-    height: calc(100% - 3rem);
-    padding: 0.5rem;
+    margin-top: 0.2rem;
+    /*background-color: white;*/
+    height: calc(100% - 2rem);
     border-radius: 0.5rem;
     overflow-x: scroll;
     overflow-y: scroll;
