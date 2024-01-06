@@ -56,3 +56,7 @@ header {
     overflow-x: scroll;
     overflow-y: scroll;
 }
+
+.light-background {
+    background-color: lightblue;
+}
