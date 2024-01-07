@@ -1,8 +1,5 @@
-# website style options
+# v1.1
+- Similar style to v1
+- Menu at top
 
-Versions | Github Pages Link (click from https://sdp-team-22.github.io/website/) |
---- | --- |
-version 1 | [/website/previous/v1/index.html](/website/previous/v1/index.html)
-version 1.1 (latest version) | [/website/previous/v1/index.html](/website/previous/v1.1/index.html) |
-version 2 | [/website/previous/v1/index.html](/website/previous/v2/index.html) |
-version 3 | [/website/previous/v1/index.html](/website/previous/v3/index.html) |
+- Statistics page as main
