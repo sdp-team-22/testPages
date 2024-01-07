@@ -43,25 +43,9 @@
                 Database Search
             </div>
             <div class="content">
-                <form id="normal-search" style="display:block">
-                    <input type="number" pattern="[0-9]+" inputmode="numeric" placeholder="Project Number" class="light-background">
-                    <input type="button" onclick="searchDatabase()" value="Search">
-                    <input type="button" onclick="toggleAdvancedSearch()" value="Advanced Search">
-                </form>
-                <form id="advanced-search" style="display:none">
-                    <!--Improvements can be made here to be more user friendly-->
-                    <select>
-                        <option value="project-number">Project Number</option>
-                        <option value="mw">MW</option>
-                        <option value="solid-form">Solid Form</option>
-                        <option value="tmelt">Tmelt</option>
-                        <option value="enthalpy">Fusion Enthalpy</option>
-                        <option value="solvent">Solvent</option>
-                    </select>
-                    <input type="button" value="Add Filter">
-                    <br>
-                    <input type="button" onclick="toggleAdvancedSearch()" value="Normal Search">
-                </form>
+                <div id="normal-search-form"></div>
+                <div id="advanced-search-form"></div>
+                <script src="assets/js/build-search.js"></script>
             </div>
         </div>
     </body>

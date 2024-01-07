@@ -57,6 +57,11 @@ header {
     overflow-y: scroll;
 }
 
+.content input {
+    outline: none;
+    margin-right: 0.5rem;
+}
+
 .light-background {
     background-color: lightblue;
 }
