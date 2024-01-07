@@ -57,9 +57,15 @@ header {
     overflow-y: scroll;
 }
 
-.content input {
+.content input,
+.content select {
     outline: none;
     margin-right: 0.5rem;
+}
+
+.content input[type="text"],
+.content input[type="number"] {
+    border-radius: 0.2rem;
 }
 
 .light-background {
