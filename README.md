@@ -1,5 +1,5 @@
 # Website
-[Currently hosting from simpleMockup_1 branch](https://sdp-team-22.github.io/website/)
+[Currently hosting from all_versions branch](https://sdp-team-22.github.io/website/)
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 1-7-2024
