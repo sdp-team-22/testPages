@@ -1,5 +1,6 @@
 # website style options
 
+Versions | Links |
 --- | --- |
 version 1 | [link](website/previous/v1/index.html) |
 version 1.1 (latest version) | [link](website/previous/v1.1/index.html) |
