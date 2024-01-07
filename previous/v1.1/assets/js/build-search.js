@@ -77,6 +77,15 @@ function createAdvancedSearch(){
         appendSelect(advancedSearch);
     });
     advancedSearch.appendChild(addFilter);
+    // create reset filters butotn
+    const resetFilter = document.createElement('input');
+    resetFilter.type = "button";
+    resetFilter.value = "Reset";
+    resetFilter.addEventListener('click', function(){
+        advancedFormDiv.innerHTML = '';
+        createAdvancedSearch();
+    });
+    advancedSearch.appendChild(resetFilter);
     // form line break
     advancedSearch.appendChild(document.createElement('br'));
     // append initial select
