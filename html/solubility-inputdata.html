@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="../css/styles.css">
+        <title>Solubility Data Management - Input Data</title>
+    </head>
+    <body>
+        <header>
+            <div>
+                <div style="width:calc(50%);">
+                    Boehringer Ingelheim: Solubility Data Management
+                </div>
+                <div style="width:calc(50%/3);">
+                    <a href="solubility-inputdata.html">Input Data</a>
+                </div>
+                <div style="width:calc(50%/3);">
+                    <a href="solubility-viewdata.html">View Data</a>
+                </div>
+                <div style="width:calc(50%/3)">
+                    <a href="solubility-statistics.html">Statistics</a>
+                </div>
+            </div>
+        </header>
+        <div>
+            <div style="background-color:beige">
+                <p>
+                    Input solubility data files:
+                </p>
+                <ul>
+                    <li>Will filter .xlsx, .csv, and .numbers files</li>
+                    <li>Can take folders/multiple files</li>
+                    <li>Will srape data from files and send to database</li>
+                    <li>Will display data in tables (one table per file) to ensure data is correct</li>
+                </ul>
+                <form>
+                    <input type="file" id="fileInput" accept=".xlsx, .csv" multiple>
+                    <input type="button" onclick="filterFiles()" value="Upload data">
+                    <!--<input type="button" onclick="readFiles()" value="Upload data">-->
+                </form>
+            </div>
+            <div style="background-color:beige">
+                <p>
+                    Will also provide a gui for manual input on the website that features:
+                </p>
+                <ul>
+                    <li>Expandable number of rows and columns?</li>
+                    <li>Unit changing options that are available on excel</li>
+                    <li>Good looking and fast hopefully</li>
+                    <li>Suggestions possibly</li>
+                    <li>Feedback on whether all necessary boxes are filled</li>
+                    <li>Expandable code</li>
+                </ul>
+            </div>
+        </div>
+        <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+        <script src="../jss/solubility-inputdata-displayData.js"></script>
+        <script src="../jss/solubility-inputdata-2.js"></script>
+        <!--<script src="../jss/solubility-inputdata.js"></script>-->
+    </body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="../css/styles.css">
+        <title>Solubility Data Management - Viewdata</title>
+    </head>
+    <body>
+        <header>
+            <div>
+                <div style="width:calc(50%);">
+                    Boehringer Ingelheim: Solubility Data Management
+                </div>
+                <div style="width:calc(50%/3);">
+                    <a href="solubility-inputdata.html">Input Data</a>
+                </div>
+                <div style="width:calc(50%/3);">
+                    <a href="solubility-viewdata.html">View Data</a>
+                </div>
+                <div style="width:calc(50%/3)">
+                    <a href="solubility-statistics.html">Statistics</a>
+                </div>
+            </div>
+        </header>
+        <div>
+            <div style="background-color: beige">
+                <p>
+                    This page is where graphical data can be viewed. It will be:
+                </p>
+                <ul>
+                    <li>Possibly less expandable. Graphs rules may be harder to create and add. Will need to research more on this.</li>
+                    <li>Start with whatever graphs sponsors want to include. Need examples/axes and weights</li>
+                    <li>Could technically run ml on this but that's for future. Also we don't know enough about solubility to know what ml would be used for.</li>
+                </ul>
+            </div>
+            <div style="background-color: beige;">
+                <p>
+                    Functionalities:
+                </p>
+                <ul>
+                    <li>Search bar to find information (nongraphically)</li>
+                    <li>After finding information, option to view data in a graph (need to choose axes and units, etc.) - need to ask sponsors for details</li>
+                    <li>Ability to view multiple graphs, open images in new pages?</li>
+                    <li>Should graphs be interactive? - need to do research</li>
+                </ul>
+            </div>
+            <div style="background-color: beige;">
+                <p>Example:</p>
+                <ul>
+                    <li>Research how to make search autofill/suggestions possible</li>
+                </ul>
+                <div>
+                    <label for="datasearch">Search database:</label>
+                    <input type="search" id="datasearch">
+                    <input type="submit" value="Search">
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
