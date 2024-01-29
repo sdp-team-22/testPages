@@ -33,7 +33,7 @@ function handleFileSelect(event) {
 }
 
 function deleteFile(index) {
-    //work around since file list is read only
+    //Work around since file list is read only
     const dt = new DataTransfer();
     const fileInput = document.getElementById('fileInput');
     const { files } = fileInput;
