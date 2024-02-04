@@ -50,7 +50,12 @@
                     <ul id="uploadedFiles" class="list-group"></ul>
                 </section>
                 <script src="assets/js/upload.js"></script>
-                <input type="button" onclick="parseFiles()" value="Upload Data">
+                <form>
+                    <input type="button" onclick="readFiles()" value="Upload Data">
+                    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+                    <script src="assets/js/solubility-inputdata.js"></script>
+                </form>
+
             </div>
         </div>
         <div id="search-page" class="page" style="display:none;">
