@@ -476,12 +476,7 @@ function createBody(table, data) {
             td.style.border = "1px solid black";
             //tdDiv.contentEditable = "true";
             td.appendChild(tdDiv);
-            if (checkInputstatus(data,i) == "Green"){
-                td.style.backgroundColor = "#ccffcc";
-            }
-            else if(checkInputstatus(data,i) == "Red"){
-                tr.style.backgroundColor = "#ffcccc"; 
-            }
+            checkInputstatus(data,i,td);
             /*
             if (data["data"][i][dataLabels[j]]) {
                 tdDiv.innerText = data["data"][i][dataLabels[j]];
@@ -498,12 +493,13 @@ function createBody(table, data) {
 }
 
 
-function checkInputstatus(data,i){
+function checkInputstatus(data,i, td){
     if (data["data"][i]["dataInputstatus"] == "OK"){
-        return "Green";
+        td.style.backgroundColor = "#ccffcc";
     }
 
     else if(data["data"][i]["dataInputstatus"] == "ERROR w/ Data Input…Check Solvent Name(s), Solvent Fracs, T, and Solubility"){
-        return "Red"
+        td.style.backgroundColor = "#ffcccc"; 
     }
+    return -1 
 }
