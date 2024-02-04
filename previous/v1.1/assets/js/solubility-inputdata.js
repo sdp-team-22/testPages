@@ -476,6 +476,7 @@ function createBody(table, data) {
             td.style.border = "1px solid black";
             //tdDiv.contentEditable = "true";
             td.appendChild(tdDiv);
+
             checkInputstatus(data,i,td);
             /*
             if (data["data"][i][dataLabels[j]]) {
@@ -491,8 +492,15 @@ function createBody(table, data) {
         table.appendChild(tr);
     }
 }
-
-
+/**
+ * checkInputstatus(data,i, td)
+ * - Check whether the row is ok if so make the background green.
+ * - If we have an error change the background of the row to red.
+ * @param {*} data 
+ * @param {*} i 
+ * @param {*} td 
+ * @returns 
+ */
 function checkInputstatus(data,i, td){
     if (data["data"][i]["dataInputstatus"] == "OK"){
         td.style.backgroundColor = "#ccffcc";
