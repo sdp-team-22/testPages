@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+
+<head>
+</head>
+<body>
+    <script src="{{ url_for('static', filename='assets/js/solubility-inputdata.js') }}"></script>
+    <script>
+        // Access JSON data embedded in the template
+        var jsonData = {{ json_data | tojson | safe }};
+    
+        // Call the grabData function with jsonData
+        grabData(jsonData);
+    </script>
+</body>
+</html>

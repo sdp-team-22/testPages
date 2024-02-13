@@ -51,13 +51,12 @@ const dataLabels = [
     "measurementMethod",
     "comments", 
 ];
-
 /**
  * void readFiles()
  * - Separates file uploads from solubility-inputdata.html into individual files
  * - Accounts for unique sheets in each file
  * - Calls filterSheet()
- */
+ * */
 function readFiles() {
     console.log("Upload data button clicked")
     const fileInput = document.getElementById('fileInput');
@@ -74,7 +73,11 @@ function readFiles() {
                 const sheetName = workbook.SheetNames[i];
                 const sheet = workbook.Sheets[sheetName];
                 const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                //console.log(jsonData);
+
+
+
+                const jsonString = JSON.stringify(jsonData, null, 2);
+                console.log(jsonString);
                 filterSheet(sheetName, jsonData);
             }
         };
@@ -103,6 +106,8 @@ function filterSheet(sheetName, jsonDataIn) {
     }
 }
 
+
+
 /**
  * void grabData(jsonDataIn)
  * - Takes jsonData from correct (after filter) sheets
@@ -114,9 +119,10 @@ function filterSheet(sheetName, jsonDataIn) {
 function grabData(jsonDataIn) {
     //console.log("grabData(jsonDataIn) called");
     data = {}
-    for (rowIndex in jsonDataIn) {
-        //console.log(row + "-->" + jsonDataIn[row]);
-        row = jsonDataIn[rowIndex];
+    rows = jsonDataIn["data"]
+
+    for (let rowIndex in rows) {
+        let row = rows[rowIndex];
         if (row == null || row == "") {
             continue;
         }
@@ -216,46 +222,13 @@ function grabData(jsonDataIn) {
             }
         }
     }
-    // console.log(data);
-    createTable2(data);
+    console.log(data);
+    createTable(data);
 }
 
 //check to see if we should round - need to fix(edge cases exist)
 function shouldRound(value) {
     return value.toString().length > 5;
-}
-
-function createTable2(data) {
-    // Create a new HTML document
-    const newWindow = window.open('', '_blank');
-    
-    const tableDiv = newWindow.document.createElement('div');
-    const titleDiv = newWindow.document.createElement('div');
-    const dataDiv = newWindow.document.createElement('div');
-    const table = newWindow.document.createElement('table');
-    
-
-    createTitle(titleDiv, data);
-    createHead(table);
-    createBody(table, data);
-    tableDiv.appendChild(titleDiv);
-    tableDiv.appendChild(dataDiv);
-    dataDiv.appendChild(table);
-    
-    // Styling
-    dataDiv.style.overflow = "scroll";
-    tableDiv.style.backgroundColor = "beige";
-    tableDiv.style.marginBottom = "1rem";
-    table.style.borderCollapse = "collapse";
-    table.style.tableLayout = "fixed";
-    table.style.border = "solid black";
-
-    var tableCells = table.querySelectorAll('th, td');
-    tableCells.forEach(function(cell) {
-        cell.style.padding = '5px';
-    });
-
-    newWindow.document.body.appendChild(tableDiv);
 }
 
 /**
@@ -286,6 +259,7 @@ function createTable(data) {
     table.style.borderCollapse = "collapse";
     table.style.tableLayout = "fixed";
     table.style.border = "solid black";
+    table.display = "flex";
 
     var tableCells = table.querySelectorAll('th, td');
     tableCells.forEach(function(cell) {
@@ -496,9 +470,9 @@ function createBody(table, data) {
  * checkInputstatus(data,i, td)
  * - Check whether the row is ok if so make the background green.
  * - If we have an error change the background of the row to red.
- * @param {*} data 
- * @param {*} i 
- * @param {*} td 
+ * @param {sheet json data} data 
+ * @param {position of current row} i 
+ * @param {current row object} td 
  * @returns 
  */
 function checkInputstatus(data,i, td){
@@ -511,3 +485,4 @@ function checkInputstatus(data,i, td){
     }
     return -1 
 }
+
