@@ -24,4 +24,9 @@ export class AppComponent {
     // Navigate to the "/view" route
     this.router.navigate(['/view']);
   }
+
+  handleStatsClick(): void {
+    // Navigate to the "/stats" route
+    this.router.navigate(['/stats']);
+  }
 }

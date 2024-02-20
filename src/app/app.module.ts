@@ -8,6 +8,7 @@ import { UploadComponent } from './upload';
 import { EditComponent } from './edit';
 import { ViewComponent } from './view';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { StatsComponent } from './stats';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
     HomeComponent,
     UploadComponent,
     EditComponent,
-    ViewComponent
+    ViewComponent,
+    StatsComponent
   ],
   imports: [
     BrowserModule,
