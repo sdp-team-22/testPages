@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -9,6 +8,7 @@ import { Router } from '@angular/router';
 export class AppComponent {
   title = 'SDPAngular';
   constructor(private router: Router) {}
+  data = []
 
   handleInputDataClick(): void {
     // Navigate to the "/upload" route
@@ -29,4 +29,5 @@ export class AppComponent {
     // Navigate to the "/stats" route
     this.router.navigate(['/stats']);
   }
+  
 }

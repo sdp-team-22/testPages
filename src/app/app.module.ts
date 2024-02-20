@@ -9,6 +9,7 @@ import { EditComponent } from './edit';
 import { ViewComponent } from './view';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { StatsComponent } from './stats';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { StatsComponent } from './stats';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NoopAnimationsModule
+    NoopAnimationsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
