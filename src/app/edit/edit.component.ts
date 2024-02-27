@@ -1,4 +1,8 @@
 import { Component } from '@angular/core';
 
-@Component({ templateUrl: 'edit.component.html' })
+@Component({
+    selector: 'edit-root',
+    templateUrl: './edit.component.html',
+    styleUrls: ['./edit.component.scss']
+  })
 export class EditComponent {}
