@@ -17,16 +17,23 @@ def database_storage():
     # make multiple queries as needed
     cur.execute("SELECT pg_size_pretty(pg_database_size('postgres')) AS size") 
     db_storage = cur.fetchone()[0]
-    
+
+    cur.execute("""
+       SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';
+    """)
+    tables = cur.fetchone()[0]
+
+
     cur.close()
     conn.close()
 
-    return db_storage
+    return db_storage, tables
 @app.route('/api/db_storage')
 def api_db_storage():
     db_storage = database_storage()
 
     return jsonify(db_storage)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

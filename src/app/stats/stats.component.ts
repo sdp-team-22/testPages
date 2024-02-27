@@ -5,13 +5,18 @@ import { StatsService } from '../stats.service';
 })
 export class StatsComponent {
   title = 'stats';
-  data: any;
+  data1: any;
+  dbStorage: any;
+  tableCount: any;
   constructor(private stats: StatsService) {
-    this.stats.getDbStorage().subscribe((data: any) => {
-      console.log(data)
-      this.data = data;
+    this.stats.getDbStorage().subscribe((data1: any) => {
+      console.log(data1)
+      this.dbStorage = data1[0];
+      this.tableCount = data1[1];
     })
   }
+
+ 
   
   //implements OnInit{
   // dbStorage: any;
