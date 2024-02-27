@@ -1,0 +1,4 @@
+[
+    {"solvent1": "Ethyl acetate", "solvent2": "", "solvent3": "", "solv_frac1": 1, "solv_frac2": 0, "solv_frac3": 0, "temp": 50.0, "xrpd": "Form III", "solute_lot_num": 3, "eln": 2, "measurement_method": "Glass scale", "comments": "Jianhua did this measurement", "data_valid": true},
+    {"solvent1": "Ethanol", "solvent2": "Water", "solvent3": "Isobutanol", "solv_frac1": 0.5, "solv_frac2": 0, "solv_frac3": 1, "temp": 25.0, "xrpd": "Hydrate", "solute_lot_num": 5, "eln": 4, "measurement_method": "Ruler", "comments": "Walson messed this one up", "data_valid": false}
+]

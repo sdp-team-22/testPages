@@ -9,7 +9,10 @@ import { EditComponent } from './edit';
 import { ViewComponent } from './view';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { StatsComponent } from './stats';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule if you're using HttpClient
+import { MatTableModule } from '@angular/material/table'; // Import MatTableModule
+import { TableComponent } from './table/table.component';
+import { SolubilityDataService } from './services/solubility-data.service';
 
 @NgModule({
   declarations: [
@@ -18,15 +21,17 @@ import { HttpClientModule } from '@angular/common/http';
     UploadComponent,
     EditComponent,
     ViewComponent,
-    StatsComponent
+    StatsComponent,
+    TableComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     NoopAnimationsModule,
-    HttpClientModule
+    HttpClientModule,
+    MatTableModule
   ],
-  providers: [],
+  providers: [SolubilityDataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
