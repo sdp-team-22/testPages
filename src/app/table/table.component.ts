@@ -17,8 +17,8 @@ export class TableComponent implements OnInit {
   constructor(private solubilityDataService: SolubilityDataService) {}
 
   ngOnInit() {
-    this.solubilityDataService.getSolubilityData().subscribe((res: SolubilityData[]) =>{
-        this.dataSource.data = res;
+    this.solubilityDataService.getSolubilityData().subscribe((res: any) =>{
+        this.dataSource.data = res["Row Data"];
     });
   }
 }
