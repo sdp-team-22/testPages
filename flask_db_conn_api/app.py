@@ -1,6 +1,7 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import psycopg2
+import logging
 
 app = Flask(__name__)
 CORS(app)
@@ -28,11 +29,27 @@ def database_storage():
     conn.close()
 
     return db_storage, tables
+
 @app.route('/api/db_storage')
 def api_db_storage():
     db_storage = database_storage()
 
     return jsonify(db_storage)
+
+@app.route('/api/upload', methods=['GET', 'POST'])
+def api_upload():
+    if 'files' not in request.files:
+        return jsonify({'error': 'No files part'})
+
+    uploaded_files = request.files.getlist('files')
+
+    filenames = []
+    for file in uploaded_files:
+        if file.filename == '':
+            return jsonify({'error': 'No selected file'})
+        filenames.append(file.filename)
+
+    return jsonify({'message': 'Files uploaded successfully', 'filenames': filenames})
 
 
 if __name__ == '__main__':

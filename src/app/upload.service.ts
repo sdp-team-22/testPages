@@ -3,12 +3,17 @@ import { HttpClient } from '@angular/common/http';
 @Injectable({
   providedIn: 'root'
 })
-export class StatsService {
+export class UploadService {
 
   constructor(private http: HttpClient) { }
 
-  getDbStorage() {
-    let url = 'http://127.0.0.1:5000/api/db_storage';
+  uploadData(data:any) {
+    let url = 'http://127.0.0.1:5000/api/upload';
+    return this.http.post(url, data);
+  }
+
+  testGet() {
+    let url = 'http://127.0.0.1:5000/api/upload';
     return this.http.get(url);
   }
 

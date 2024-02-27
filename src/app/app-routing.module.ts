@@ -5,6 +5,7 @@ import { UploadComponent } from './upload';
 import { EditComponent } from './edit';
 import { ViewComponent } from './view';
 import { StatsComponent } from './stats';
+import { HttpClientModule } from '@angular/common/http';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -18,7 +19,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes), HttpClientModule],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
