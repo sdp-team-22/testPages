@@ -1,6 +1,71 @@
 <h1>View Page</h1>
-<p><a href="https://material.angular.io/components/progress-bar/overview" target="_blank">Material Progress Bar Overview</a></p>
-<p><a href="https://material.angular.io/components/progress-spinner/overview" target="_blank">Material Progress Spinner Overview</a></p>
-<p><a href="https://material.angular.io/components/slider/overview" target="_blank">Material Slider Overview</a></p>
-<p><a href="https://material.angular.io/components/slide-toggle/overview" target="_blank">Material Slide-Toggle Overview</a></p>
-<img src="assets/images/StatsExample.jpeg" width="400px">
+
+<div class="search-container" *ngIf="!showAdvancedSearch">
+    <input type="text" placeholder="Search by Compound Name" class="search-input">
+    <button mat-raised-button class="search-button" (click)="performSearch()">Search</button>
+</div>
+
+<button mat-raised-button class="advanced-button" *ngIf="!showAdvancedSearch" (click)="toggleAdvancedSearch()">Advanced Search</button>
+
+<div class ="advanced-container" *ngIf="showAdvancedSearch">
+<mat-form-field appearance="fill">
+    <mat-label>Filter</mat-label>
+    <mat-select (selectionChange)="updateFormFields($event.value)">
+        <mat-option>None</mat-option>
+        <mat-option value="Project Number">Project Number</mat-option>
+        <mat-option value="Molecular Weight">Molecular Weight</mat-option>
+        <mat-option value="Solid Form">Solid Form</mat-option>
+        <mat-option value="Melting Temperature">Melting Temperature</mat-option>
+        <mat-option value="Fusion Enthalpy">Fusion Enthalpy</mat-option>
+        <mat-option value="Solvent">Solvent</mat-option>
+    </mat-select>
+</mat-form-field>
+
+<ng-container *ngIf="inputType === 'number'">
+    <mat-form-field appearance="fill">
+        <mat-label>Enter a number</mat-label>
+        <input matInput placeholder="Number" type="number">
+    </mat-form-field>
+</ng-container>
+
+<ng-container *ngIf="showAdditionalFields">
+    <mat-form-field appearance="fill">
+      <mat-label>Equality</mat-label>
+      <mat-select>
+        <mat-option *ngFor="let term of equalityTerms" [value]="term">{{ term }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Value</mat-label>
+      <input matInput type="number" placeholder="Enter Value">
+    </mat-form-field>
+  </ng-container>
+
+<ng-container *ngIf="inputType === 'solidform'">
+    <mat-form-field appearance="fill">
+        <mat-label>Solid Form</mat-label>
+        <mat-select>
+            <mat-option *ngFor="let term of solidformTerms" [value]="term">{{ term }}</mat-option>
+        </mat-select>
+    </mat-form-field>
+</ng-container> 
+
+<ng-container *ngIf="inputType === 'solvent'">
+    <mat-form-field appearance="fill">
+        <mat-label>Solvent</mat-label>
+        <mat-select>
+            <mat-option *ngFor="let solvent of solventSelectTerms" [value]="solvent">{{ solvent }}</mat-option>
+        </mat-select>
+    </mat-form-field>
+</ng-container>
+<!-- <button mat-button (click)="addFilter()"> Add Filter </button> -->
+</div>
+
+<div>
+<button mat-raised-button class ="search-button" *ngIf="showAdvancedSearch" (click)="performSearch()">Search</button>
+</div>
+
+<button mat-button *ngIf="showAdvancedSearch" (click)="toggleAdvancedSearch()">Search by Compund Name?</button>
+
+<!-- <div #normalSearch></div>
+<div #advancedSearch></div> -->
