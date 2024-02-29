@@ -23,7 +23,7 @@ import { MatTabsModule } from '@angular/material/tabs';
     HomeComponent,
     UploadComponent,
     EditComponent,
-    ViewComponent,
+    // ViewComponent,
     StatsComponent,
     TableComponent
   ],
