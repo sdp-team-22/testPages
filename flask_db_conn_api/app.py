@@ -5,7 +5,7 @@ import psycopg2
 app = Flask(__name__)
 CORS(app)
 
-def database_storage():
+def database_stats():
     conn = psycopg2.connect(
         database="postgres",
         user="sdp-dev",
@@ -18,22 +18,49 @@ def database_storage():
     cur.execute("SELECT pg_size_pretty(pg_database_size('postgres')) AS size") 
     db_storage = cur.fetchone()[0]
 
+    # Fetch user upload history
     cur.execute("""
-       SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';
+        SELECT  f.id, f.compound_name, u.username, f.time_uploaded
+        FROM filestore f
+        JOIN users u ON f.owner_id = u.id
+        ORDER BY f.time_uploaded DESC
     """)
-    tables = cur.fetchone()[0]
+    upload_history = cur.fetchall()
 
+    # Fetch daily visits
+    cur.execute("""
+        SELECT DATE_TRUNC('day', f.time_uploaded) AS day, u.id AS user_id, u.username, COUNT(*) AS daily_visits
+        FROM filestore f
+        JOIN users u ON f.owner_id = u.id
+        GROUP BY day, u.id, u.username
+        ORDER BY day
+    """)
+    daily_visits = cur.fetchall()
+
+    # Fetch monthly visits
+    cur.execute("""
+        SELECT DATE_TRUNC('month', f.time_uploaded) AS month, u.id AS user_id, u.username, COUNT(*) AS monthly_visits
+        FROM filestore f
+        JOIN users u ON f.owner_id = u.id
+        GROUP BY month, u.id, u.username
+        ORDER BY month
+    """)
+    monthly_visits = cur.fetchall()
 
     cur.close()
     conn.close()
 
-    return db_storage, tables
-@app.route('/api/db_storage')
-def api_db_storage():
-    db_storage = database_storage()
+    return db_storage, upload_history, daily_visits, monthly_visits
+@app.route('/api/data', methods=['GET'])
+def get_data():
+    db_storage, upload_history, daily_visits, monthly_visits = database_stats()
 
-    return jsonify(db_storage)
-
+    return jsonify({
+        'db_storage':db_storage,
+        'upload_history':upload_history,
+        'daily_visits':daily_visits,
+        'monthly_visits':monthly_visits
+                    })
 
 if __name__ == '__main__':
     app.run(debug=True)
