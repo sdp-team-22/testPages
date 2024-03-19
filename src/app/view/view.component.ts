@@ -27,7 +27,7 @@ export class ViewComponent {
 
     equalityTerms: string[] = ["=", "<", "<=", ">", ">="];
     solidformTerms: string[] = ["Form I", "Form II", "Form III"];
-    solventSelectTerms: string[] = ["has specific solvent combination", "has any data on solvent"];
+    // solventSelectTerms: string[] = ["has specific solvent combination", "has any data on solvent"];
 
     inputType: 'number' | 'equality' | 'solidform' | 'solvent' | null = null;
 
@@ -35,7 +35,9 @@ export class ViewComponent {
 
     showAdvancedSearch: boolean = false;
 
-    // advancedSearchFilterID = 0;
+    // filters: { selectedValue: string | null, inputType: string | null }[] = [];
+
+
 
     toggleAdvancedSearch() {
         this.showAdvancedSearch = !this.showAdvancedSearch;
@@ -45,6 +47,7 @@ export class ViewComponent {
         switch (selectedValue) {
             case 'Project Number':
                 this.inputType = 'number';
+                this.showAdditionalFields = false;
                 break;
             case 'Molecular Weight':
                 this.inputType = 'equality';
@@ -52,6 +55,7 @@ export class ViewComponent {
                 break;
             case 'Solid Form':
                 this.inputType = 'solidform';
+                this.showAdditionalFields = false;
                 break;
             case 'Melting Temperature':
                 this.inputType = 'equality';
@@ -63,6 +67,7 @@ export class ViewComponent {
                 break;
             case 'Solvent':
                 this.inputType = 'solvent';
+                this.showAdditionalFields = false;
                 break;
             default:
                 this.inputType = null;
@@ -73,7 +78,16 @@ performSearch() {
     console.log('Searching for:', this.selectedValue, this.inputType, this.showAdditionalFields);
 }
 // addFilter() {
-//     this.advancedSearchFilterID++;
-// }
+//     if (this.selectedValue && this.inputType) {
+//       this.filters.push({ selectedValue: this.selectedValue, inputType: this.inputType });
+//       this.selectedValue = null;
+//       this.inputType = null;
+//     }
+//   }
+
+// removeFilter(index: number) {
+//     this.filters.splice(index, 1);
+//   }
+
 }
 
