@@ -122,13 +122,15 @@ export class ViewComponent {
         searchButton.value = "Search";
         advancedSearch.append(searchButton)
         
+        let flag = true
+        
         const currentData: { [key: string]: any[] } = {};
-        //need to implement something that prevent double upload
+        // current method to prevent multiple upload is hacky, need to clear the current entry instead.
         searchButton.addEventListener('click', () => {
             for (const key in currentData) {
                 const divElement = document.getElementById(key);
 
-                if(divElement){
+                if(divElement && flag){
                     const inputFields = divElement.querySelectorAll('input');
     
                     inputFields.forEach((inputField: HTMLInputElement) => {
@@ -319,19 +321,18 @@ export class ViewComponent {
 
                     currentData[parentDivID.id].push("Solvent")
                     // solvent entries
-                    this.solventSelectAction(solventSelect, currentData);
+                    this.solventSelectAction(solventSelect);
                     solventSelect.addEventListener("change", () => {
-                        this.solventSelectAction(solventSelect, currentData);
+                        this.solventSelectAction(solventSelect);
                     })
                     break;
             }
         }
     }
 
-    solventSelectAction(select: HTMLSelectElement, currentData :  {[key: string]: any[] }) {
+    solventSelectAction(select: HTMLSelectElement) {
         var selectedValue = select.value;
         var parentDiv = select.parentNode;
-        let parentDivID = select.parentNode as HTMLElement; 
 
         if (parentDiv) {
             // eliminate children
@@ -362,10 +363,7 @@ export class ViewComponent {
                     numberInput.type = "text";
                     numberInput.placeholder = "Solvent Name (optional)";
                     numberInput.classList.add("light-background");
-                    parentDiv.appendChild(numberInput);
-
-                    currentData[parentDivID.id].push("has specific solvent combination")
-                    
+                    parentDiv.appendChild(numberInput);     
                     break;
 
                     //add it to an dictionary
@@ -376,8 +374,6 @@ export class ViewComponent {
                     numberInput.placeholder = "Solvent Name";
                     numberInput.classList.add("light-background");
                     parentDiv.appendChild(numberInput);
-
-                    currentData[parentDivID.id].push("has any data on solvent")
                     break;
             }
         }
