@@ -25,6 +25,7 @@ def file_excel_to_json1(file):
     DATASET_JSON['Project Name'] = excel_df.iloc[8]['Unnamed: 1']
     DATASET_JSON['Scientist Name'] = excel_df.iloc[9]['Unnamed: 1']
     DATASET_JSON['Compound Name'] = excel_df.iloc[15]['Unnamed: 1']
+    DATASET_JSON['Molecular Weight'] = excel_df.iloc[16]['Unamed: 1']
     DATASET_JSON['Solid Form'] = excel_df.iloc[17]['Unnamed: 1']
     DATASET_JSON['Tmelt'] = excel_df.iloc[18]['Unnamed: 1']
     DATASET_JSON['Hfus'] = excel_df.iloc[19]['Unnamed: 1']

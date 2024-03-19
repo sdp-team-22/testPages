@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -10,6 +12,13 @@ import { ViewComponent } from './view';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { StatsComponent } from './stats';
 import { HttpClientModule } from '@angular/common/http';
+import { MatTableModule } from '@angular/material/table'; // Import MatTableModule
+import { TableComponent } from './table/table.component';
+import { SolubilityDataService } from './services/solubility-data.service';
+import { MatTabsModule } from '@angular/material/tabs';
+
+
+
 
 @NgModule({
   declarations: [
@@ -18,15 +27,19 @@ import { HttpClientModule } from '@angular/common/http';
     UploadComponent,
     EditComponent,
     ViewComponent,
-    StatsComponent
+    StatsComponent,
+    TableComponent
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule, 
     AppRoutingModule,
     NoopAnimationsModule,
-    HttpClientModule
+    HttpClientModule,
+    MatTableModule,
+    MatTabsModule
   ],
-  providers: [],
+  providers: [SolubilityDataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

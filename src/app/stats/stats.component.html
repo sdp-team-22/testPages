@@ -1,13 +1,84 @@
-<h1>Statistics Page</h1>
+<!-- <h1>Statistics Page</h1> -->
 <div class="card-container">
     <div class="content" role="main">
         <div class="card">
             <!-- // make this links url_for in the backend  -->
-            <p><a class="card" href="">Daily Visits</a></p> <!-- // daily visits from database -->
-            <p><a class="card" href="">Monthly Visits</a></p> <!-- // monthly visits, need admin info for this? -->
-            <p><a class="card" href="something={{ dbStorage }}">Database Storage </a></p> <!-- // database storage -->
-            <p><a class="card" href="">Upload History</a></p>   <!-- // upload history, need admin info for this? -->
-            <p><a class="card" href="">Table Count (Testing): {{tableCount}}</a></p> 
+            <p><a class="card-child" >Database Storage: {{ db_storage }}  </a></p> <!-- // database storage -->
+
+            <a class="card-child" href="" [hidden]="showUploadHistory || showMonthlyVisits" (click)="toggleDailyVisits($event)">
+                <span *ngIf="!showDailyVisits">Daily Visits</span>
+                <span class="arrow" *ngIf="showDailyVisits">&#x21e6;</span></a>
+                <div *ngIf="showDailyVisits">
+                    <h2>Daily Visits:</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>UserID</th>
+                                <th>Username</th>
+                                <th>Daily Visited</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let dailyVisit of daily_visits">
+                                <td>{{ dailyVisit.id }}</td>
+                                <td>{{ dailyVisit.username }}</td>
+                                <td>{{ dailyVisit.daily_visited }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            
+            <a class="card-child" href="" [hidden]="showUploadHistory || showDailyVisits" (click)="toggleMonthlyVisits($event)">
+                <span *ngIf="!showMonthlyVisits">Monthly Visits</span>
+                <span class="arrow" *ngIf="showMonthlyVisits">&#x21e6;</span></a>
+                <div *ngIf="showMonthlyVisits">
+                    <h2>Monthly Visits:</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>UserID</th>
+                                <th>Username</th>
+                                <th>Monthly Visited</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let monthlyVisit of monthly_visits">
+                                <td>{{ monthlyVisit.id }}</td>
+                                <td>{{ monthlyVisit.username }}</td>
+                                <td>{{ monthlyVisit.monthly_visited }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            
+            <a class="card-child" href="" [hidden]="showDailyVisits || showMonthlyVisits" (click)="toggleUploadHistory($event)">
+                <span *ngIf="!showUploadHistory">Upload History</span>
+                <span class="arrow" *ngIf="showUploadHistory">&#x21e6;</span>
+                    <!-- <span *ngIf="showUploadHistory">&#x21a9;</span> -->
+                    <!-- <span *ngIf="showUploadHistory">&#x21d0;</span> -->
+                </a>
+                <div *ngIf="showUploadHistory">
+                    <h2>Upload History:</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>File No.</th>
+                                <th>Compound Name</th>
+                                <th>Uploaded By</th>
+                                <th>Time Uploaded</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let upload of upload_history">
+                                <td>{{ upload.id }}</td>
+                                <td>{{ upload.compound_name }}</td>
+                                <td>{{ upload.username }}</td>
+                                <td>{{ upload.time_uploaded }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
         </div> 
     </div>
 </div>
+ 

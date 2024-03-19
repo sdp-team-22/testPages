@@ -1,0 +1,31 @@
+<div class="project-info-container">
+    <div class="left-column">
+        <h2><strong>Project </strong> <u>{{ projectName }}</u></h2>
+        <p><strong>Scientist(s):</strong> {{ scientistName }}</p>
+    </div>
+    <div class="middle-column">
+        <h2>_</h2>
+        <p><strong>Compound Name:</strong> {{ compoundName }}</p>
+        <p><strong>Solid Form:</strong> {{ solidForm }}</p>
+    </div>
+    <div class="right-column">
+        <h2>_</h2>
+        <p><strong>Tmelt:</strong> {{ Tmelt }}</p>
+        <p><strong>Hfus:</strong> {{ Hfus }}</p>
+    </div>
+</div>
+
+
+<div style="overflow-x: auto; overflow-y: auto; max-height: auto;">
+    <table mat-table [dataSource]="dataSource">
+      <!-- Define table columns dynamically -->
+      <ng-container *ngFor="let col of columnsSchema" [matColumnDef]="col.key">
+        <th mat-header-cell *matHeaderCellDef>{{ col.label }}</th>
+        <td mat-cell *matCellDef="let element">{{ element[col.key] }}</td>
+      </ng-container>
+    
+      <!-- Set up table rows -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+</div>
