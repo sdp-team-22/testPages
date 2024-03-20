@@ -131,6 +131,7 @@ export class ViewComponent {
         const currentData: { [key: string]: any[] } = {};
         // does not prevent multi-upload 
         searchButton.addEventListener('click', () => {
+            searchButton.disabled = true; // Disable the button
             for (const key in currentData) {
                 const divElement = document.getElementById(key);
 
