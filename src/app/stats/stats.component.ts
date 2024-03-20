@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { StatsService } from '../stats.service';
 @Component({
   templateUrl: './stats.component.html',
   styleUrls: ['./stats.component.scss'],
+  providers: [DatePipe]
 })
 export class StatsComponent {
   title = 'stats';
@@ -11,13 +13,16 @@ export class StatsComponent {
   upload_history: any;
   daily_visits: any;
   monthly_visits: any;
+  myDate = new Date();
 
   // flags to show/hide components
   showUploadHistory = false;
   showDailyVisits = false;
   showMonthlyVisits = false;
 
-  constructor(private stats: StatsService) {
+
+  constructor(private stats: StatsService, public datePipe: DatePipe) {
+    let date = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.stats.getData().subscribe((data: any) => {
       console.log(data)
       this.db_storage = data.db_storage; // change data1 to data1[0]-[1] if calling multiple elements 

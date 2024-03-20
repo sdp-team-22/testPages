@@ -32,6 +32,7 @@ def database_stats():
         SELECT DATE_TRUNC('day', f.time_uploaded) AS day, u.id AS user_id, u.username, COUNT(*) AS daily_visits
         FROM filestore f
         JOIN users u ON f.owner_id = u.id
+        WHERE f.time_uploaded > CURRENT_DATE - INTERVAL '1 day'
         GROUP BY day, u.id, u.username
         ORDER BY day
     """)
@@ -39,11 +40,12 @@ def database_stats():
 
     # Fetch monthly visits
     cur.execute("""
-        SELECT DATE_TRUNC('month', f.time_uploaded) AS month, u.id AS user_id, u.username, COUNT(*) AS monthly_visits
+        SELECT DATE_TRUNC('day', f.time_uploaded) AS day, u.id AS user_id, u.username, COUNT(*) AS daily_visits
         FROM filestore f
         JOIN users u ON f.owner_id = u.id
-        GROUP BY month, u.id, u.username
-        ORDER BY month
+        WHERE DATE_TRUNC('month', f.time_uploaded) = DATE_TRUNC('month', CURRENT_DATE)
+        GROUP BY day, u.id, u.username
+        ORDER BY day;
     """)
     monthly_visits = cur.fetchall()
 
