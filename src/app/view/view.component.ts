@@ -1,6 +1,8 @@
 import { getSafePropertyAccessString } from '@angular/compiler';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { SearchService } from '../view.service';
+import { TableData } from '../view/table-data.interface';
+
 
 @Component({
     selector: 'view-root',
@@ -12,6 +14,7 @@ export class ViewComponent {
     @ViewChild('advancedSearch') advancedSearch!: ElementRef;
 
     constructor(private searchService: SearchService) { }
+    tableData: TableData[] = [];
 
     advancedSearchFilterID = 0;
 
@@ -78,6 +81,7 @@ export class ViewComponent {
             const dataToSend = { projectNumber: numberInput.value };
             this.searchService.uploadData(dataToSend).subscribe(response => {
               console.log(response);
+              this.tableData = this.parseResponseData(response);
             });
           });
 
@@ -125,7 +129,7 @@ export class ViewComponent {
         let flag = true
         
         const currentData: { [key: string]: any[] } = {};
-        // current method to prevent multiple upload is hacky, need to clear the current entry instead.
+        // does not prevent multi-upload 
         searchButton.addEventListener('click', () => {
             for (const key in currentData) {
                 const divElement = document.getElementById(key);
@@ -141,6 +145,7 @@ export class ViewComponent {
             const dataToSend = { Data :  currentData};
             this.searchService.uploadData(dataToSend).subscribe(response => {
               console.log(response);
+              this.tableData = this.parseResponseData(response);
             });
           });
 
@@ -378,5 +383,21 @@ export class ViewComponent {
             }
         }
 
+    }
+    
+    parseResponseData(response: any): TableData[]{
+        return response.map((row: any[]) => ({
+            fileName: row[0],
+            projectName: row[1],
+            scientistName: row[2],
+            compoundName: row[3],
+            moleculearWeight: row[4],
+            solidForm: row[5],
+            tMelt: row[6],
+            fusionEnthalpy: row[7],
+            solvent1: row[8],
+            solvent2: row[9],
+            solvent3: row[10]
+        }));
     }
 }

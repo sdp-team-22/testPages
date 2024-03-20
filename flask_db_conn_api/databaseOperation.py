@@ -4,13 +4,14 @@ import logging
 
 def advanced_search_clean_up(data):
     res = "WHERE"
+    print(data)
     for key in data.keys():
         tempList = data.get(key,[])
         if len(res) > 5:
             res += " AND"
 
-        if tempList[0] == "Project Number" and len(tempList) == 2:
-            res += f" project_name = '{tempList[1]}'"
+        if len(tempList) == 1:
+            res += f" project_name = '{tempList[0]}'"
         
         elif tempList[0] == "Molecular Weight" and len(tempList) == 3:
             res += f" molecular_weight {tempList[1]} '{tempList[2]}'"
@@ -35,7 +36,7 @@ def advanced_search_clean_up(data):
                 #inside of res and if we are not on the first iteration.
                 if len(res) > 5 and i != 0:
                     res += " AND"
-                res += f" solvent{i+1} = '{tempList[i+1].strip()}'"
+                res += f" solvent_{i+1} = '{tempList[i+1].strip()}'"
     return res
 
 def normal_search_clean_up(data):
@@ -55,10 +56,12 @@ def database_search(data):
     else:
         res = advanced_search_clean_up(dic)
     
+    print(res)
+    
 
     string = (f"""
-        SELECT *
-        FROM solubility_data
+        SELECT s.file_name, s.project_name, s.scientist_name, s.compound_name, s.molecular_weight, s.solid_form, s.tmelt, s.hfus, s.solvent_1, s.solvent_2, s.solvent_3
+        FROM solubility_data as s
         {res}
             """)
 

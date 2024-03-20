@@ -36,7 +36,6 @@ def api_upload():
 def api_search():
     upload_content = request.json
     search_result = database_search(upload_content)
-        
     return jsonify(search_result)
 
 if __name__ == '__main__':
