@@ -4,6 +4,7 @@ from databaseOperation import database_search, database_stats
 from flask_cors import CORS
 import psycopg2
 import logging
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -29,7 +30,8 @@ def api_upload():
     data = []
     for f in uploaded_files:
         data.append(file_excel_to_json1(f))
-
+    # print(jsonify(data))
+    # print(data)
     return jsonify(data)
 
 @app.route('/api/search', methods = ['POST', 'GET'])
