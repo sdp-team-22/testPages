@@ -16,7 +16,7 @@ export class ViewComponent {
     constructor(private searchService: SearchService) { }
     tableData: TableData[] = [];
 
-    advancedSearchFilterID = 0;
+    // advancedSearchFilterID = 0;
 
     equalityTerms = [
         "=",
@@ -79,8 +79,6 @@ export class ViewComponent {
         // make the search button work 
         searchButton.addEventListener('click', () => {
             const dataToSend = { projectNumber: numberInput.value };
-
-
             this.searchService.uploadData(dataToSend).subscribe(response => {
               console.log(response);
               this.tableData = this.parseResponseData(response);
@@ -118,6 +116,7 @@ export class ViewComponent {
         resetFilter.addEventListener('click', () => {
             advanced.innerHTML = '';
             this.createAdvanced(normal, advanced);
+            // this.advancedSearchFilterID = 0;
         });
         advancedSearch.appendChild(resetFilter);
 
@@ -128,7 +127,8 @@ export class ViewComponent {
         searchButton.value = "Search";
         advancedSearch.append(searchButton)
         
-
+        let flag = true
+        
         const currentData: { [key: string]: any[] } = {};
         // does not prevent multi-upload 
         searchButton.addEventListener('click', () => {
@@ -136,13 +136,8 @@ export class ViewComponent {
             for (const key in currentData) {
                 const divElement = document.getElementById(key);
 
-                if(divElement){
-                    const selectFields  = divElement.querySelectorAll('select')
+                if(divElement && flag){
                     const inputFields = divElement.querySelectorAll('input');
-
-                    selectFields.forEach((selectField: HTMLSelectElement) => {
-                        currentData[key].push(selectField.value)
-                    })
     
                     inputFields.forEach((inputField: HTMLInputElement) => {
                         currentData[key].push(inputField.value);
@@ -198,23 +193,24 @@ export class ViewComponent {
         selectDiv.appendChild(select);
         search.appendChild(selectParent)
         // set id for select
-        selectParent.id = this.advancedSearchFilterID.toString();
-        currentData[this.advancedSearchFilterID.toString()] = []
-        this.advancedSearchFilterID++;
+        // selectParent.id = this.advancedSearchFilterID.toString();
+        // currentData[this.advancedSearchFilterID.toString()] = []
+        // this.advancedSearchFilterID++;
         // make selects based on select value
-        this.updateSelectOptions(select);
+        this.updateSelectOptions(select, currentData);
         select.addEventListener('change', () => {
-            this.updateSelectOptions(select);
+            this.updateSelectOptions(select, currentData);
         });
 
 
 
     }
 
-    updateSelectOptions(select: HTMLSelectElement) {
+    updateSelectOptions(select: HTMLSelectElement, currentData :  {[key: string]: any[] } ) {
         var selectedValue = select.value;
         var parentDiv = select.parentNode;                    
-
+        let parentDivID = select.parentNode as HTMLElement; 
+        console.log(parentDiv?.childNodes);
         if (parentDiv) {
             // reset select div
             if (parentDiv.children.length > 1) {
@@ -223,6 +219,7 @@ export class ViewComponent {
                         parentDiv.removeChild(parentDiv.children[i]);
                     }
                 }
+                // this.advancedSearchFilterID = 0;
             }
             // add more inputs depending on what selected value is
             switch (selectedValue) {
@@ -248,6 +245,18 @@ export class ViewComponent {
                     numberInput.placeholder = "Molecular Weight (g/mol)";
                     numberInput.classList.add("light-background");
                     parentDiv.appendChild(numberInput);
+
+                    // currentData[parentDivID.id].push("Molecular Weight")
+                    // currentData[parentDivID.id].push("=");
+
+                    // update current change
+                    equalitySelect.addEventListener('change', (event) => {
+                        const selectedOption = (event.target as HTMLSelectElement).value;
+                        const parentElement = (event.target as HTMLElement).parentElement;
+                        if (parentElement) {
+                            currentData[parentElement.id][1] = selectedOption
+                            }
+                    });
                     break;
                 case "Solid Form":
                     var solidformSelect = document.createElement('select');
@@ -257,6 +266,17 @@ export class ViewComponent {
                         solidformSelect.appendChild(tempOption);
                     }
                     parentDiv.appendChild(solidformSelect);
+                    // currentData[parentDivID.id].push("Solid Form")
+                    // currentData[parentDivID.id].push("Form I");
+
+                    // update current change
+                    solidformSelect.addEventListener('change', (event) => {
+                        const selectedOption = (event.target as HTMLSelectElement).value;
+                        const parentElement = (event.target as HTMLElement).parentElement;
+                        if (parentElement) {
+                            currentData[parentElement.id][1] = selectedOption
+                            }
+                    });
                     break;
                 case "Melting Temperature":
                     // equality select
@@ -272,6 +292,19 @@ export class ViewComponent {
                     numberInput.placeholder = "Melting Temperature (\u00B0C)";
                     numberInput.classList.add("light-background");
                     parentDiv.appendChild(numberInput);
+
+                    // currentData[parentDivID.id].push("Melting Temperature")
+                    // currentData[parentDivID.id].push("=");
+
+                    // update current change
+                    equalitySelect.addEventListener('change', (event) => {
+                        const selectedOption = (event.target as HTMLSelectElement).value;
+                        const parentElement = (event.target as HTMLElement).parentElement;
+                        if (parentElement) {
+                            currentData[parentElement.id][1] = selectedOption
+                            }
+                    });
+
                     break;
                 case "Fusion Enthalpy":
                     // equality select
@@ -287,6 +320,17 @@ export class ViewComponent {
                     numberInput.placeholder = "Fusion Enthalpy (J/g)";
                     numberInput.classList.add("light-background");
                     parentDiv.appendChild(numberInput);
+
+                    // currentData[parentDivID.id].push("Fusion Enthalpy")
+                    // currentData[parentDivID.id].push("=");
+
+                    equalitySelect.addEventListener('change', (event) => {
+                        const selectedOption = (event.target as HTMLSelectElement).value;
+                        const parentElement = (event.target as HTMLElement).parentElement;
+                        if (parentElement) {
+                            currentData[parentElement.id][1] = selectedOption
+                            }
+                    });
                     break;
                 case "Solvent":
                     // solvent select
@@ -297,12 +341,20 @@ export class ViewComponent {
                         solventSelect.appendChild(tempOption);
                     }
                     parentDiv.appendChild(solventSelect);
+                    // console.log(parentDivID.id)
+                    // currentData[parentDivID.id].push("Solvent")
+                    // solvent entries
+                    this.solventSelectAction(solventSelect);
+                    solventSelect.addEventListener("change", () => {
+                        this.solventSelectAction(solventSelect);
+                    })
                     break;
             }
         }
     }
 
     solventSelectAction(select: HTMLSelectElement) {
+        console.log("solvent")
         var selectedValue = select.value;
         var parentDiv = select.parentNode;
 
