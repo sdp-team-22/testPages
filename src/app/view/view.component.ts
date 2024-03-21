@@ -6,6 +6,8 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import { CommonModule } from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
+import { HttpClient } from '@angular/common/http';
+import { MatTableModule } from '@angular/material/table';
 
 @Component({
     selector: 'view-root',
@@ -18,11 +20,14 @@ import {MatIconModule} from '@angular/material/icon';
         MatSelectModule,
         MatInputModule,
         MatButtonModule,
-        MatIconModule
+        MatIconModule,
+        MatTableModule
+
     ],
     styleUrls: ['./view.component.scss']
     })
 export class ViewComponent {
+    @ViewChild('searchInput') searchInput!: ElementRef;
     selectedValue: string | null = null;
 
     equalityTerms: string[] = ["=", "<", "<=", ">", ">="];
@@ -34,6 +39,31 @@ export class ViewComponent {
     showAdditionalFields: boolean = false;
 
     showAdvancedSearch: boolean = false;
+    searchQuery: string = '';
+    searchResults: any[] = [];
+    selectedUnit: string = 'mg_g_solv'; //default
+    selectedFraction: string = 'wt_frac'; //default
+
+    isNaN: Function = Number.isNaN;
+
+    constructor(private http: HttpClient) { }
+
+    basicSearch() {
+        // if (this.searchQuery.trim() !== '')
+            this.http.get<any>(`http://127.0.0.1:5000/api/basicSearch?query=${this.searchQuery}`).subscribe(
+                (response) => {
+                this.searchResults = response;
+            },
+            (error) => {
+                console.error("no work", error);
+        });
+    }
+    resetSearch() {
+        this.searchQuery = '';
+        this.searchResults = [];
+        this.searchInput.nativeElement.value = '';
+    }
+
 
     // filters: { selectedValue: string | null, inputType: string | null }[] = [];
 
@@ -42,6 +72,8 @@ export class ViewComponent {
     toggleAdvancedSearch() {
         this.showAdvancedSearch = !this.showAdvancedSearch;
     }
+
+
 
     updateFormFields(selectedValue: string) {
         switch (selectedValue) {

@@ -1,9 +1,12 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import psycopg2
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 CORS(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://sdp-dev:sdp123@24.62.166.59:5432/postgres'
+db = SQLAlchemy(app)
 
 def database_stats():
     conn = psycopg2.connect(
@@ -63,6 +66,49 @@ def get_data():
         'daily_visits':daily_visits,
         'monthly_visits':monthly_visits
                     })
+class solubility_data(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    compound_name = db.Column(db.String(200))
+    solvent_1 = db.Column(db.String(100))
+    solvent_2 = db.Column(db.String(100))
+    solvent_3 = db.Column(db.String(100))
+    temp = db.Column(db.Float)
+    volfrac1 = db.Column(db.Float)
+    volfrac2 = db.Column(db.Float)
+    volfrac3 = db.Column(db.Float)
+    wtfrac1 = db.Column(db.Float)
+    wtfrac2 = db.Column(db.Float)
+    wtfrac3 = db.Column(db.Float)
+    solubility_mg_g_solvn = db.Column(db.Float)
+    solubility_mg_g_solv = db.Column(db.Float)
+    solubility_mg_mL_solv = db.Column(db.Float)
+    solubility_wt = db.Column(db.Float)
 
+@app.route('/api/basicSearch', methods=[ 'GET' ,'POST'])
+def basic_search():
+    search_query = request.args.get('query')
+    query_results = solubility_data.query.filter(solubility_data.compound_name.like(f'%{search_query}%')).all()
+    results = []
+    for record in query_results:
+        result_data = {
+            'compound_name': record.compound_name,
+            'solubility_mg_g_solvn': record.solubility_mg_g_solvn,
+            'solubility_mg_g_solv': record.solubility_mg_g_solv,
+            'solubility_mg_mL_solv': record.solubility_mg_mL_solv,
+            'solubility_wt': record.solubility_wt,
+            'solvent_1': record.solvent_1,
+            'solvent_2': record.solvent_2,
+            'solvent_3': record.solvent_3,
+            'temp': record.temp,
+            'volfrac1': record.volfrac1,
+            'volfrac2': record.volfrac2,
+            'volfrac3': record.volfrac3,
+            'wtfrac1': record.wtfrac1,
+            'wtfrac2': record.wtfrac2,
+            'wtfrac3': record.wtfrac3
+        }
+        results.append(result_data)
+
+    return jsonify(results)
 if __name__ == '__main__':
     app.run(debug=True)
