@@ -168,13 +168,28 @@ export class ViewComponent {
             "Solvent",
         ]
         const selectParent = document.createElement('div');
+        selectParent.style.display = "flex";
+        selectParent.style.flexDirection = "row";
+        const selectDiv = document.createElement('div');
         const select = document.createElement('select');
+        // add small delete div
+        const deleteDiv = document.createElement('div');
+        const deleteButton = document.createElement('button')
+        deleteButton.addEventListener('click', () => {
+            try {
+                selectParent.parentElement?.removeChild(selectParent);
+            } catch {}
+        });
+        deleteButton.innerText = 'X';
+        deleteDiv.appendChild(deleteButton);
+        selectParent.appendChild(deleteDiv);
         for (let i = 0; i < selectOptions.length; i++) {
             const tempOption = document.createElement('option');
             tempOption.innerText = selectOptions[i];
             select.appendChild(tempOption);
         }
-        selectParent.appendChild(select);
+        selectParent.appendChild(selectDiv);
+        selectDiv.appendChild(select);
         search.appendChild(selectParent)
         // set id for select
         selectParent.id = this.advancedSearchFilterID.toString();
