@@ -79,6 +79,8 @@ export class ViewComponent {
         // make the search button work 
         searchButton.addEventListener('click', () => {
             const dataToSend = { projectNumber: numberInput.value };
+
+
             this.searchService.uploadData(dataToSend).subscribe(response => {
               console.log(response);
               this.tableData = this.parseResponseData(response);
@@ -126,8 +128,7 @@ export class ViewComponent {
         searchButton.value = "Search";
         advancedSearch.append(searchButton)
         
-        let flag = true
-        
+
         const currentData: { [key: string]: any[] } = {};
         // does not prevent multi-upload 
         searchButton.addEventListener('click', () => {
@@ -135,8 +136,13 @@ export class ViewComponent {
             for (const key in currentData) {
                 const divElement = document.getElementById(key);
 
-                if(divElement && flag){
+                if(divElement){
+                    const selectFields  = divElement.querySelectorAll('select')
                     const inputFields = divElement.querySelectorAll('input');
+
+                    selectFields.forEach((selectField: HTMLSelectElement) => {
+                        currentData[key].push(selectField.value)
+                    })
     
                     inputFields.forEach((inputField: HTMLInputElement) => {
                         currentData[key].push(inputField.value);
@@ -196,19 +202,18 @@ export class ViewComponent {
         currentData[this.advancedSearchFilterID.toString()] = []
         this.advancedSearchFilterID++;
         // make selects based on select value
-        this.updateSelectOptions(select, currentData);
+        this.updateSelectOptions(select);
         select.addEventListener('change', () => {
-            this.updateSelectOptions(select, currentData);
+            this.updateSelectOptions(select);
         });
 
 
 
     }
 
-    updateSelectOptions(select: HTMLSelectElement, currentData :  {[key: string]: any[] } ) {
+    updateSelectOptions(select: HTMLSelectElement) {
         var selectedValue = select.value;
         var parentDiv = select.parentNode;                    
-        let parentDivID = select.parentNode as HTMLElement; 
 
         if (parentDiv) {
             // reset select div
@@ -243,18 +248,6 @@ export class ViewComponent {
                     numberInput.placeholder = "Molecular Weight (g/mol)";
                     numberInput.classList.add("light-background");
                     parentDiv.appendChild(numberInput);
-
-                    currentData[parentDivID.id].push("Molecular Weight")
-                    currentData[parentDivID.id].push("=");
-
-                    // update current change
-                    equalitySelect.addEventListener('change', (event) => {
-                        const selectedOption = (event.target as HTMLSelectElement).value;
-                        const parentElement = (event.target as HTMLElement).parentElement;
-                        if (parentElement) {
-                            currentData[parentElement.id][1] = selectedOption
-                            }
-                    });
                     break;
                 case "Solid Form":
                     var solidformSelect = document.createElement('select');
@@ -264,17 +257,6 @@ export class ViewComponent {
                         solidformSelect.appendChild(tempOption);
                     }
                     parentDiv.appendChild(solidformSelect);
-                    currentData[parentDivID.id].push("Solid Form")
-                    currentData[parentDivID.id].push("Form I");
-
-                    // update current change
-                    solidformSelect.addEventListener('change', (event) => {
-                        const selectedOption = (event.target as HTMLSelectElement).value;
-                        const parentElement = (event.target as HTMLElement).parentElement;
-                        if (parentElement) {
-                            currentData[parentElement.id][1] = selectedOption
-                            }
-                    });
                     break;
                 case "Melting Temperature":
                     // equality select
@@ -290,19 +272,6 @@ export class ViewComponent {
                     numberInput.placeholder = "Melting Temperature (\u00B0C)";
                     numberInput.classList.add("light-background");
                     parentDiv.appendChild(numberInput);
-
-                    currentData[parentDivID.id].push("Melting Temperature")
-                    currentData[parentDivID.id].push("=");
-
-                    // update current change
-                    equalitySelect.addEventListener('change', (event) => {
-                        const selectedOption = (event.target as HTMLSelectElement).value;
-                        const parentElement = (event.target as HTMLElement).parentElement;
-                        if (parentElement) {
-                            currentData[parentElement.id][1] = selectedOption
-                            }
-                    });
-
                     break;
                 case "Fusion Enthalpy":
                     // equality select
@@ -318,17 +287,6 @@ export class ViewComponent {
                     numberInput.placeholder = "Fusion Enthalpy (J/g)";
                     numberInput.classList.add("light-background");
                     parentDiv.appendChild(numberInput);
-
-                    currentData[parentDivID.id].push("Fusion Enthalpy")
-                    currentData[parentDivID.id].push("=");
-
-                    equalitySelect.addEventListener('change', (event) => {
-                        const selectedOption = (event.target as HTMLSelectElement).value;
-                        const parentElement = (event.target as HTMLElement).parentElement;
-                        if (parentElement) {
-                            currentData[parentElement.id][1] = selectedOption
-                            }
-                    });
                     break;
                 case "Solvent":
                     // solvent select
@@ -339,13 +297,6 @@ export class ViewComponent {
                         solventSelect.appendChild(tempOption);
                     }
                     parentDiv.appendChild(solventSelect);
-
-                    currentData[parentDivID.id].push("Solvent")
-                    // solvent entries
-                    this.solventSelectAction(solventSelect);
-                    solventSelect.addEventListener("change", () => {
-                        this.solventSelectAction(solventSelect);
-                    })
                     break;
             }
         }
