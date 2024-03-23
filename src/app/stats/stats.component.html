@@ -3,7 +3,7 @@
     <div class="content" role="main">
         <div class="card">
             <!-- // make this links url_for in the backend  -->
-            <p><a class="card-child" >Database Storage: {{ db_storage }}  </a></p> <!-- // database storage -->
+            <p><a class="card-child" >Total Data Points as of {{ myDate | date: 'MMMM YYYY'}}: {{ data_points }}  </a></p> <!-- // database storage -->
 
             <a class="card-child" href="" [hidden]="showUploadHistory || showMonthlyVisits" (click)="toggleDailyVisits($event)">
                 <span *ngIf="!showDailyVisits">Daily Visits</span>

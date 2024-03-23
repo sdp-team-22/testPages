@@ -9,7 +9,7 @@ import { StatsService } from '../stats.service';
 export class StatsComponent {
   title = 'stats';
   data: any;
-  db_storage: any;
+  data_points: any;
   upload_history: any;
   daily_visits: any;
   monthly_visits: any;
@@ -25,7 +25,7 @@ export class StatsComponent {
     let date = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.stats.getData().subscribe((data: any) => {
       console.log(data)
-      this.db_storage = data.db_storage; // change data1 to data1[0]-[1] if calling multiple elements 
+      this.data_points = data.data_points; // change data1 to data1[0]-[1] if calling multiple elements 
       this.upload_history = data.upload_history.map((upload: any) => {
         return {
           id: upload[0],

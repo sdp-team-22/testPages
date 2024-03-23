@@ -9,6 +9,7 @@ import {MatIconModule} from '@angular/material/icon';
 import { HttpClient, HttpHandler, HttpHeaders } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 interface AdvancedSearchQuery {
+    field: string;
     compound_name?: string;
     solvent_1?: string;
     solvent_2?: string;
@@ -48,24 +49,30 @@ export class ViewComponent {
 
     showAdvancedSearch: boolean = false;
     searchQuery: string = '';
+    searchQuery2: string = '';
     searchResults: any[] = [];
+    searchResults2: any[] = [];
     selectedUnit: string = 'mg_g_solv'; //default
     selectedFraction: string = 'wtfrac'; //default
     selectedCriterion: string = 'solid_form'; //default
-    includeSolvent2: boolean = false;
-    includeSolvent3: boolean = false;
+
 
     compound_name: string = '';
     solvent_1: string = '';
     solvent_2: string = '';
     solvent_3: string = '';
     solid_form: string = '';
+
+    filters: AdvancedSearchQuery[] = [{field: '', compound_name: '', solvent_1: '', solvent_2: '', solvent_3: '', solid_form: ''}];
     
 
     isNaN: Function = Number.isNaN;
 
     constructor(private http: HttpClient) { }
 
+    toggleAdvancedSearch() {
+        this.showAdvancedSearch = !this.showAdvancedSearch;
+    }
     basicSearch(): void {
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
         // const body = {searchQuery: this.searchQuery};
@@ -77,33 +84,50 @@ export class ViewComponent {
                 console.error("no work", error);
         });
     }
-
+    addFilter(): void {
+        this.filters.push({field:'', compound_name: '', solvent_1: '', solvent_2: '', solvent_3: '', solid_form: ''});
+        console.log(this.filters);
+    }
+    removeFilter(i: number): void {
+        this.filters.splice(i, 1);
+    }
     advancedSearch(): void {
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-        const searchQuery: AdvancedSearchQuery = {}
-        if (this.compound_name) {
-            searchQuery.compound_name = this.compound_name;
-        }
-        if (this.solvent_1) {
-            searchQuery.solvent_1 = this.solvent_1;
-        }
-        if (this.solvent_2) {
-            searchQuery.solvent_2 = this.solvent_2;
-        }
-        if (this.solvent_3) {
-            searchQuery.solvent_3 = this.solvent_3;
-        }
-        if (this.solid_form) {
-            searchQuery.solid_form = this.solid_form;
-        }
 
-        this.http.post<any>(`http://127.0.0.1:5000/api/advancedSearch`, searchQuery, {headers}).subscribe(
+        const searchQuery2: AdvancedSearchQuery = {
+            field: '',  
+            compound_name: '',  
+            solvent_1: '',  
+            solvent_2: '',  
+            solvent_3: '',  
+            solid_form: '',  
+        };
+    
+        // Loop through filters to populate searchQuery
+        for (const filter of this.filters) {
+            if (filter.field === 'compound_name') {
+                searchQuery2.compound_name = filter.compound_name;
+            } else if (filter.field === 'solvent') {
+                searchQuery2.solvent_1 = filter.solvent_1;
+                searchQuery2.solvent_2 = filter.solvent_2;
+                searchQuery2.solvent_3 = filter.solvent_3;
+            } else if (filter.field === 'solid_form') {
+                searchQuery2.solid_form = filter.solid_form;
+            }
+        }
+        const searchQueryString = encodeURIComponent(JSON.stringify(searchQuery2));
+        console.log('advanced search query string:', searchQueryString);
+    
+        // Set the field based on the first filter
+        searchQuery2.field = this.filters.length > 0 ? this.filters[0].field : '';
+        console.log('advanced search query:', searchQuery2);
+        this.http.get<any>(`http://127.0.0.1:5000/api/advancedSearch?query=${searchQueryString}`, {headers}).subscribe(
             (response) => {
-                this.searchResults = response;
-                console.log('advanced search results:', this.searchResults);
+                this.searchResults2 = response;
+                console.log('advanced search results:', this.searchResults2);
             },
             (error) => {
-                console.error("no work", error);
+                console.error("no bueno", error);
         });
     }
         
@@ -115,7 +139,6 @@ export class ViewComponent {
     }
 
     clearSearch(){
-        this.selectedCriterion ='';
         this.compound_name = '';
         this.solvent_1 = '';
         this.solvent_2 = '';
@@ -123,63 +146,6 @@ export class ViewComponent {
         this.solid_form = '';
         this.resetSearch();
     }
-
-
-    // filters: { selectedValue: string | null, inputType: string | null }[] = [];
-
-
-
-    toggleAdvancedSearch() {
-        this.showAdvancedSearch = !this.showAdvancedSearch;
-    }
-
-
-
-    updateFormFields(selectedValue: string) {
-        switch (selectedValue) {
-            case 'Project Number':
-                this.inputType = 'number';
-                this.showAdditionalFields = false;
-                break;
-            case 'Molecular Weight':
-                this.inputType = 'equality';
-                this.showAdditionalFields = true;
-                break;
-            case 'Solid Form':
-                this.inputType = 'solidform';
-                this.showAdditionalFields = false;
-                break;
-            case 'Melting Temperature':
-                this.inputType = 'equality';
-                this.showAdditionalFields = true;
-                break;
-            case 'Fusion Enthalpy':
-                this.inputType = 'equality';
-                this.showAdditionalFields = true;
-                break;
-            case 'Solvent':
-                this.inputType = 'solvent';
-                this.showAdditionalFields = false;
-                break;
-            default:
-                this.inputType = null;
-                break;
-        }
-    }
-performSearch() {
-    console.log('Searching for:', this.selectedValue, this.inputType, this.showAdditionalFields);
-}
-// addFilter() {
-//     if (this.selectedValue && this.inputType) {
-//       this.filters.push({ selectedValue: this.selectedValue, inputType: this.inputType });
-//       this.selectedValue = null;
-//       this.inputType = null;
-//     }
-//   }
-
-// removeFilter(index: number) {
-//     this.filters.splice(index, 1);
-//   }
 
 }
 
