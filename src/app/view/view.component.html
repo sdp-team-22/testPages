@@ -1,5 +1,5 @@
 <div class="search-container" *ngIf="!showAdvancedSearch">
-    <input type="text" placeholder="Search by Compound Name" class="search-input" (keyup.enter)="basicSearch()">
+    <input type="text" placeholder="Search by Compound Name" class="search-input" [(ngModel)]="searchQuery" (keyup.enter)="basicSearch()">
     <button mat-raised-button class="search-button" (click)="basicSearch()">Search</button>
 </div>
 <button mat-raised-button class="advanced-button" *ngIf="!showAdvancedSearch" (click)="toggleAdvancedSearch(); resetSearch()">Advanced Search</button>
@@ -93,22 +93,100 @@
       <tr mat-header-row *matHeaderRowDef="['compound_name', 'solubility', 'fraction']"></tr>
       <tr mat-row *matRowDef="let row; columns: ['compound_name', 'solubility', 'fraction'];"></tr>
     </table>
-  </div>
+</div>
+
+<div class="advanced-container" *ngIf="showAdvancedSearch">
+    <form (ngSubmit)="advancedSearch()">
+        <mat-form-field appearance="fill">
+            <mat-label>Filter</mat-label>
+            <mat-select [(ngModel)]="selectedCriterion" name="selectedCriterion">
+              <mat-option value="compound_name">Compound Name</mat-option>
+              <mat-option value="solid_form">Solid Form</mat-option>
+              <mat-option value="solvent">Solvent</mat-option>
+            </mat-select>
+          </mat-form-field>
+          
+          <!-- Display input fields based on selected criterion -->
+          <div *ngIf="selectedCriterion === 'compound_name'">
+            <mat-form-field appearance="fill">
+              <mat-label>Compound Name</mat-label>
+              <input matInput type="text" [(ngModel)]="compound_name" name="compound_name">
+            </mat-form-field>
+          </div>
+          
+          <div *ngIf="selectedCriterion === 'solid_form'">
+            <mat-form-field appearance="fill">
+              <mat-label>Solid Form</mat-label>
+              <mat-select placeholder="Select Solid Form" [(ngModel)]="solid_form" name="solid_form">
+                <mat-option value="1">Form I</mat-option>
+                <mat-option value="2">Form II</mat-option>
+                <mat-option value="3">Form III</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          
+          <div *ngIf="selectedCriterion === 'solvent'">
+            <mat-form-field appearance="fill">
+              <mat-label>Solvent 1</mat-label>
+              <input matInput type="text" [(ngModel)]="solvent_1" name="solvent_1">
+            </mat-form-field>
+          
+            <!-- Solvent 2 (Optional) -->
+            <mat-form-field appearance="fill">
+              <mat-label>Solvent 2</mat-label>
+              <input matInput type="text" [(ngModel)]="solvent_2" name="solvent_2">
+            </mat-form-field>
+          
+            <!-- Solvent 3 (Optional) -->
+            <mat-form-field appearance="fill">
+              <mat-label>Solvent 3</mat-label>
+              <input matInput type="text" [(ngModel)]="solvent_3" name="solvent_3">
+            </mat-form-field>
+          </div>
+        <div>
+            <button mat-raised-button class="search-button" type="submit">Search</button>
+            <button mat-raised-button class="clear-button" type="button" (click)="clearSearch()">Clear</button>
+       </div>
+    </form>
+
+    <div *ngIf="searchResults.length > 0">
+        <h2>Search Results</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Compound Name</th>
+              <!-- Add other table headers as needed -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let result of searchResults">
+              <td>{{ result.compound_name }}</td>
+              <!-- Display other result properties in corresponding columns -->
+            </tr>
+          </tbody>
+        </table>
+      </div>
+</div>
+
+
+
+            
   
 
-<div class ="advanced-container" *ngIf="showAdvancedSearch">
-<mat-form-field appearance="fill">
-    <mat-label>Filter</mat-label>
-    <mat-select (selectionChange)="updateFormFields($event.value)">
-        <mat-option>None</mat-option>
-        <mat-option value="Project Number">Project Number</mat-option>
-        <mat-option value="Molecular Weight">Molecular Weight</mat-option>
-        <mat-option value="Solid Form">Solid Form</mat-option>
-        <mat-option value="Melting Temperature">Melting Temperature</mat-option>
-        <mat-option value="Fusion Enthalpy">Fusion Enthalpy</mat-option>
-        <mat-option value="Solvent">Solvent</mat-option>
-    </mat-select>
-</mat-form-field>
+<!-- <div class ="advanced-container" *ngIf="showAdvancedSearch">
+    <form (ngSubmit)="advancedSearch()">
+        <mat-form-field appearance="fill">
+            <mat-label>Filter</mat-label>
+            <mat-select (selectionChange)="updateFormFields($event.value)">
+                <mat-option>None</mat-option>
+                <mat-option value="Compound Name">Compound Name</mat-option>
+                <mat-option value="Solid Form">Solid Form</mat-option>
+                <mat-option value="Solvent">Solvent</mat-option>
+                <mat-option value="Molecular Weight">Molecular Weight</mat-option>
+                <mat-option value="Melting Temperature">Melting Temperature</mat-option>
+                <mat-option value="Fusion Enthalpy">Fusion Enthalpy</mat-option>
+            </mat-select>
+        </mat-form-field>
 
 <ng-container *ngIf="inputType === 'number'">
     <mat-form-field appearance="fill">
@@ -149,7 +227,7 @@
 
 <div>
 <button mat-raised-button class ="search-button" *ngIf="showAdvancedSearch" (click)="performSearch()">Search</button>
-</div>
+</div> -->
 <!-- <div>
     <button mat-raised-button class ="search-button" (click)="addFilter()">Add Filter</button>
 </div> -->
