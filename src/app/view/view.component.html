@@ -1,3 +1,14 @@
+<!-- some things to work on
+layout of advanced search filter fields;
+try to make them look good, side by side preferably
+adjust clear button in advanced search
+adjust checkbox color, it has color=primary by default but css is not working
+adjust select all checkbox in full window
+do we need a rest button to reset graph? 
+reset button in advanced search should reset search results;
+currently basic search resets, used resetSearch()
+-->
+
 <div class="search-container" *ngIf="!showAdvancedSearch">
     <input type="text" placeholder="Search by Compound Name" class="search-input" [(ngModel)]="searchQuery" (keyup.enter)="basicSearch()">
     <button mat-raised-button class="search-button" (click)="basicSearch()">Search</button>
@@ -15,18 +26,27 @@
   
     <mat-form-field>
       <mat-label>Select Solubility Unit:</mat-label>
-      <mat-select [(ngModel)]="selectedUnit">
+      <mat-select [(ngModel)]="selectedUnit" (ngModelChange)="onUnitChange()">
         <mat-option value="mg_g_solvn">mg/g solvent</mat-option>
         <mat-option value="mg_g_solv">mg/g solv</mat-option>
         <mat-option value="mg_mL_solv">mg/mL solv</mat-option>
         <mat-option value="solubility_wt">Solubility wt</mat-option>
       </mat-select>
     </mat-form-field>
-  
     <table mat-table [dataSource]="searchResults">
+        <!-- checkbox Column -->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>Select All
+            <mat-checkbox color ="primary" class ="checkbox" (change)="toggleSelectAll($event)"></mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let result">
+            <mat-checkbox color ="primary" class ="checkbox" [(ngModel)]="result.selected" (change)="onCheckboxChange($event, result)"></mat-checkbox>
+          </td>
+        </ng-container>
       <!-- Compound Name Column -->
       <ng-container matColumnDef="compound_name">
         <th mat-header-cell *matHeaderCellDef> Compound Name </th>
+
         <td mat-cell *matCellDef="let result"> {{ result.compound_name }} </td>
       </ng-container>
     <!-- Solvent Column
@@ -61,42 +81,42 @@
         <th mat-header-cell *matHeaderCellDef> Fraction </th>
         <td mat-cell class="mat-cell" *matCellDef="let result">
           <ng-container *ngIf="selectedFraction === 'volfrac'">
-            <ul>
-                <ng-container *ngIf="result.solvent_1 !== undefined && !isNaN(result.volfrac1)">
-                    <li>{{ result.solvent_1 }} Volume Fraction: {{ result.volfrac1 }}</li>
-                  </ng-container>
-                  <ng-container *ngIf="result.solvent_2 !== undefined && !isNaN(result.volfrac2) ">
-                    <li>{{ result.solvent_2 }} Volume Fraction: {{ result.volfrac2 }}</li>
-                  </ng-container>
-                  <ng-container *ngIf="result.solvent_3 !== undefined && !isNaN(result.volfrac3) ">
-                    <li>{{ result.solvent_3 }} Volume Fraction: {{ result.volfrac3 }}</li>
-                </ng-container>
-            </ul>
+            <div *ngIf="result.solvent_1 !== undefined && !isNaN(result.volfrac1)">
+                {{ result.solvent_1 }} Volume Fraction: {{ result.volfrac1 }}
+            </div>
+            <div *ngIf="result.solvent_2 !== undefined && !isNaN(result.volfrac2) ">
+                {{ result.solvent_2 }} Volume Fraction: {{ result.volfrac2 }}
+            </div>
+            <div *ngIf="result.solvent_3 !== undefined && !isNaN(result.volfrac3) ">
+                {{ result.solvent_3 }} Volume Fraction: {{ result.volfrac3 }}
+            </div>
           </ng-container>
           <ng-container *ngIf="selectedFraction === 'wtfrac'">
-            <ul>
-                <ng-container *ngIf="result.solvent_1 !== undefined && !isNaN(result.wtfrac1)">
-                    <li>{{ result.solvent_1 }} Weight Fraction: {{ result.wtfrac1 }}</li>
-                  </ng-container>
-                  <ng-container *ngIf="result.solvent_2 !== undefined && !isNaN(result.wtfrac2)">
-                    <li>{{ result.solvent_2 }} Weight Fraction: {{ result.wtfrac2 }}</li>
-                  </ng-container>
-                  <ng-container *ngIf="result.solvent_3 !== undefined && !isNaN(result.wtfrac3)">
-                    <li>{{ result.solvent_3 }} Weight Fraction: {{ result.wtfrac3 }}</li>
-                </ng-container>
-            </ul>
+            <div *ngIf="result.solvent_1 !== undefined && !isNaN(result.wtfrac1)">
+                {{ result.solvent_1 }} Weight Fraction: {{ result.wtfrac1 }}
+            </div>
+            <div *ngIf="result.solvent_2 !== undefined && !isNaN(result.wtfrac2) ">
+                {{ result.solvent_2 }} Weight Fraction: {{ result.wtfrac2 }}
+            </div>
+            <div *ngIf="result.solvent_3 !== undefined && !isNaN(result.wtfrac3) ">
+                {{ result.solvent_3 }} Weight Fraction: {{ result.wtfrac3 }}
+            </div>
           </ng-container>
         </td>
       </ng-container>
       <!-- Define table columns -->
-      <tr mat-header-row *matHeaderRowDef="['compound_name', 'solubility', 'fraction']"></tr>
-      <tr mat-row *matRowDef="let row; columns: ['compound_name', 'solubility', 'fraction'];"></tr>
+      <tr mat-header-row *matHeaderRowDef="['select','compound_name', 'solubility', 'fraction']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['select', 'compound_name', 'solubility', 'fraction'];"></tr>
     </table>
+    <button mat-raised-button class="graph-button" (click)="showGraph()">Graph It</button>
+    <div class="graph-container">
+        <canvas id="barCanvas" width="400" height="400"></canvas>
+    </div>
 </div>
 
 <div class="advanced-container" *ngIf="showAdvancedSearch">
     <form (ngSubmit)="advancedSearch()">
-        <div *ngFor="let filter of filters; let i = index">
+        <div class="filter-container" *ngFor="let filter of filters; let i = index">
             <mat-form-field appearance="fill">
                 <mat-label>Filter {{i+1}}</mat-label>
                 <mat-select [(ngModel)]="filter.field" name="field">
@@ -107,19 +127,16 @@
             </mat-form-field>
             
             <!-- Display input fields based on selected criterion -->
-            <div *ngIf="filter.field === 'compound_name'">
-                <mat-form-field appearance="fill">
+            <div class="input-container">
+                <mat-form-field appearance="fill" *ngIf="filter.field === 'compound_name'">
                     <mat-label>Compound Name</mat-label>
                     <input matInput type="text" [(ngModel)]="filter.compound_name" name="compound_name{{i}}">
-
                 </mat-form-field>
-                <button mat-raised-button class="clear-button" type="button" (click)="removeFilter(i)">
+                <!-- <button mat-raised-button class="clear-button" type="button" (click)="removeFilter(i)">
                     <mat-icon>clear</mat-icon>
-                </button>
-            </div>
+                </button> -->
             
-            <div *ngIf="filter.field === 'solid_form'">
-                <mat-form-field appearance="fill">
+                <mat-form-field appearance="fill" *ngIf="filter.field === 'solid_form'">
                     <mat-label>Solid Form</mat-label>
                     <mat-select placeholder="Select Solid Form" [(ngModel)]="filter.solid_form" name="solid_form{{i}}">
                         <mat-option value="Form I">Form I</mat-option>
@@ -127,40 +144,38 @@
                         <mat-option value="Form III">Form III</mat-option>
                     </mat-select>
                 </mat-form-field>
-                <button mat-raised-button class="clear-button" type="button" (click)="removeFilter(i)">
+                <!-- <button mat-raised-button class="clear-button" type="button" (click)="removeFilter(i)">
                     <mat-icon>clear</mat-icon>
-                </button>
+                </button> -->
+           
+            
+                <mat-form-field appearance="fill" *ngIf="filter.field === 'solvent'">
+                    <mat-label>Solvent 1</mat-label>
+                    <input matInput type="text" [(ngModel)]="filter.solvent_1" name="solvent_1{{i}}">
+                </mat-form-field>
+                
+                    <!-- Solvent 2 (Optional) -->
+                <mat-form-field appearance="fill" *ngIf="filter.field === 'solvent'">
+                    <mat-label>Solvent 2</mat-label>
+                    <input matInput type="text" [(ngModel)]="filter.solvent_2" name="solvent_2{{i}}">
+                </mat-form-field>
+                
+                    <!-- Solvent 3 (Optional) -->
+                <mat-form-field appearance="fill" *ngIf="filter.field === 'solvent'">
+                    <mat-label>Solvent 3</mat-label>
+                    <input matInput type="text" [(ngModel)]="filter.solvent_3" name="solvent_3{{i}}">
+                </mat-form-field>  
             </div>
-            
-            <div *ngIf="filter.field === 'solvent'">
-                <mat-form-field appearance="fill">
-                <mat-label>Solvent 1</mat-label>
-                <input matInput type="text" [(ngModel)]="filter.solvent_1" name="solvent_1{{i}}">
-                </mat-form-field>
-            
-                <!-- Solvent 2 (Optional) -->
-                <mat-form-field appearance="fill">
-                <mat-label>Solvent 2</mat-label>
-                <input matInput type="text" [(ngModel)]="filter.solvent_2" name="solvent_2{{i}}">
-                </mat-form-field>
-            
-                <!-- Solvent 3 (Optional) -->
-                <mat-form-field appearance="fill">
-                <mat-label>Solvent 3</mat-label>
-                <input matInput type="text" [(ngModel)]="filter.solvent_3" name="solvent_3{{i}}">
-                </mat-form-field>
-
-                <button mat-raised-button class="clear-button" type="button" (click)="removeFilter(i)">
-                    <mat-icon>clear</mat-icon>
-                </button>
-
-            </div>
+            <button mat-raised-button class="clear-button" type="button" (click)="removeFilter(i)">
+                <mat-icon>clear</mat-icon>
+            </button>
         </div>
-        <div>
-            <button mat-raised-button class="add-button" type="button" (click)="addFilter()">Add Filter</button>
-            <button mat-raised-button class="search-button" type="submit">Search</button>
-       </div>
+            <div>
+                <button mat-raised-button class="add-button" type="button" (click)="addFilter()">Add Filter</button>
+                <button mat-raised-button class="search-button" type="submit">Search</button>
+            </div>
     </form>
+    
 
     <div *ngIf="searchResults2.length > 0">
         <mat-form-field>

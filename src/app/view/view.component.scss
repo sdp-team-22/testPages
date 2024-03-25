@@ -3,7 +3,31 @@
     align-items: center;
     margin-bottom: 20px; 
   }
-  
+//   .container {
+//     display: flex;
+//   }
+// .table-container, .graph-container {
+//   flex: 1;
+//   margin-right: 20px;
+// }
+// .graph-container {
+//   width: 100%;
+//   height: auto;
+// }
+.filter-container {
+    display: flex;
+    align-items: center;
+}
+.input-container {
+  margin-left: 20px;
+  align-items: center;
+  flex-direction: row;
+}
+.clear-button {
+  margin-left: 10px;
+  margin-bottom: 20px;
+
+}
   .search-input {
     flex: 1;
     padding: 8px;
@@ -48,7 +72,48 @@
   .advanced-search-container {
     display: none; 
   }
- 
+  .graph-button {
+    color: #055c33;
+    border: 1px solid #055c33;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+ .graph-button:hover {
+    background-color: #055c33;
+    color: white;
+ }
+ ::ng-deep .mat-checkbox-checked .mat-checkbox-background {
+  background-color: rgb(0, 0, 0) !important;
+  color: #000;
+}
+.mat-checkbox:hover{
+  background-color: rgb(0, 0, 0) !important;
+  color: #000;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 8px;
+  background-color: #f2f2f2;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
 
 
 
