@@ -13,7 +13,7 @@ import { StatsComponent } from './stats';
 import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule if you're using HttpClient
 import { MatTableModule } from '@angular/material/table'; // Import MatTableModule
 import { TableComponent } from './table/table.component';
-import { SolubilityDataService } from './services/solubility-data.service';
+import { DataService } from './services/solubility-data.service';
 import { MatTabsModule } from '@angular/material/tabs';
 
 
@@ -36,7 +36,7 @@ import { MatTabsModule } from '@angular/material/tabs';
     MatTableModule,
     MatTabsModule
   ],
-  providers: [SolubilityDataService],
+  providers: [DataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
