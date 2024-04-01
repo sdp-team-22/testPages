@@ -17,9 +17,9 @@ interface AdvancedSearchQuery {
     solvent_1?: string;
     solvent_2?: string;
     solvent_3?: string;
-    solid_form?: string;
-    selectedUnit?: string;
-    selectedFraction?: string;
+    xrpdf?: string;
+    // selectedUnit?: string;
+    // selectedFraction?: string;
 }
 @Component({
     selector: 'view-root',
@@ -51,7 +51,7 @@ export class ViewComponent {
     searchResults: any[] = [];
     searchResults2: any[] = [];
 
-    selectedUnit: string = 'mg_g_solv'; //default
+    selectedUnit: string = 'solubility_mg_g_solv'; //default
     selectedFraction: string = 'wtfrac'; //default
     selectedItems: any[] = [];
     selectedData: any[] = []; 
@@ -61,13 +61,13 @@ export class ViewComponent {
     solvent_1: string = '';
     solvent_2: string = '';
     solvent_3: string = '';
-    solid_form: string = '';
+    xrpdf: string = '';
     solubility_mg_g_solv: number = 0;
     solubility_mg_g_solvn: number = 0;
     solubility_mg_mL_solv: number = 0;
     solubility_wt: number = 0;
 
-    filters: AdvancedSearchQuery[] = [{field: '', compound_name: '', solvent_1: '', solvent_2: '', solvent_3: '', solid_form: ''}];
+    filters: AdvancedSearchQuery[] = [{field: '', compound_name: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''}];
     isNaN: Function = Number.isNaN;
     barChart: any;
 
@@ -90,7 +90,7 @@ export class ViewComponent {
         });
     }
     addFilter(): void {
-        this.filters.push({field:'', compound_name: '', solvent_1: '', solvent_2: '', solvent_3: '', solid_form: ''});
+        this.filters.push({field:'', compound_name: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''});
         console.log(this.filters);
     }
     removeFilter(i: number): void {
@@ -105,7 +105,7 @@ export class ViewComponent {
             solvent_1: '',  
             solvent_2: '',  
             solvent_3: '',  
-            solid_form: '',  
+            xrpdf: '',  
         };
     
         // Loop through filters to populate searchQuery
@@ -116,12 +116,12 @@ export class ViewComponent {
                 searchQuery2.solvent_1 = filter.solvent_1;
                 searchQuery2.solvent_2 = filter.solvent_2;
                 searchQuery2.solvent_3 = filter.solvent_3;
-            } else if (filter.field === 'solid_form') {
-                searchQuery2.solid_form = filter.solid_form;
+            } else if (filter.field === 'xrpdf') {
+                searchQuery2.xrpdf = filter.xrpdf;
             }
         }
         const searchQueryString = encodeURIComponent(JSON.stringify(searchQuery2));
-        console.log('advanced search query string:', searchQueryString);
+        // console.log('advanced search query string:', searchQueryString);
     
         // Set the field based on the first filter
         searchQuery2.field = this.filters.length > 0 ? this.filters[0].field : '';
@@ -146,19 +146,22 @@ export class ViewComponent {
         this.solvent_1 = '';
         this.solvent_2 = '';
         this.solvent_3 = '';
-        this.solid_form = '';
-        this.resetSearch();
-    }
-    onUnitChange() {
-        console.log(this.selectedUnit);
+        this.xrpdf = '';
+        this.filters = [{field:'', compound_name: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''}];
+        this.searchQuery2 = '';
+        this.searchResults2 = [];
     }
 
+    
+    
     onCheckboxChange(event: MatCheckboxChange, item: any) {
         const selectedData = {
             compound_name: item.compound_name,
             solvent_1: item.solvent_1,
             solvent_2: item.solvent_2,
             solvent_3: item.solvent_3,
+            temp: item.temp,
+            xrpdf: item.xrpdf,
             solubility: item[this.selectedUnit]
         };
 
@@ -172,19 +175,23 @@ export class ViewComponent {
                       data.solvent_1 === selectedData.solvent_1 &&
                       data.solvent_2 === selectedData.solvent_2 &&
                       data.solvent_3 === selectedData.solvent_3 &&
+                      data.temp === selectedData.temp &&
+                      data.xrpdf === selectedData.xrpdf &&
                       data.solubility === selectedData.solubility)
             );
             console.log(this.selectedItems);}
         }    
 
-    toggleSelectAll(event: MatCheckboxChange) {
+    toggleSelectAll1(event: MatCheckboxChange) {
 
         if (event.checked) {
             this.selectedItems = this.searchResults.map(item => ({ 
                     compound_name: item.compound_name,
                     solvent_1: item.solvent_1,
                     solvent_2: item.solvent_2,
-                    solvent_3: item.solvent_3,                       
+                    solvent_3: item.solvent_3,  
+                    temp: item.temp,
+                    xrpdf: item.xrpdf,                     
                     solubility: item[this.selectedUnit]
             }));
     
@@ -192,12 +199,32 @@ export class ViewComponent {
             this.selectedItems = [];
             }
         }
+
+    toggleSelectAll2(event: MatCheckboxChange) {
+
+        if (event.checked) {
+            this.selectedItems = this.searchResults2.map(item => ({ 
+                    compound_name: item.compound_name,
+                    solvent_1: item.solvent_1,
+                    solvent_2: item.solvent_2,
+                    solvent_3: item.solvent_3,  
+                    temp: item.temp,
+                    xrpdf: item.xrpdf,                     
+                    solubility: item[this.selectedUnit]
+            }));
+        
+        } else {
+            this.selectedItems = [];
+            }
+        }    
     showGraph() {
         // console.log("Creating chart...");
     
-        const labels = this.selectedItems.map(item => `${item.solvent_1} ${item.solvent_2} ${item.solvent_3}`);
+        const labels = this.selectedItems.map(item => `${item.solvent_1} ${item.solvent_2} ${item.solvent_3} ${item.temp}°C`);
         const data = this.selectedItems.map(item => item.solubility);
-    
+        const datasetsLabels = `${this.selectedItems[0].compound_name} ${this.selectedItems[0].xrpdf}`;
+        // const yAxisTitle = this.selectedUnit; // try to print the selected unit on y axis label
+
         const canvas = document.getElementById('barCanvas') as HTMLCanvasElement;
         if (!canvas) {
             console.error("Canvas element 'barCanvas' not found.");
@@ -208,22 +235,33 @@ export class ViewComponent {
             this.barChart.destroy();
             // console.log("Destroyed old chart...");
 
-        } else {
-            // console.log("No existing chart to destroy.");
-        }
-    
+        } //else {
+        //     // console.log("No existing chart to destroy.");
+        // }
+
         // console.log("Creating new chart...");
         this.barChart = new Chart(canvas, {
             type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Solubility',
+                    label: datasetsLabels,
                     data: data,
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 1
                 }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            text: this.selectedUnit, 
+                            display: true
+                        }
+                    }
+                }
             }
         });
     
@@ -231,3 +269,7 @@ export class ViewComponent {
     }
     
 }
+    
+    
+
+
