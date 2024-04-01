@@ -5,6 +5,7 @@ from flask_cors import CORS
 import psycopg2
 from flask_sqlalchemy import SQLAlchemy
 import logging
+from helper import file_excel_to_json1
 
 logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
@@ -152,6 +153,26 @@ def advancedSearch():
             
     results = [record.serialize() for record in query.all()]
     return jsonify(results)
+
+@app.route('/api/upload', methods=['GET', 'POST'])
+def api_upload():
+    if 'files' not in request.files:
+        return jsonify({'error': 'No files part'})
+
+    uploaded_files = request.files.getlist('files')
+
+    data = []
+    for f in uploaded_files:
+        data.append(file_excel_to_json1(f))
+    # print(jsonify(data))
+    # print(data)
+    return jsonify(data)
+
+
+@app.route('/api/db_upload', methods=['POST'])
+def database_upload():
+    uploaded_data = request.get_json()
+    return jsonify(uploaded_data)
 
 
 if __name__ == '__main__':
