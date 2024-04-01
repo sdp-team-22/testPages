@@ -64,6 +64,7 @@ def database_stats():
 
     cur.close()
     conn.close()
+    
 
     return data_points, upload_history, daily_visits, monthly_visits
 @app.route('/api/data', methods=['GET'])
@@ -83,7 +84,7 @@ class solubility_data(db.Model):
     solvent_1 = db.Column(db.String(100))
     solvent_2 = db.Column(db.String(100))
     solvent_3 = db.Column(db.String(100))
-    solid_form = db.Column(db.String(100))
+    xrpdf = db.Column(db.String(100))
     temp = db.Column(db.Float)
     volfrac1 = db.Column(db.Float)
     volfrac2 = db.Column(db.Float)
@@ -103,7 +104,7 @@ class solubility_data(db.Model):
             'solvent_1': self.solvent_1,
             'solvent_2': self.solvent_2,
             'solvent_3': self.solvent_3,
-            'solid_form': self.solid_form,
+            'xrpdf': self.xrpdf,
             'temp': self.temp,
             'volfrac1': self.volfrac1,
             'volfrac2': self.volfrac2,
@@ -120,8 +121,8 @@ class solubility_data(db.Model):
 @app.route('/api/basicSearch', methods=[ 'GET' ,'POST', 'OPTIONS'])
 def basic_search():
         search_query = request.args.get('query')
-        # query = solubility_data.query.filter(solubility_data.compound_name.ilike(search_query)) #gives typeError but works
-        query = solubility_data.query.filter(solubility_data.compound_name == search_query) #ilike will work better for case insensitive search, but both works fine
+        query = solubility_data.query.filter(solubility_data.compound_name.ilike(search_query)) 
+        # query = solubility_data.query.filter(solubility_data.compound_name == search_query) #ilike will work better for case insensitive search, but both works fine
         results = [record.serialize() for record in query.all()]
         return jsonify(results)
 
@@ -139,8 +140,8 @@ def advancedSearch():
             continue
         if key == 'compound_name' and value:
             query = query.filter(solubility_data.compound_name.ilike(f'%{value}%'))
-        elif key == 'solid_form' and value:
-            query = query.filter(solubility_data.solid_form == value)
+        elif key == 'xrpdf' and value:
+            query = query.filter(solubility_data.xrpdf == value)
         elif key.startswith('solvent_') and value:
             solvent_number = int(key.split('_')[1])
             solvent_filters = []
