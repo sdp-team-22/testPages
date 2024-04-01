@@ -231,7 +231,3 @@ export class ViewComponent {
     }
     
 }
-    
-    
-
-
