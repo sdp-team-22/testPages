@@ -5,7 +5,7 @@ from flask_cors import CORS
 import psycopg2
 from flask_sqlalchemy import SQLAlchemy
 import logging
-from helper import file_excel_to_json1
+from helper import file_excel_to_json1, file_excel_to_json
 
 logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
@@ -172,6 +172,7 @@ def api_upload():
 @app.route('/api/db_upload', methods=['POST'])
 def database_upload():
     uploaded_data = request.get_json()
+    file_excel_to_json(uploaded_data)
     return jsonify(uploaded_data)
 
 

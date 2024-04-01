@@ -78,12 +78,9 @@ export class TableComponent implements OnInit {
         .subscribe(
           response => {
             console.log('Data sent successfully:', response);
-            
-            // Optionally, handle success response
           },
           error => {
             console.error('Error sending data:', error);
-            // Optionally, handle error
           }
         );
     } else {
