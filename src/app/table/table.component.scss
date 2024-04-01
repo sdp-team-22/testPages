@@ -1,3 +1,8 @@
+.table-divider {
+  border-bottom: 2px solid rgb(122, 122, 122); 
+  margin-bottom: 20px;
+}
+
 .project-info-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -22,7 +27,35 @@
 .right-column {
     grid-column: 3 / span 1;
 }
+//logic for status check 
+.green-row {
+  background-color: rgb(0, 255, 0);
+}
+//logic for status check
+.red-row {
+  background-color: lightcoral;
+}
 
+.delete-button-container {
+  text-align: center; 
+  margin-top: 10px; 
+}
+
+.delete-button {
+  background-color: #f44336;
+  color: black;
+  border: none; 
+  font-size: 16px; 
+  cursor: pointer; 
+  border-radius: 5px; 
+  transition: background-color 0.3s; 
+  padding: 10px 20px;
+
+}
+
+.delete-button:hover {
+  background-color: #d32f2f; /* Darker red color on hover */
+}
 
 table {
     width: 100%;
@@ -32,14 +65,16 @@ table {
     th {
       background-color: lightgreen; // Set column header background color
     }
-  
-    tr:nth-child(even) {
-      background-color: #f2f2f2; // Set even row background color
-    }
   }
   
   /* Adjust styles for text color */
   th, td {
     color: black;
   }
+
+
+
+
   
+
+
