@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+<head>
+</head>
+<body>
+    <script src="{{ url_for('static', filename='assets/js/solubility-inputdata.js') }}"></script>
+    <script>
+        // Access JSON data embedded in the template
+        var jsonData = {{ json_data | tojson | safe }};
+    
+        // Call the grabData function with jsonData
+        grabData(jsonData);
+    </script>
+</body>
+<body> 
+	<form action = "/upload_cancel" method = "post"> 
+		<input type = "submit" name = "cancel" value = "cancel"> 
+		<input type = "submit" name = "upload" value = "upload"> 
+	</form> 
+</body> 
+</html>

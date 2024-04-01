@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Solubility Data Management</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}">
+    </head>
+    <body>
+        <header class="important-text">
+            Solubility Data Management
+        </header>
+        <div id="content-selector">
+            <div class="page-button" onclick="showStatisticsPage()">
+                General Website Statistics
+            </div>
+            <div class="page-button" onclick="showInputPage()">
+                Input Data
+            </div>
+            <div class="page-button" onclick="showSearchPage()">
+                Search and View Data
+            </div>
+        </div>
+        <div id="statistics-page" class="page" style="display:block;">
+            <div class="important-text">
+                Statistics
+            </div>
+            <div class="content">
+                
+            </div>
+        </div>
+        <div id="input-page" class="page" style="display:none;">
+            <div class="important-text">
+                Input Data
+            </div>
+            <div class="Inputcontent">
+                <form action="#">
+                    <label for="fileInput" class="upload-label">
+                        <!-- SVG from bootstrap of a cloud -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" fill="blue" class="bi bi-cloud-arrow-up-fill" viewBox="0 0 16 16">
+                            <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m2.354 5.146a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0z"/>
+                        </svg>
+                        <p class="file-upload-text">Browse File to Upload</p>
+                    </label>
+                    <input type="file" id="fileInput" class="file-input" accept=".xlsx, .csv" multiple hidden>
+                </form>
+            
+                <section class="progress">
+                    <h4>Files</h4>
+                    <ul id="uploadedFiles" class="list-group"></ul>
+                </section>
+                <script src="{{ url_for('static', filename='assets/js/upload.js') }}"></script>
+                <form>
+                    <input type="button" onclick="readFiles()" value="Upload Data">
+                    <script src="{{ url_for('static', filename='assets/js/solubility-inputdata.js') }}"></script>
+                </form>
+
+            </div>
+        </div>
+        <div id="search-page" class="page" style="display:none;">
+            <div class="important-text">
+                Database Search
+            </div>
+            <div class="content">
+                <div id="normal-search-form"></div>
+                <div id="advanced-search-form"></div>
+                <script src="{{url_for('static', filename='assets/js/build-search.js')}}"></script>
+            </div>
+        </div>
+    </body>
+    <script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
+</html> 

@@ -1,0 +1,112 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    background-color: darkslategrey;
+    overflow-y: hidden;
+}
+
+header {
+    width: 100%;
+    height: 50px;
+    padding-left: 1rem;
+}
+
+.important-text {
+    display:flex;
+    flex-direction:column;
+    justify-content: center;
+    font-size: 150%;
+    font-weight: bold;
+    color: cornflowerblue;
+}
+
+#content-selector {
+    margin: 0rem 1rem 0rem 1rem;
+    /*border: solid black 2px;*/
+    display: flex;
+    flex-direction: row;
+
+}
+
+.page-button {
+    background-color: white;
+    color: black;
+    margin-right: 1rem;
+    padding: 0.1rem 0.5rem 0.1rem 0.5rem;
+    /*border-radius: 0.5rem; */ 
+    /*border: solid black 0.1rem;*/
+}
+
+.page-button:hover{
+    cursor: pointer;
+
+
+}
+
+.page {
+    position: absolute;
+    margin: 1rem;
+    height: calc(100% - 50px - 4.2rem);
+    width: calc(100% - 3rem);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: white;
+}
+
+.content {
+    margin-top: 0.2rem;
+    /*background-color: white;*/
+    height: calc(100% - 2rem);
+    border-radius: 0.5rem;
+    overflow-x: scroll;
+    overflow-y: scroll;
+}
+
+.content input,
+.content select {
+    outline: none;
+    margin-right: 0.5rem;
+}
+
+.content input[type="text"],
+.content input[type="number"] {
+    border-radius: 0.2rem;
+}
+
+.light-background {
+    background-color: lightblue;
+}
+
+.Inputcontent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 2px dotted gray;
+    padding: 7em;
+    background-color: rgb(207, 207, 207);
+}
+
+.file-upload-text {
+    margin-top: 2rem;
+}
+
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
