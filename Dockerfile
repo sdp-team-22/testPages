@@ -9,6 +9,8 @@ RUN npm install
 
 RUN npm install -g @angular/cli
 
+RUN npm install chart.js
+
 COPY . .
 
 RUN ng build --configuration=production --output-path=dist/aftas-angular
