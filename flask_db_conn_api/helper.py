@@ -143,7 +143,8 @@ def file_excel_to_json(data):
 
 def convertToFloat(input):
     try:
-        fInput = float(input)
+        fInput = round(float(input), 3)
+
         if math.isnan(fInput):
             return 'nan'
         return fInput
