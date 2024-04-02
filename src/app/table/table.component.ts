@@ -13,8 +13,10 @@ import { take } from 'rxjs/operators';
 export class TableComponent implements OnInit {
   tablesData: { 
     projectInfo: { 
+      fileName: string,
       projectName: string, 
       scientistName: string, 
+      molecularWeight: string,
       compoundName: string, 
       solidForm: string, 
       Tmelt: number, 
@@ -34,8 +36,10 @@ export class TableComponent implements OnInit {
       if (response != null) {
         for (const key in response) {
           const projectInfo = {
+            fileName: response[key]['File Name'],
             projectName: response[key]['Project Name'],
             scientistName: response[key]['Scientist Name'],
+            molecularWeight: response[key]['Molecular Weight'],
             compoundName: response[key]['Compound Name'],
             solidForm: response[key]['Solid Form'],
             Tmelt: response[key]['Tmelt'],

@@ -5,7 +5,7 @@ from flask_cors import CORS
 import psycopg2
 from flask_sqlalchemy import SQLAlchemy
 import logging
-from helper import file_excel_to_json1, file_excel_to_json
+from helper import file_excel_to_json1, file_excel_to_json, get_engine, get_db_session, create_new_solubility_data_entry
 
 logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
@@ -170,11 +170,35 @@ def api_upload():
     return jsonify(data)
 
 
+USERNAME = "sdp-dev"
+PASSWORD = "sdp123"
+HOSTNAME = "24.62.166.59"
+DBNAME = "postgres"
 @app.route('/api/db_upload', methods=['POST'])
 def database_upload():
-    uploaded_data = request.get_json()
-    file_excel_to_json(uploaded_data)
-    return jsonify(uploaded_data)
+    #Upload to database
+    try:
+        data = request.get_json()[0]
+        engine = get_engine(
+            username= USERNAME,
+            password= PASSWORD,
+            hostname= HOSTNAME,
+            dbname = DBNAME
+        )
+        session = get_db_session(engine)
+        
+        #print(json.dumps(data, indent=1))
+
+        create_new_solubility_data_entry(
+        session= session,
+        data= data
+        )
+        session.close()
+            
+    except Exception as e:
+        return jsonify("failed")
+    
+    return jsonify("success")
 
 
 if __name__ == '__main__':
