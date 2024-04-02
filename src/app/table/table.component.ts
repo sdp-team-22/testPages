@@ -3,6 +3,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SolubilityData, SolubilityDataColumns } from '../model/solubilitydata'; // Import SolubilityDataColumns from the same file
 import { DataService } from '../services/solubility-data.service';
 import { take } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -27,7 +28,7 @@ export class TableComponent implements OnInit {
     dataSource: MatTableDataSource<SolubilityData> 
   }[] = [];
 
-  constructor(private dataService: DataService) {}
+  constructor(private dataService: DataService, private router : Router ) {}
 
   ngOnInit() {
     this.dataService.responseData$.pipe(
@@ -82,13 +83,16 @@ export class TableComponent implements OnInit {
         .subscribe(
           response => {
             console.log('Data sent successfully:', response);
+            this.router.navigateByUrl('')
           },
           error => {
             console.error('Error sending data:', error);
           }
         );
-    } else {
+    }
+     else {
       console.error('Some tables are not valid.');
+      alert('Some tables are not valid.');
     }
   }
 
