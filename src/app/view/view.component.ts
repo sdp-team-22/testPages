@@ -183,6 +183,9 @@ export class ViewComponent {
         }    
 
     toggleSelectAll1(event: MatCheckboxChange) {
+        this.searchResults.forEach(item => {
+            item.selected = event.checked;
+        })
 
         if (event.checked) {
             this.selectedItems = this.searchResults.map(item => ({ 
@@ -201,6 +204,10 @@ export class ViewComponent {
         }
 
     toggleSelectAll2(event: MatCheckboxChange) {
+        this.searchResults2.forEach(item => {
+            item.selected = event.checked;
+        })
+
 
         if (event.checked) {
             this.selectedItems = this.searchResults2.map(item => ({ 
