@@ -10,6 +10,9 @@ import { HttpClient, HttpHandler, HttpHeaders } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import {MatCheckboxChange, MatCheckboxModule} from '@angular/material/checkbox';
 import {Chart} from 'chart.js/auto';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 interface AdvancedSearchQuery {
     field: string;
@@ -18,6 +21,7 @@ interface AdvancedSearchQuery {
     solvent_2?: string;
     solvent_3?: string;
     xrpdf?: string;
+    solventMatch?: string;
     // selectedUnit?: string;
     // selectedFraction?: string;
 }
@@ -43,7 +47,6 @@ export class ViewComponent {
     @ViewChild('barCanvas') barCanvas: any;
 
     showAdditionalFields: boolean = false;
-
     showAdvancedSearch: boolean = false;
 
     searchQuery: string = '';
@@ -58,6 +61,7 @@ export class ViewComponent {
 
 
     compound_name: string = '';
+    solventMatch: string = '';
     solvent_1: string = '';
     solvent_2: string = '';
     solvent_3: string = '';
@@ -67,12 +71,12 @@ export class ViewComponent {
     solubility_mg_mL_solv: number = 0;
     solubility_wt: number = 0;
 
-    filters: AdvancedSearchQuery[] = [{field: '', compound_name: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''}];
+    filters: AdvancedSearchQuery[] = [{field: '', compound_name: '', solventMatch: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''}];
     isNaN: Function = Number.isNaN;
     barChart: any;
 
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient, private _snackBar: MatSnackBar) { }
 
 
     toggleAdvancedSearch() {
@@ -80,28 +84,68 @@ export class ViewComponent {
     }
     basicSearch(): void {
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-        // const body = {searchQuery: this.searchQuery};
-            this.http.get<any>(`http://127.0.0.1:5000/api/basicSearch?query=${this.searchQuery}`,{ headers }).subscribe(
+        if (this.searchQuery === '') {
+            this._snackBar.open('Please enter Compound Name', 'Close', {
+                duration: 3000, 
+                horizontalPosition: 'center', 
+                verticalPosition: 'bottom', 
+                panelClass: 'error-snackbar' // Custom CSS class for styling
+            });
+            return;
+        }
+
+        this.http.get<any>(`http://127.0.0.1:5000/api/basicSearch?query=${this.searchQuery}`,{ headers }).subscribe(
                 (response) => {
                 this.searchResults = response;
             },
             (error) => {
-                console.error("no work", error);
+                if (error.status === 404) {
+                    this._snackBar.open('No results found', 'Close', {
+                        duration: 3000, 
+                        horizontalPosition: 'center', 
+                        verticalPosition: 'bottom', 
+                        panelClass: 'error-snackbar' 
+                    });
+                } else {
+                    console.error("no work", error);
+                }
         });
     }
     addFilter(): void {
-        this.filters.push({field:'', compound_name: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''});
-        console.log(this.filters);
+        if (this.filters.length < 3) {
+            this.filters.push({field:'', compound_name: '', solventMatch: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''});
+        } else {
+            this._snackBar.open('Cannot add more than 3 filters', 'Close', {
+                duration: 3000, 
+                horizontalPosition: 'center', 
+                verticalPosition: 'bottom', 
+                panelClass: 'error-snackbar' // Custom CSS class for styling
+            });       
+        }
     }
     removeFilter(i: number): void {
         this.filters.splice(i, 1);
     }
     advancedSearch(): void {
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+        // Check if any filter fields are filled
+        const filtersEmpty = this.filters.every(filter => !filter.compound_name && !filter.solvent_1 && !filter.solvent_2 && !filter.solvent_3 && !filter.xrpdf);
+
+    // Show error message if filters are empty
+        if (filtersEmpty) {
+        this._snackBar.open('Please fill in at least one filter', 'Close', {
+            duration: 3000, 
+            horizontalPosition: 'center', 
+            verticalPosition: 'bottom', 
+            panelClass: 'error-snackbar' // Custom CSS class for styling
+        });
+        return;
+        }
 
         const searchQuery2: AdvancedSearchQuery = {
             field: '',  
-            compound_name: '',  
+            compound_name: '',
+            solventMatch: '',
             solvent_1: '',  
             solvent_2: '',  
             solvent_3: '',  
@@ -113,6 +157,7 @@ export class ViewComponent {
             if (filter.field === 'compound_name') {
                 searchQuery2.compound_name = filter.compound_name;
             } else if (filter.field === 'solvent') {
+                searchQuery2.solventMatch = filter.solventMatch;
                 searchQuery2.solvent_1 = filter.solvent_1;
                 searchQuery2.solvent_2 = filter.solvent_2;
                 searchQuery2.solvent_3 = filter.solvent_3;
@@ -132,7 +177,7 @@ export class ViewComponent {
                 console.log('advanced search results:', this.searchResults2);
             },
             (error) => {
-                console.error("no bueno", error);
+                console.error("no work", error);
         });
     }
         
@@ -143,11 +188,12 @@ export class ViewComponent {
 
     clearSearch(){
         this.compound_name = '';
+        this.solventMatch = '';
         this.solvent_1 = '';
         this.solvent_2 = '';
         this.solvent_3 = '';
         this.xrpdf = '';
-        this.filters = [{field:'', compound_name: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''}];
+        this.filters = [{field:'', compound_name: '', solventMatch: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''}];
         this.searchQuery2 = '';
         this.searchResults2 = [];
     }
@@ -181,7 +227,20 @@ export class ViewComponent {
             );
             console.log(this.selectedItems);}
         }    
+    exportToExcel(selectedItems: any[]): void {
+        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(selectedItems);
 
+        // Create a workbook
+        const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+
+        // Convert workbook to binary Excel file
+        const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+        // Save the file
+        const data: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+        saveAs(data, 'Solubility.xlsx');
+    }
+    
     toggleSelectAll1(event: MatCheckboxChange) {
         this.searchResults.forEach(item => {
             item.selected = event.checked;
@@ -278,5 +337,4 @@ export class ViewComponent {
 }
     
     
-
 
