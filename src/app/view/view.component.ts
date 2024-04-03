@@ -12,7 +12,6 @@ import {MatCheckboxChange, MatCheckboxModule} from '@angular/material/checkbox';
 import {Chart} from 'chart.js/auto';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
 
 interface AdvancedSearchQuery {
     field: string;
@@ -228,6 +227,16 @@ export class ViewComponent {
             console.log(this.selectedItems);}
         }    
     exportToExcel(selectedItems: any[]): void {
+        if (selectedItems.length === 0) {
+            this._snackBar.open('Cannot export an empty table', 'Close', {
+                duration: 3000, 
+                horizontalPosition: 'center', 
+                verticalPosition: 'bottom', 
+                panelClass: 'error-snackbar' 
+            });
+            return;
+        }
+
         const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(selectedItems);
 
         // Create a workbook
@@ -237,10 +246,29 @@ export class ViewComponent {
         const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
 
         // Save the file
+        let fileName = 'Solubility.xlsx';
+        const existingFiles = window.localStorage.getItem('excelFiles');
+        if (existingFiles) {
+            const files = JSON.parse(existingFiles);
+            let index = 1;
+            while (files.includes(fileName)) {
+                fileName = `Solubility ${index}.xlsx`;
+                index++;
+            }
+            files.push(fileName);
+            window.localStorage.setItem('excelFiles', JSON.stringify(files));
+        } else {
+            window.localStorage.setItem('excelFiles', JSON.stringify([fileName]));
+        }
+
         const data: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
-        saveAs(data, 'Solubility.xlsx');
+        const url = window.URL.createObjectURL(data);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
     }
-    
+
     toggleSelectAll1(event: MatCheckboxChange) {
         this.searchResults.forEach(item => {
             item.selected = event.checked;
