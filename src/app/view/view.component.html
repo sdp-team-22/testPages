@@ -149,9 +149,7 @@ add extra field in solvent, exact and contains. use current logic for contains
                     <mat-label>Compound Name</mat-label>
                     <input matInput type="text" [(ngModel)]="filter.compound_name" name="compound_name{{i}}">
                 </mat-form-field>
-                <!-- <button mat-raised-button class="clear-button" type="button" (click)="removeFilter(i)">
-                    <mat-icon>clear</mat-icon>
-                </button> -->
+                
             
                 <mat-form-field appearance="fill" *ngIf="filter.field === 'xrpdf'">
                     <mat-label>Solid Form</mat-label>
@@ -161,14 +159,19 @@ add extra field in solvent, exact and contains. use current logic for contains
                         <mat-option value="Form III">Form III</mat-option>
                     </mat-select>
                 </mat-form-field>
-                <!-- <button mat-raised-button class="clear-button" type="button" (click)="removeFilter(i)">
-                    <mat-icon>clear</mat-icon>
-                </button> -->
-           
-            
+
                 <mat-form-field appearance="fill" *ngIf="filter.field === 'solvent'">
-                    <mat-label>Solvent 1</mat-label>
-                    <input matInput type="text" [(ngModel)]="filter.solvent_1" name="solvent_1{{i}}">
+                  <mat-label>Solvent</mat-label>
+                  <mat-select placeholder="Select Solvent match" [(ngModel)]="filter.solventMatch" name="solventMatch{{i}}">
+                      <mat-option value="contains">Contains</mat-option>
+                      <mat-option value="exact">Exact</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+              <div *ngIf="filter.solventMatch === 'contains'">
+                <mat-form-field appearance="fill" *ngIf="filter.field === 'solvent'">
+                  <mat-label>Solvent 1</mat-label>
+                  <input matInput type="text" [(ngModel)]="filter.solvent_1" name="solvent_1{{i}}">
                 </mat-form-field>
                 
                     <!-- Solvent 2 (Optional) -->
@@ -182,6 +185,25 @@ add extra field in solvent, exact and contains. use current logic for contains
                     <mat-label>Solvent 3</mat-label>
                     <input matInput type="text" [(ngModel)]="filter.solvent_3" name="solvent_3{{i}}">
                 </mat-form-field>  
+              </div>
+              <div *ngIf="filter.solventMatch === 'exact'">
+                <mat-form-field appearance="fill" *ngIf="filter.field === 'solvent'">
+                  <mat-label>Solvent 1</mat-label>
+                  <input matInput type="text" [(ngModel)]="filter.solvent_1" name="solvent_1{{i}}">
+                </mat-form-field>
+                
+                    <!-- Solvent 2 (Optional) -->
+                <mat-form-field appearance="fill" *ngIf="filter.field === 'solvent'">
+                    <mat-label>Solvent 2</mat-label>
+                    <input matInput type="text" [(ngModel)]="filter.solvent_2" name="solvent_2{{i}}">
+                </mat-form-field>
+                
+                    <!-- Solvent 3 (Optional) -->
+                <mat-form-field appearance="fill" *ngIf="filter.field === 'solvent'">
+                    <mat-label>Solvent 3</mat-label>
+                    <input matInput type="text" [(ngModel)]="filter.solvent_3" name="solvent_3{{i}}">
+                </mat-form-field>  
+              </div>
             </div>
             <button mat-raised-button class="clear-button" type="button" (click)="removeFilter(i)">
                 <mat-icon>clear</mat-icon>
@@ -189,6 +211,7 @@ add extra field in solvent, exact and contains. use current logic for contains
         </div>
             <div>
                 <button mat-raised-button class="add-button" type="button" (click)="addFilter()">Add Filter</button>
+                <button mat-raised-button class="add-button" type="button" (click)="clearSearch()">Reset</button>
                 <button mat-raised-button class="search-button" type="submit">Search</button>
             </div>
     </form>
@@ -218,6 +241,7 @@ add extra field in solvent, exact and contains. use current logic for contains
           <ng-container matColumnDef="select">
             <th mat-header-cell *matHeaderCellDef>Select All
               <mat-checkbox color ="primary" class ="checkbox" (change)="toggleSelectAll2($event)"></mat-checkbox>
+
             </th>
             <td mat-cell *matCellDef="let result">
               <mat-checkbox color ="primary" class ="checkbox" [(ngModel)]="result.selected" (change)="onCheckboxChange($event, result)"></mat-checkbox>
@@ -260,24 +284,24 @@ add extra field in solvent, exact and contains. use current logic for contains
             <th mat-header-cell *matHeaderCellDef> Fraction </th>
             <td mat-cell class="mat-cell" *matCellDef="let result">
               <ng-container *ngIf="selectedFraction === 'volfrac'">
-                  <div *ngIf="result.solvent_1 !== undefined && !isNaN(result.volfrac1)">
+                  <div *ngIf="result.solvent_1 !== undefined && result.solvent_1 !== 'nan' ">
                     {{ result.solvent_1 }} Volume Fraction: {{ result.volfrac1 }}
                   </div>
-                  <div *ngIf="result.solvent_2 !== undefined && !isNaN(result.volfrac2) ">
+                  <div *ngIf="result.solvent_2 !== undefined && result.solvent_2 !== 'nan' ">
                       {{ result.solvent_2 }} Volume Fraction: {{ result.volfrac2 }}
                   </div>
-                  <div *ngIf="result.solvent_3 !== undefined && !isNaN(result.volfrac3) ">
+                  <div *ngIf="result.solvent_3 !== undefined && result.solvent_3 !== 'nan' ">
                       {{ result.solvent_3 }} Volume Fraction: {{ result.volfrac3 }}
                   </div>
               </ng-container>
               <ng-container *ngIf="selectedFraction === 'wtfrac'">
-                <div *ngIf="result.solvent_1 !== undefined && !isNaN(result.wtfrac1)">
+                <div *ngIf="result.solvent_1 !== undefined && result.solvent_1 !== 'nan' ">
                   {{ result.solvent_1 }} Weight Fraction: {{ result.wtfrac1 }}
                 </div>
-                <div *ngIf="result.solvent_2 !== undefined && !isNaN(result.wtfrac2) ">
+                <div *ngIf="result.solvent_2 !== undefined && result.solvent_2 !== 'nan' ">
                     {{ result.solvent_2 }} Weight Fraction: {{ result.wtfrac2 }}
                 </div>
-                <div *ngIf="result.solvent_3 !== undefined && !isNaN(result.wtfrac3) ">
+                <div *ngIf="result.solvent_3 !== undefined && result.solvent_3 !== 'nan' ">
                     {{ result.solvent_3 }} Weight Fraction: {{ result.wtfrac3 }}
                 </div>
               </ng-container>
@@ -298,6 +322,9 @@ add extra field in solvent, exact and contains. use current logic for contains
         <button mat-raised-button class="graph-button" (click)="showGraph()">Graph It</button>
         <div class="graph-container">
           <canvas id="barCanvas" width="400" height="400"></canvas>
+        </div>
+        <div class="download-container">
+          <button mat-raised-button class="download-button" (click)="exportToExcel(selectedItems)">Download Table</button>
         </div>
     </div>    
 </div>
