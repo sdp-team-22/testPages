@@ -1,5 +1,5 @@
 import json
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import psycopg2
@@ -134,24 +134,33 @@ def advancedSearch():
         return jsonify({'error': 'No search criteria provided'}), 400
 
     search_criteria = json.loads(search_query)
-
+    if not search_criteria:
+        return jsonify({'error': 'No search criteria provided'}), 400
     query = solubility_data.query
     for key, value in search_criteria.items():
         if key == 'field':
             continue
         if key == 'compound_name' and value:
-            query = query.filter(solubility_data.compound_name.ilike(f'%{value}%'))
+            query = query.filter(solubility_data.compound_name.ilike(value))
         elif key == 'xrpdf' and value:
             query = query.filter(solubility_data.xrpdf == value)
         elif key.startswith('solvent_') and value:
             solvent_number = int(key.split('_')[1])
-            solvent_filters = []
-            for i in range(1, 4):
-                solvent_key = f'solvent_{i}'
-                solvent_column = getattr(solubility_data, solvent_key)
-                solvent_filters.append(solvent_column == value)
-            query = query.filter(or_(*solvent_filters))
-            
+            if search_criteria.get('solventMatch') == 'exact':
+                solvent_filters = []
+                for i in range(1, 4):
+                    solvent_key = f'solvent_{i}'
+                    solvent_column = getattr(solubility_data, solvent_key)
+                    if i == solvent_number:
+                        solvent_filter = solvent_column == value
+                        query = query.filter(solvent_filter)
+            elif search_criteria.get('solventMatch') == 'contains':
+                solvent_filters = []
+                for i in range(1, 4):
+                    solvent_key = f'solvent_{i}'
+                    solvent_column = getattr(solubility_data, solvent_key)
+                    solvent_filters.append(solvent_column == value)
+                query = query.filter(or_(*solvent_filters))
     results = [record.serialize() for record in query.all()]
     return jsonify(results)
 
