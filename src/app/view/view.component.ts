@@ -10,7 +10,7 @@ import { HttpClient, HttpHandler, HttpHeaders } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import {MatCheckboxChange, MatCheckboxModule} from '@angular/material/checkbox';
 import {Chart} from 'chart.js/auto';
-import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import * as XLSX from 'xlsx';
 
 interface AdvancedSearchQuery {
@@ -37,8 +37,8 @@ interface AdvancedSearchQuery {
         MatButtonModule,
         MatIconModule,
         MatTableModule,
-        MatCheckboxModule,
-        MatSnackBarModule
+        MatCheckboxModule
+
     ],
     styleUrls: ['./view.component.scss']
     })
@@ -107,8 +107,16 @@ export class ViewComponent {
                     });
                 } else {
                     console.error("no work", error);
+                }},
+                
+            () => this.searchResults.forEach((row: any) => {
+                for (let key in row) {
+                  if (row[key] == 'nan') { 
+                    row[key] = '';
                 }
-        });
+                }
+                }
+                ));
     }
     addFilter(): void {
         if (this.filters.length < 3) {
@@ -165,7 +173,6 @@ export class ViewComponent {
             }
         }
         const searchQueryString = encodeURIComponent(JSON.stringify(searchQuery2));
-        // console.log('advanced search query string:', searchQueryString);
     
         // Set the field based on the first filter
         searchQuery2.field = this.filters.length > 0 ? this.filters[0].field : '';
@@ -177,7 +184,16 @@ export class ViewComponent {
             },
             (error) => {
                 console.error("no work", error);
-        });
+        },
+        () => this.searchResults2.forEach((row: any) => {
+            for (let key in row) {
+              if (row[key] == 'nan') { 
+                row[key] = '';
+              }
+            }
+          }
+        )
+        );
     }
         
     resetSearch(): void {
