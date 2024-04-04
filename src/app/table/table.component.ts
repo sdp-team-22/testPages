@@ -54,6 +54,8 @@ export class TableComponent implements OnInit {
             dataSource: new MatTableDataSource<SolubilityData>()
           };
           tableData.dataSource.data = response[key]['Row Data'];
+
+          console.log('tableData', tableData.dataSource.data)
           // Loop through each element in dataSource data and replace NaN with ""
           tableData.dataSource.data.forEach((row: any) => {
           for (let key in row) {

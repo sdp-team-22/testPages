@@ -10,7 +10,7 @@ import { HttpClient, HttpHandler, HttpHeaders } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import {MatCheckboxChange, MatCheckboxModule} from '@angular/material/checkbox';
 import {Chart} from 'chart.js/auto';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 import * as XLSX from 'xlsx';
 
 interface AdvancedSearchQuery {
@@ -37,8 +37,8 @@ interface AdvancedSearchQuery {
         MatButtonModule,
         MatIconModule,
         MatTableModule,
-        MatCheckboxModule
-
+        MatCheckboxModule,
+        MatSnackBarModule
     ],
     styleUrls: ['./view.component.scss']
     })
