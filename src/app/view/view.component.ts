@@ -93,7 +93,7 @@ export class ViewComponent {
             return;
         }
 
-        this.http.get<any>(`http://127.0.0.1:5000/api/basicSearch?query=${this.searchQuery}`,{ headers }).subscribe(
+        this.http.get<any>(`/api/basicSearch?query=${this.searchQuery}`,{ headers }).subscribe(
                 (response) => {
                 this.searchResults = response;
             },
@@ -170,7 +170,7 @@ export class ViewComponent {
         // Set the field based on the first filter
         searchQuery2.field = this.filters.length > 0 ? this.filters[0].field : '';
         console.log('advanced search query:', searchQuery2);
-        this.http.get<any>(`http://127.0.0.1:5000/api/advancedSearch?query=${searchQueryString}`, {headers}).subscribe(
+        this.http.get<any>(`/api/advancedSearch?query=${searchQueryString}`, {headers}).subscribe(
             (response) => {
                 this.searchResults2 = response;
                 console.log('advanced search results:', this.searchResults2);
