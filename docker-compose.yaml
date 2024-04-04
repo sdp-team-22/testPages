@@ -10,8 +10,12 @@ services:
       - "61000:80"
     restart: unless-stopped
 
-    flask:
-      build: ./flask_conn_db_api
-      ports:
-        - "5000:5000"
-      restart: unless-stopped
+
+  flask:
+    image: flask-image
+    build: 
+      context: ./flask_db_conn_api
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
