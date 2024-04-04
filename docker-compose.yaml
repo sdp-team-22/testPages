@@ -1,0 +1,10 @@
+version: '3'
+services:
+  my-app:
+    image: angular-fe-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "61000:80"
+    restart: unless-stopped
