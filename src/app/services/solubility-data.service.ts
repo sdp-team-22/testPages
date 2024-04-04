@@ -16,7 +16,7 @@ export class DataService {
   }
 
   sendDataToBackend(dataToSend : any){
-    let url = 'http://127.0.0.1:5000/api/db_upload';
+    let url = '/api/db_upload';
     return this.http.post(url, dataToSend);
   }
 }
