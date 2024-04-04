@@ -1,6 +1,7 @@
 version: '3'
 services:
-  my-app:
+
+  angular-app:
     image: angular-fe-app
     build:
       context: .
@@ -8,3 +9,9 @@ services:
     ports:
       - "61000:80"
     restart: unless-stopped
+
+    flask:
+      build: ./flask_conn_db_api
+      ports:
+        - "5000:5000"
+      restart: unless-stopped
