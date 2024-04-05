@@ -1,0 +1,49 @@
+# Node artifacts
+/node_modules
+
+# Compiled output
+/dist
+
+# cache
+.angular/cache/
+
+# Angular CLI configuration
+/angular.json
+/.browserslistrc
+/karma.conf.js
+/tsconfig.app.json
+/tsconfig.spec.json
+/tslint.json
+
+# IDE/Editor files
+/.idea
+/.vscode
+*.iml
+*.ipr
+*.iws
+*.orig
+*.swp
+*.bak
+*.tmp
+
+# Logs and databases
+*.log
+*.sqlite
+*.sqlite3
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+/jspm_packages/
+/bower_components/
+
+# Environment variables file
+.env
+.env.*
