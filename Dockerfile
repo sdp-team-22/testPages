@@ -9,7 +9,7 @@ RUN npm install
 
 RUN npm install -g @angular/cli
 
-RUN npm install chart.js
+RUN npm install chart.js xlsx
 
 COPY . .
 
