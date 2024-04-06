@@ -1,0 +1,22 @@
+version: '3'
+services:
+
+  angular-app:
+    image: angular-fe-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "61000:80"
+    restart: unless-stopped
+
+
+  flask:
+    image: flask-image
+    build: 
+      context: ./flask_db_conn_api
+      dockerfile: Dockerfile
+    ports:
+      - "62000:5000"
+    restart: unless-stopped
+

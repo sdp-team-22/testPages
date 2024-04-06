@@ -1,0 +1,58 @@
+.card {
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  text-decoration: none;
+  color: #333;
+}
+.card-child {
+  display: flex;
+  padding: 10px;
+  margin: 10px 0;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  text-decoration: none;
+  color: #333;
+  position: relative;
+}
+.card .card-child[hidden] {
+  display: none;
+}
+.card-child:hover {
+  background-color: #055c33;
+  color: #ffffff;
+}
+
+.card-child:hover .arrow {
+    color: #fbfbfb;
+    border-left: 2px solid #fbfbfb; 
+    padding-left: 5px;  
+}
+.card .arrow {
+  color: #055c33;
+  position: relative;
+}
+.date{
+    text-align: right;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 8px;
+  background-color: #f2f2f2;
+  border-bottom: 1px solid #ddd;
+}
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
