@@ -37,6 +37,7 @@ export class TableComponent implements OnInit  {
     ).subscribe(response => {
       if (response != null) {
         for (const key in response) {
+          console.log()
           const projectInfo = {
             fileName: response[key]['File Name'],
             projectName: response[key]['Project Name'],
@@ -114,22 +115,31 @@ export class TableComponent implements OnInit  {
     // Check if all tables are valid
     if (this.tablesData.every(table => this.validateTable(table))) {
       // Prepare data to send
+
       const dataToSend = this.tablesData.map(table => ({
         projectInfo: table.projectInfo,
-        rowData: table.dataSource.data
+        rowData: table.dataSource.data.map((row: any) => {
+          const newRow = { ...row };
+          for (let key in newRow) {
+            if (newRow[key] === '') {
+              newRow[key] = 'nan'; // Map empty string to 'nan'
+            }
+          }
+          return newRow;
+        })
       }));
 
       // Send data to backend
       this.dataService.sendDataToBackend(dataToSend)
-        .subscribe(
-          response => {
-            console.log('Data sent successfully:', response);
-            this.router.navigateByUrl('')
-          },
-          error => {
-            console.error('Error sending data:', error);
-          }
-        );
+      .subscribe({
+        next: response => {
+          console.log('Data sent successfully:', response);
+          this.router.navigateByUrl('');
+        },
+        error: error => {
+          console.error('Error sending data:', error);
+        }
+      });
     }
      else {
       console.error('Some tables are not valid.');
