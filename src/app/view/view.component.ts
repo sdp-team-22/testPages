@@ -12,18 +12,10 @@ import {MatCheckboxChange, MatCheckboxModule} from '@angular/material/checkbox';
 import {Chart} from 'chart.js/auto';
 import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 import * as XLSX from 'xlsx';
+import { filter } from 'rxjs';
+import {AdvancedSearchQuery, populateSearchQuery} from '../searchMethods/advanced_search'
 
-interface AdvancedSearchQuery {
-    field: string;
-    compound_name?: string;
-    solvent_1?: string;
-    solvent_2?: string;
-    solvent_3?: string;
-    xrpdf?: string;
-    solventMatch?: string;
-    // selectedUnit?: string;
-    // selectedFraction?: string;
-}
+
 @Component({
     selector: 'view-root',
     templateUrl: 'view.component.html',
@@ -71,9 +63,15 @@ export class ViewComponent {
     solubility_mg_mL_solv: number = 0;
     solubility_wt: number = 0;
 
+
+
     filters: AdvancedSearchQuery[] = [{field: '', compound_name: '', solventMatch: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''}];
     isNaN: Function = Number.isNaN;
     barChart: any;
+
+    xrpdfOptions: string[] = [];
+
+    
 
 
     constructor(private http: HttpClient, private _snackBar: MatSnackBar) { }
@@ -119,8 +117,15 @@ export class ViewComponent {
                 }
                 ));
     }
+
     addFilter(): void {
         if (this.filters.length < 3) {
+            const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+            const searchQueryString = populateSearchQuery(this.filters)
+
+            
+            
             this.filters.push({field:'', compound_name: '', solventMatch: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''});
         } else {
             this._snackBar.open('Cannot add more than 3 filters', 'Close', {
@@ -196,6 +201,17 @@ export class ViewComponent {
         )
         );
     }
+
+    extractXrpdfOptions(results: any[]): string[] {
+        // Extract unique xrpdf options from search results
+        const optionsSet = new Set<string>();
+        results.forEach(result => {
+          if (result.xrpdf) {
+            optionsSet.add(result.xrpdf);
+          }
+        });
+        return Array.from(optionsSet);
+      }
         
     resetSearch(): void {
         this.searchQuery = '';
@@ -382,4 +398,3 @@ export class ViewComponent {
 }
     
     
-
