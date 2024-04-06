@@ -85,7 +85,7 @@ export const SolubilityDataColumns = [
         required: true
     },
     {
-        key: 'wt %',
+        key: 'wt%',
         type: 'text',
         label: 'wt%',
         required: true

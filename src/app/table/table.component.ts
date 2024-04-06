@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { SolubilityData, SolubilityDataColumns } from '../model/solubilitydata'; // Import SolubilityDataColumns from the same file
 import { DataService } from '../services/solubility-data.service';
-import { take } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./table.component.scss'],
   templateUrl: 'table.component.html',
 })
-export class TableComponent implements OnInit {
+export class TableComponent implements OnInit  {
   tablesData: { 
     projectInfo: { 
       fileName: string,
@@ -28,11 +28,12 @@ export class TableComponent implements OnInit {
     dataSource: MatTableDataSource<SolubilityData> 
   }[] = [];
 
+  private subscription: Subscription | undefined;
+
   constructor(private dataService: DataService, private router : Router ) {}
 
   ngOnInit() {
-    this.dataService.responseData$.pipe(
-      take(1)
+    this.subscription = this.dataService.getResponseData(
     ).subscribe(response => {
       if (response != null) {
         for (const key in response) {
@@ -47,15 +48,40 @@ export class TableComponent implements OnInit {
             Hfus: response[key]['Hfus'],
           };
 
+          let columnsSchema = SolubilityDataColumns.slice();
+          const keyMappings: { [key: string]: string } = {
+            'SolvFrac1_wtfrac': 'SolvFrac1_volfrac',
+            'SolvFrac2_wtfrac': 'SolvFrac2_volfrac',
+            'SolvFrac3_wtfrac': 'SolvFrac3_volfrac'
+        };
+        
+        // Iterate over the keys in the response data
+        for (const solvFracKey in keyMappings) {
+            if (response[key]['Row Data'][0].hasOwnProperty(solvFracKey) &&
+                response[key]['Row Data'][0][solvFracKey] !== null &&
+                response[key]['Row Data'][0][solvFracKey] !== undefined) {
+                columnsSchema = columnsSchema.map(col => {
+                    if (col.key === keyMappings[solvFracKey]) {
+                        return {
+                            key: solvFracKey,
+                            type: 'text',
+                            label: `Solv Frac ${solvFracKey.substring(5, 6)} (solute-free) wt`,
+                            required: true
+                        };
+                    }
+                    return col;
+                });
+            }
+        }
           const tableData = {
             projectInfo: projectInfo,
-            columnsSchema: SolubilityDataColumns,
-            displayedColumns: SolubilityDataColumns.map(col => col.key),
+            //columnsSchema: SolubilityDataColumns,
+            columnsSchema: columnsSchema,
+            //displayedColumns: SolubilityDataColumns.map(col => col.key),
+            displayedColumns: columnsSchema.map(col => col.key),
             dataSource: new MatTableDataSource<SolubilityData>()
           };
           tableData.dataSource.data = response[key]['Row Data'];
-
-          console.log('tableData', tableData.dataSource.data)
           // Loop through each element in dataSource data and replace NaN with ""
           tableData.dataSource.data.forEach((row: any) => {
           for (let key in row) {
@@ -64,12 +90,16 @@ export class TableComponent implements OnInit {
             }
           }
         });
-
-
           this.tablesData.push(tableData);
         }
       }
     });
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   statusCheck(status: any): string {
