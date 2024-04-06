@@ -19,4 +19,8 @@ export class DataService {
     let url = 'http://127.0.0.1:5000/api/db_upload';
     return this.http.post(url, dataToSend);
   }
+
+  getResponseData(): Observable<any> {
+    return this.responseData$;
+  }
 }

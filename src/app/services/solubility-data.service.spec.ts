@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { SolubilityDataService } from './solubility-data.service';
+import { DataService } from './solubility-data.service';
 
 describe('SolubilityDataService', () => {
-  let service: SolubilityDataService;
+  let service: DataService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(SolubilityDataService);
+    service = TestBed.inject(DataService);
   });
 
   it('should be created', () => {
