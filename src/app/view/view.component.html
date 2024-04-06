@@ -150,14 +150,21 @@ add extra field in solvent, exact and contains. use current logic for contains
                     <input matInput type="text" [(ngModel)]="filter.compound_name" name="compound_name{{i}}" [disabled]="i !== filters.length - 1">
                 </mat-form-field>
                 
-            
+                <mat-label>Solid Form</mat-label>
+                <mat-select placeholder="Select Solid Form" [(ngModel)]="filter.xrpdf" name="xrpdf{{i}}">
+                    <mat-option value="Hydrate">Hydrate</mat-option>
+                    <mat-option value="Acetone Solvate">Acetone Solvate</mat-option>
+                    <mat-option value="Form III">Form III</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <!--
                 <mat-form-field appearance="fill" *ngIf="filter.field === 'xrpdf'">
                   <mat-label>Solid Form</mat-label>
                   <mat-select placeholder="Select Solid Form" [(ngModel)]="filter.xrpdf" name="xrpdf{{i}}" [disabled]="i !== filters.length - 1">
                       <mat-option *ngFor="let option of xrpdfOptions" [value]="option">{{ option }}</mat-option>
                   </mat-select>
               </mat-form-field>
-
+            -->
                 <mat-form-field appearance="fill" *ngIf="filter.field === 'solvent'">
                   <mat-label>Solvent</mat-label>
                   <mat-select placeholder="Select Solvent match" [(ngModel)]="filter.solventMatch" name="solventMatch{{i}}" [disabled]="i !== filters.length - 1">

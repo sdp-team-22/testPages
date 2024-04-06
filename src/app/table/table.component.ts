@@ -136,7 +136,7 @@ export class TableComponent implements OnInit  {
         .subscribe(
           response => {
             console.log('Data sent successfully:', response);
-            //this.router.navigateByUrl('')
+            this.router.navigateByUrl('')
           },
           error => {
             console.error('Error sending data:', error);
