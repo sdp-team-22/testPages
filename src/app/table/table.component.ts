@@ -129,19 +129,17 @@ export class TableComponent implements OnInit  {
         })
       }));
 
-    console.log("data",dataToSend)
-
       // Send data to backend
       this.dataService.sendDataToBackend(dataToSend)
-        .subscribe(
-          response => {
-            console.log('Data sent successfully:', response);
-            this.router.navigateByUrl('')
-          },
-          error => {
-            console.error('Error sending data:', error);
-          }
-        );
+      .subscribe({
+        next: response => {
+          console.log('Data sent successfully:', response);
+          this.router.navigateByUrl('');
+        },
+        error: error => {
+          console.error('Error sending data:', error);
+        }
+      });
     }
      else {
       console.error('Some tables are not valid.');
