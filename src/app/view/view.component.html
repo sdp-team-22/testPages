@@ -90,24 +90,24 @@ add extra field in solvent, exact and contains. use current logic for contains
         <th mat-header-cell *matHeaderCellDef> Fraction </th>
         <td mat-cell class="mat-cell" *matCellDef="let result">
           <ng-container *ngIf="selectedFraction === 'volfrac'">
-            <div *ngIf="result.solvent_1 !== undefined && !isNaN(result.volfrac1)">
+            <div *ngIf="result.solvent_1 !== undefined && result.solvent_1 !== '' ">
                 {{ result.solvent_1 }} Volume Fraction: {{ result.volfrac1 }}
             </div>
-            <div *ngIf="result.solvent_2 !== undefined && !isNaN(result.volfrac2) ">
+            <div *ngIf="result.solvent_2 !== undefined && result.solvent_2 !== '' ">
                 {{ result.solvent_2 }} Volume Fraction: {{ result.volfrac2 }}
             </div>
-            <div *ngIf="result.solvent_3 !== undefined && !isNaN(result.volfrac3) ">
+            <div *ngIf="result.solvent_3 !== undefined && result.solvent_3 !== '' ">
                 {{ result.solvent_3 }} Volume Fraction: {{ result.volfrac3 }}
             </div>
           </ng-container>
           <ng-container *ngIf="selectedFraction === 'wtfrac'">
-            <div *ngIf="result.solvent_1 !== undefined && !isNaN(result.wtfrac1)">
+            <div *ngIf="result.solvent_1 !== undefined && result.solvent_1 !== '' ">
                 {{ result.solvent_1 }} Weight Fraction: {{ result.wtfrac1 }}
             </div>
-            <div *ngIf="result.solvent_2 !== undefined && !isNaN(result.wtfrac2) ">
+            <div *ngIf="result.solvent_2 !== undefined && result.solvent_2 !== '' ">
                 {{ result.solvent_2 }} Weight Fraction: {{ result.wtfrac2 }}
             </div>
-            <div *ngIf="result.solvent_3 !== undefined && !isNaN(result.wtfrac3) ">
+            <div *ngIf="result.solvent_3 !== undefined && result.solvent_3 !== '' ">
                 {{ result.solvent_3 }} Weight Fraction: {{ result.wtfrac3 }}
             </div>
           </ng-container>
@@ -284,24 +284,24 @@ add extra field in solvent, exact and contains. use current logic for contains
             <th mat-header-cell *matHeaderCellDef> Fraction </th>
             <td mat-cell class="mat-cell" *matCellDef="let result">
               <ng-container *ngIf="selectedFraction === 'volfrac'">
-                  <div *ngIf="result.solvent_1 !== undefined && result.solvent_1 !== 'nan' ">
+                  <div *ngIf="result.solvent_1 !== undefined && result.solvent_1 !== '' ">
                     {{ result.solvent_1 }} Volume Fraction: {{ result.volfrac1 }}
                   </div>
-                  <div *ngIf="result.solvent_2 !== undefined && result.solvent_2 !== 'nan' ">
+                  <div *ngIf="result.solvent_2 !== undefined && result.solvent_2 !== '' ">
                       {{ result.solvent_2 }} Volume Fraction: {{ result.volfrac2 }}
                   </div>
-                  <div *ngIf="result.solvent_3 !== undefined && result.solvent_3 !== 'nan' ">
+                  <div *ngIf="result.solvent_3 !== undefined && result.solvent_3 !== '' ">
                       {{ result.solvent_3 }} Volume Fraction: {{ result.volfrac3 }}
                   </div>
               </ng-container>
               <ng-container *ngIf="selectedFraction === 'wtfrac'">
-                <div *ngIf="result.solvent_1 !== undefined && result.solvent_1 !== 'nan' ">
+                <div *ngIf="result.solvent_1 !== undefined && result.solvent_1 !== '' ">
                   {{ result.solvent_1 }} Weight Fraction: {{ result.wtfrac1 }}
                 </div>
-                <div *ngIf="result.solvent_2 !== undefined && result.solvent_2 !== 'nan' ">
+                <div *ngIf="result.solvent_2 !== undefined && result.solvent_2 !== '' ">
                     {{ result.solvent_2 }} Weight Fraction: {{ result.wtfrac2 }}
                 </div>
-                <div *ngIf="result.solvent_3 !== undefined && result.solvent_3 !== 'nan' ">
+                <div *ngIf="result.solvent_3 !== undefined && result.solvent_3 !== '' ">
                     {{ result.solvent_3 }} Weight Fraction: {{ result.wtfrac3 }}
                 </div>
               </ng-container>
