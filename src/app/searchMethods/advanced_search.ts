@@ -8,7 +8,8 @@ export interface AdvancedSearchQuery {
     xrpdf: string;
 }
 
-export function populateSearchQuery(filters: any[]) : string{
+export function populateSearchQuery(filters: any[]) : string
+{
     const searchQuery: AdvancedSearchQuery = {
         field: '',
         compound_name: '',

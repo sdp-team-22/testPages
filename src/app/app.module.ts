@@ -17,6 +17,7 @@ import { DataService } from './services/solubility-data.service';
 import { MatTabsModule } from '@angular/material/tabs';
 
 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -34,7 +35,7 @@ import { MatTabsModule } from '@angular/material/tabs';
     NoopAnimationsModule,
     HttpClientModule,
     MatTableModule,
-    MatTabsModule
+    MatTabsModule,
   ],
   providers: [DataService],
   bootstrap: [AppComponent]

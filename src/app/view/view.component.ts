@@ -1,5 +1,5 @@
-import { Component, ElementRef, ViewChild, OnInit, AfterViewInit } from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import { Component, ElementRef, ViewChild, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import {FormsModule, FormControl , ReactiveFormsModule} from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -12,9 +12,10 @@ import {MatCheckboxChange, MatCheckboxModule} from '@angular/material/checkbox';
 import {Chart} from 'chart.js/auto';
 import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 import * as XLSX from 'xlsx';
-import { filter } from 'rxjs';
 import {AdvancedSearchQuery, populateSearchQuery} from '../searchMethods/advanced_search'
-
+import { Subscription, Observable, filter } from 'rxjs';
+import { startWith, map } from 'rxjs/operators';
+import { MatAutocompleteModule, MatAutocomplete } from '@angular/material/autocomplete';
 
 @Component({
     selector: 'view-root',
@@ -30,13 +31,16 @@ import {AdvancedSearchQuery, populateSearchQuery} from '../searchMethods/advance
         MatIconModule,
         MatTableModule,
         MatCheckboxModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        ReactiveFormsModule,
+        MatAutocompleteModule
 
     ],
     styleUrls: ['./view.component.scss']
     })
-export class ViewComponent {
+export class ViewComponent implements OnInit, OnDestroy {
     @ViewChild('barCanvas') barCanvas: any;
+    @ViewChild(MatAutocomplete) auto!: MatAutocomplete;
 
     showAdditionalFields: boolean = false;
     showAdvancedSearch: boolean = false;
@@ -63,22 +67,53 @@ export class ViewComponent {
     solubility_mg_mL_solv: number = 0;
     solubility_wt: number = 0;
 
-
+    CurrentQuery: any[] = [];
 
     filters: AdvancedSearchQuery[] = [{field: '', compound_name: '', solventMatch: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''}];
     isNaN: Function = Number.isNaN;
     barChart: any;
 
     xrpdfOptions: string[] = [];
+    compoundOptions: string[] = [];
+    solvent1_Options: string[] = [];
+    solvent2_Options: string[] = [];
+    solvent3_Options: string[] = [];
+    solvent_Combo_Options : string[][] = [[]];
+    searchResultFilter: any[] = [];
+
+
+    private xrpdfOptionsSubscription: Subscription | undefined;
+    myControl = new FormControl();
+
+    filteredOptions: Observable<string[]> | undefined;
 
     
 
 
     constructor(private http: HttpClient, private _snackBar: MatSnackBar) { }
 
+    ngOnInit() {
+        this.fetchOptions();
+        this.filteredOptions = this.myControl.valueChanges.pipe(
+            startWith(''),
+            map(value => this._filter(value))
+          );
+      }
+
+      private _filter(value: string): string[] {
+        const filterValue = value.toLowerCase();
+        return this.compoundOptions.filter(option => option.toLowerCase().includes(filterValue));
+      }
+
+    ngOnDestroy() {
+        if (this.xrpdfOptionsSubscription) {
+          this.xrpdfOptionsSubscription.unsubscribe();
+        }
+      }
 
     toggleAdvancedSearch() {
         this.showAdvancedSearch = !this.showAdvancedSearch;
+
     }
     basicSearch(): void {
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -119,21 +154,36 @@ export class ViewComponent {
     }
 
     addFilter(): void {
-        if (this.filters.length < 3) {
-            const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-
-            const searchQueryString = populateSearchQuery(this.filters)
-
-            
-            
-            this.filters.push({field:'', compound_name: '', solventMatch: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''});
-        } else {
-            this._snackBar.open('Cannot add more than 3 filters', 'Close', {
-                duration: 3000, 
-                horizontalPosition: 'center', 
-                verticalPosition: 'bottom', 
-                panelClass: 'error-snackbar' // Custom CSS class for styling
-            });       
+        const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    
+        const filtersEmpty = this.filters.every(filter => !filter.compound_name && !filter.solvent_1 && !filter.solvent_2 && !filter.solvent_3 && !filter.xrpdf);
+    
+        // Check if any of the fields in the current filter are not empty
+        if (!filtersEmpty) {
+            // Check if the maximum number of filters has been reached
+            if (this.filters.length < 3) {
+                // Add a new filter with default values
+                const searchQueryString = populateSearchQuery(this.filters);
+                this.http.get<any>(`http://127.0.0.1:5000/api/advancedSearch?query=${searchQueryString}`, { headers }).subscribe(
+                    (response) => {
+                        this.searchResultFilter = response;
+                        console.log('search result:', this.searchResultFilter);
+                    },
+                    (error) => {
+                        console.error("no work", error);
+                    }
+                );
+    
+                this.filters.push({field:'', compound_name: '', solventMatch: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''});
+            } else {
+                // Display error message if more than 3 filters are already added
+                this._snackBar.open('Cannot add more than 3 filters', 'Close', {
+                    duration: 3000, 
+                    horizontalPosition: 'center', 
+                    verticalPosition: 'bottom', 
+                    panelClass: 'error-snackbar' // Custom CSS class for styling
+                });       
+            }
         }
     }
     removeFilter(i: number): void {
@@ -170,7 +220,7 @@ export class ViewComponent {
             if (filter.field === 'compound_name') {
                 searchQuery2.compound_name = filter.compound_name;
             } else if (filter.field === 'solvent') {
-                searchQuery2.solventMatch = filter.solventMatch;
+                searchQuery2.solventMatch = filter.solventMatch;  
                 searchQuery2.solvent_1 = filter.solvent_1;
                 searchQuery2.solvent_2 = filter.solvent_2;
                 searchQuery2.solvent_3 = filter.solvent_3;
@@ -202,17 +252,54 @@ export class ViewComponent {
         );
     }
 
-    extractXrpdfOptions(results: any[]): string[] {
-        // Extract unique xrpdf options from search results
-        const optionsSet = new Set<string>();
-        results.forEach(result => {
-          if (result.xrpdf) {
-            optionsSet.add(result.xrpdf);
-          }
-        });
-        return Array.from(optionsSet);
+    fetchOptions() {
+        this.xrpdfOptionsSubscription = this.http.get<any>('http://127.0.0.1:5000/api/form').subscribe(
+            (response) => {
+                if (response) {
+                    this.processOptions(response.xrpdf_options, this.xrpdfOptions);
+                    this.processOptions(response.compound_name_options, this.compoundOptions);
+                    this.processOptions(response.solvent_1_options, this.solvent1_Options);
+                    this.processOptions(response.solvent_2_options, this.solvent2_Options);
+                    this.processOptions(response.solvent_3_options, this.solvent3_Options);
+                    this.processOptions2D(response.solvent_combinations_options, this.solvent_Combo_Options);
+                } else {
+                    console.error('Invalid response format:', response);
+                }
+            },
+            (error) => {
+                console.error('Error fetching options:', error);
+            }
+        );
+    }
+
+    processOptions(options: string[], targetArray: string[]) {
+        if (options && Array.isArray(options)) {
+            options.forEach((option: string) => {
+                if (option !== 'nan') { // Exclude 'nan' values
+                    targetArray.push(option);
+                }
+            });
+        }
+    }
+
+    processOptions2D(options: string[][], targetArray: string[][]) {
+        if (options && Array.isArray(options)) {
+            options.forEach((combination: string[]) => { 
+                const validCombination: string[] = []; 
+                combination.forEach((option: string) => { 
+                    if (option !== 'nan') { 
+                        validCombination.push(option);
+                    }
+                });
+                targetArray.push(validCombination); 
+            });
+        }
+    }
+    isInputDisabled(index: number): boolean {
+        // Disable the input if it's not the last filter'
+        return index !== this.filters.length - 1;
       }
-        
+
     resetSearch(): void {
         this.searchQuery = '';
         this.searchResults = [];
