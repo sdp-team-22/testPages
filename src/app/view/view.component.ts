@@ -80,6 +80,7 @@ export class ViewComponent implements OnInit, OnDestroy {
     solvent3_Options: string[] = [];
     solvent_Combo_Options : string[][] = [[]];
     searchResultFilter: any[] = [];
+    History: any[] = [];
 
 
     private xrpdfOptionsSubscription: Subscription | undefined;
@@ -167,12 +168,45 @@ export class ViewComponent implements OnInit, OnDestroy {
                 this.http.get<any>(`http://127.0.0.1:5000/api/advancedSearch?query=${searchQueryString}`, { headers }).subscribe(
                     (response) => {
                         this.searchResultFilter = response;
-                        console.log('search result:', this.searchResultFilter);
+                    
+                        // Push current options arrays into History and reset them
+                        this.History.push([
+                            this.compoundOptions,
+                            this.xrpdfOptions,
+                            this.solvent1_Options,
+                            this.solvent2_Options,
+                            this.solvent3_Options,
+                            this.solvent_Combo_Options
+                        ]);
+                        this.compoundOptions = [];
+                        this.xrpdfOptions = [];
+                        this.solvent1_Options = [];
+                        this.solvent2_Options = [];
+                        this.solvent3_Options = [];
+                        this.solvent_Combo_Options = [[]];
+                    
+                        // Define a mapping object to associate keys with options arrays
+                        const optionsMap: { [key: string]: any[] } = {
+                            compound_name: this.compoundOptions,
+                            xrpdf: this.xrpdfOptions,
+                            solvent1: this.solvent1_Options,
+                            solvent2: this.solvent2_Options,
+                            solvent3: this.solvent3_Options,
+                            solvent_Combo: this.solvent_Combo_Options
+                        };
+                    
+                        // Iterate over searchResultFilter to populate options arrays
+                        this.searchResultFilter.forEach((row: any) => {
+                            for (let key in row) {
+                                if (optionsMap.hasOwnProperty(key)) {
+                                    optionsMap[key].push(row[key]);
+                                }
+                            }
+                        });
                     },
                     (error) => {
                         console.error("no work", error);
-                    }
-                );
+                    });
     
                 this.filters.push({field:'', compound_name: '', solventMatch: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''});
             } else {
@@ -188,6 +222,7 @@ export class ViewComponent implements OnInit, OnDestroy {
     }
     removeFilter(i: number): void {
         this.filters.splice(i, 1);
+        this.History.splice(i,1);
     }
     advancedSearch(): void {
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
