@@ -78,7 +78,6 @@ export class ViewComponent implements OnInit, OnDestroy {
     solvent1_Options: string[] = [];
     solvent2_Options: string[] = [];
     solvent3_Options: string[] = [];
-    solvent_Combo_Options : string[][] = [[]];
     searchResultFilter: any[] = [];
     History: any[] = [];
 
@@ -176,23 +175,20 @@ export class ViewComponent implements OnInit, OnDestroy {
                             this.solvent1_Options,
                             this.solvent2_Options,
                             this.solvent3_Options,
-                            this.solvent_Combo_Options
                         ]);
                         this.compoundOptions = [];
                         this.xrpdfOptions = [];
                         this.solvent1_Options = [];
                         this.solvent2_Options = [];
                         this.solvent3_Options = [];
-                        this.solvent_Combo_Options = [[]];
                     
                         // Define a mapping object to associate keys with options arrays
                         const optionsMap: { [key: string]: any[] } = {
                             compound_name: this.compoundOptions,
                             xrpdf: this.xrpdfOptions,
-                            solvent1: this.solvent1_Options,
-                            solvent2: this.solvent2_Options,
-                            solvent3: this.solvent3_Options,
-                            solvent_Combo: this.solvent_Combo_Options
+                            solvent_1: this.solvent1_Options,
+                            solvent_2: this.solvent2_Options,
+                            solvent_3: this.solvent3_Options,
                         };
                     
                         // Iterate over searchResultFilter to populate options arrays
@@ -296,7 +292,6 @@ export class ViewComponent implements OnInit, OnDestroy {
                     this.processOptions(response.solvent_1_options, this.solvent1_Options);
                     this.processOptions(response.solvent_2_options, this.solvent2_Options);
                     this.processOptions(response.solvent_3_options, this.solvent3_Options);
-                    this.processOptions2D(response.solvent_combinations_options, this.solvent_Combo_Options);
                 } else {
                     console.error('Invalid response format:', response);
                 }
@@ -313,20 +308,6 @@ export class ViewComponent implements OnInit, OnDestroy {
                 if (option !== 'nan') { // Exclude 'nan' values
                     targetArray.push(option);
                 }
-            });
-        }
-    }
-
-    processOptions2D(options: string[][], targetArray: string[][]) {
-        if (options && Array.isArray(options)) {
-            options.forEach((combination: string[]) => { 
-                const validCombination: string[] = []; 
-                combination.forEach((option: string) => { 
-                    if (option !== 'nan') { 
-                        validCombination.push(option);
-                    }
-                });
-                targetArray.push(validCombination); 
             });
         }
     }

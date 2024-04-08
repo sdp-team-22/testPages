@@ -225,7 +225,7 @@ add extra field in solvent, exact and contains. use current logic for contains
                          name="solvent_1{{i}}"
                          [matAutocomplete]="solvent1Auto">
                   <mat-autocomplete #solvent1Auto>
-                    <mat-option *ngFor="let option of solvent_Combo_Options" [value]="option[0]">{{ option[0] }}</mat-option>
+                    <mat-option *ngFor="let option of solvent1_Options" [value]="option">{{ option }}</mat-option>
                   </mat-autocomplete>
                 </mat-form-field>
                 
@@ -238,7 +238,7 @@ add extra field in solvent, exact and contains. use current logic for contains
                          name="solvent_2{{i}}"
                          [matAutocomplete]="solvent2Auto">
                   <mat-autocomplete #solvent2Auto>
-                    <mat-option *ngFor="let option of solvent_Combo_Options" [value]="option[1]">{{ option[1] }}</mat-option>
+                    <mat-option *ngFor="let option of solvent2_Options" [value]="option">{{ option }}</mat-option>
                   </mat-autocomplete>
                 </mat-form-field>
                 
@@ -251,7 +251,7 @@ add extra field in solvent, exact and contains. use current logic for contains
                          name="solvent_3{{i}}"
                          [matAutocomplete]="solvent3Auto">
                   <mat-autocomplete #solvent3Auto>
-                    <mat-option *ngFor="let option of solvent_Combo_Options" [value]="option[3]">{{ option }}</mat-option>
+                    <mat-option *ngFor="let option of solvent3_Options" [value]="option">{{ option }}</mat-option>
                   </mat-autocomplete>
                 </mat-form-field>
               </div>
