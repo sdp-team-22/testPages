@@ -286,8 +286,9 @@ export class ViewComponent implements OnInit, OnDestroy {
     }
 
     fetchOptions() {
-        this.xrpdfOptionsSubscription = this.http.get<any>('http://127.0.0.1:5000/api/form').subscribe(
-            (response) => {
+        const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+        this.xrpdfOptionsSubscription = this.http.get<any>('http://127.0.0.1:5000/api/form', { headers }).subscribe(
+                    (response) => {
                 if (response) {
                     this.processOptions(response.compound_name_options, this.compoundOptions);
                     this.processOptions(response.xrpdf_options, this.xrpdfOptions);
