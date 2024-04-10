@@ -356,8 +356,29 @@ export class ViewComponent implements OnInit, OnDestroy {
             solvent_3: item.solvent_3,
             temp: item.temp,
             xrpdf: item.xrpdf,
-            solubility: item[this.selectedUnit]
+            solubility: item[this.selectedUnit],
+            fractions: [] as {unit: string, value: number}[],
+            solubility_units: [] as {unit: string, value: number}[]
         };
+        const fractionKeys = ['volfrac1', 'volfrac2', 'volfrac3', 'wtfrac1', 'wtfrac2', 'wtfrac3'];
+        for (const fractionKey of fractionKeys) {
+            if (item[fractionKey] !== null) {
+                selectedData.fractions.push({
+                    unit: fractionKey,
+                    value: item[fractionKey]
+                });
+            }
+        }
+
+        const solubilityUnitKeys = ['solubility_mg_g_solv', 'solubility_mg_g_solvn', 'solubility_mg_mL_solv', 'solubility_wt'];
+        for (const unitKey of solubilityUnitKeys) {
+            if (item[unitKey] !== null) {
+                selectedData.solubility_units.push({
+                    unit: unitKey,
+                    value: item[unitKey]
+                });
+            }
+        }
 
         if (event.checked) {
             this.selectedItems.push(selectedData);
@@ -371,10 +392,19 @@ export class ViewComponent implements OnInit, OnDestroy {
                       data.solvent_3 === selectedData.solvent_3 &&
                       data.temp === selectedData.temp &&
                       data.xrpdf === selectedData.xrpdf &&
-                      data.solubility === selectedData.solubility)
+                      data.solubility === selectedData.solubility &&
+                      this.arraysEqual(data.fractions, selectedData.fractions) &&
+                      this.arraysEqual(data.solubility_units, selectedData.solubility_units))
             );
             console.log(this.selectedItems);}
         }    
+    arraysEqual(arr1: any[], arr2: any[]): boolean {
+        if (arr1.length !== arr2.length) return false;
+        for (let i = 0; i < arr1.length; i++) {
+            if (arr1[i] !== arr2[i]) return false;
+        }
+        return true;
+    }
     exportToExcel(selectedItems: any[]): void {
         if (selectedItems.length === 0) {
             this._snackBar.open('Cannot export an empty table', 'Close', {
@@ -386,7 +416,24 @@ export class ViewComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(selectedItems);
+        const flattenItems = selectedItems.map(item => ({
+            compound_name: item.compound_name,
+            solvent_1: item.solvent_1,
+            solvent_2: item.solvent_2,
+            solvent_3: item.solvent_3,
+            temp: item.temp,
+            xrpdf: item.xrpdf,
+            ...item.fractions.reduce((acc: { [x: string]: any; }, fraction: { unit: string | number; value: any; }) => {
+                acc[fraction.unit] = fraction.value;
+                return acc; 
+            }, {}),
+            ...item.solubility_units.reduce((acc: { [x: string]: any; }, unit: { unit: string | number; value: any; }) => {
+                acc[unit.unit] = unit.value;
+                return acc;
+            }, {})
+        }));
+
+        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(flattenItems);
 
         // Create a workbook
         const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
