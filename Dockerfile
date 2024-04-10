@@ -18,6 +18,12 @@ RUN ng build --configuration=production --output-path=dist/aftas-angular
 # Stage 2: Serve the Angular app with Nginx
 FROM nginx:latest
 
+# Remove the default Nginx configuration
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copy custom Nginx configuration that redirects all requests to Angular app
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Copy the built Angular app from the build stage to the nginx server
 COPY --from=build /app/dist/aftas-angular /usr/share/nginx/html
 
