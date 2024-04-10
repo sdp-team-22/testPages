@@ -90,7 +90,7 @@ add extra field in solvent, exact and contains. use current logic for contains
         <th mat-header-cell *matHeaderCellDef> Fraction </th>
         <td mat-cell class="mat-cell" *matCellDef="let result">
           <ng-container *ngIf="selectedFraction === 'volfrac'">
-            <div *ngIf="result.solvent_1 !== undefined && result.solvent_1 !== '' ">
+            <div *ngIf="result.solvent_1 !== undefined && !isNaN(result.volfrac1)">
                 {{ result.solvent_1 }} Volume Fraction: {{ result.volfrac1 }}
             </div>
             <div *ngIf="result.solvent_2 !== undefined && result.solvent_2 !== '' ">
@@ -134,29 +134,37 @@ add extra field in solvent, exact and contains. use current logic for contains
 <div class="advanced-container" *ngIf="showAdvancedSearch">
     <form (ngSubmit)="advancedSearch()">
         <div class="filter-container" *ngFor="let filter of filters; let i = index">
-            <mat-form-field appearance="fill">
-                <mat-label>Filter {{i+1}}</mat-label>
-                <mat-select [(ngModel)]="filter.field" name="field">
-                    <mat-option value="compound_name">Compound Name</mat-option>
-                    <mat-option value="xrpdf">Solid Form</mat-option>
-                    <mat-option value="solvent">Solvent</mat-option>
-                </mat-select>
-            </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Filter {{i+1}}</mat-label>
+            <mat-select [(ngModel)]="filter.field" name="field"
+                        [ngModelOptions]="{standalone: true}" >
+                <mat-option value="compound_name">Compound Name</mat-option>
+                <mat-option value="xrpdf">Solid Form</mat-option>
+                <mat-option value="solvent">Solvent</mat-option>
+            </mat-select>
+        </mat-form-field>
             
             <!-- Display input fields based on selected criterion -->
             <div class="input-container">
-                <mat-form-field appearance="fill" *ngIf="filter.field === 'compound_name'">
-                    <mat-label>Compound Name</mat-label>
-                    <input matInput type="text" [(ngModel)]="filter.compound_name" name="compound_name{{i}}">
-                </mat-form-field>
-                
+              <mat-form-field appearance="fill" *ngIf="filter.field === 'compound_name'">
+                <mat-label>Compound Name</mat-label>
+                <input matInput
+                       placeholder="Pick one"
+                       aria-label="Compound Name"
+                       [matAutocomplete]="auto"
+                       [(ngModel)]="filter.compound_name"
+                       [name]="'compound_name' + i">
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                        {{ option }}
+                    </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
             
                 <mat-form-field appearance="fill" *ngIf="filter.field === 'xrpdf'">
                     <mat-label>Solid Form</mat-label>
                     <mat-select placeholder="Select Solid Form" [(ngModel)]="filter.xrpdf" name="xrpdf{{i}}">
-                        <mat-option value="Hydrate">Hydrate</mat-option>
-                        <mat-option value="Acetone Solvate">Acetone Solvate</mat-option>
-                        <mat-option value="Form III">Form III</mat-option>
+                      <mat-option *ngFor="let option of xrpdfOptions" [value]="option">{{ option }}</mat-option>
                     </mat-select>
                 </mat-form-field>
 
@@ -171,38 +179,81 @@ add extra field in solvent, exact and contains. use current logic for contains
               <div *ngIf="filter.solventMatch === 'contains'">
                 <mat-form-field appearance="fill" *ngIf="filter.field === 'solvent'">
                   <mat-label>Solvent 1</mat-label>
-                  <input matInput type="text" [(ngModel)]="filter.solvent_1" name="solvent_1{{i}}">
+                  <input matInput
+                         type="text"
+                         [(ngModel)]="filter.solvent_1"
+                         name="solvent_1{{i}}"
+                         [matAutocomplete]="solvent1Auto">
+                  <mat-autocomplete #solvent1Auto>
+                    <mat-option *ngFor="let option of solvent1_Options" [value]="option">{{ option }}</mat-option>
+                  </mat-autocomplete>
                 </mat-form-field>
                 
-                    <!-- Solvent 2 (Optional) -->
+                <!-- Solvent 2 -->
                 <mat-form-field appearance="fill" *ngIf="filter.field === 'solvent'">
-                    <mat-label>Solvent 2</mat-label>
-                    <input matInput type="text" [(ngModel)]="filter.solvent_2" name="solvent_2{{i}}">
+                  <mat-label>Solvent 2</mat-label>
+                  <input matInput
+                         type="text"
+                         [(ngModel)]="filter.solvent_2"
+                         name="solvent_2{{i}}"
+                         [matAutocomplete]="solvent2Auto">
+                  <mat-autocomplete #solvent2Auto>
+                    <mat-option *ngFor="let option of solvent2_Options" [value]="option">{{ option }}</mat-option>
+                  </mat-autocomplete>
                 </mat-form-field>
                 
-                    <!-- Solvent 3 (Optional) -->
+                <!-- Solvent 3 -->
                 <mat-form-field appearance="fill" *ngIf="filter.field === 'solvent'">
-                    <mat-label>Solvent 3</mat-label>
-                    <input matInput type="text" [(ngModel)]="filter.solvent_3" name="solvent_3{{i}}">
-                </mat-form-field>  
+                  <mat-label>Solvent 3</mat-label>
+                  <input matInput
+                         type="text"
+                         [(ngModel)]="filter.solvent_3"
+                         name="solvent_3{{i}}"
+                         [matAutocomplete]="solvent3Auto">
+                  <mat-autocomplete #solvent3Auto>
+                    <mat-option *ngFor="let option of solvent3_Options" [value]="option">{{ option }}</mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
               </div>
               <div *ngIf="filter.solventMatch === 'exact'">
+                <!-- Solvent 1 -->
                 <mat-form-field appearance="fill" *ngIf="filter.field === 'solvent'">
                   <mat-label>Solvent 1</mat-label>
-                  <input matInput type="text" [(ngModel)]="filter.solvent_1" name="solvent_1{{i}}">
+                  <input matInput
+                         type="text"
+                         [(ngModel)]="filter.solvent_1"
+                         name="solvent_1{{i}}"
+                         [matAutocomplete]="solvent1Auto">
+                  <mat-autocomplete #solvent1Auto>
+                    <mat-option *ngFor="let option of solvent1_Options" [value]="option">{{ option }}</mat-option>
+                  </mat-autocomplete>
                 </mat-form-field>
                 
-                    <!-- Solvent 2 (Optional) -->
+                <!-- Solvent 2 -->
                 <mat-form-field appearance="fill" *ngIf="filter.field === 'solvent'">
-                    <mat-label>Solvent 2</mat-label>
-                    <input matInput type="text" [(ngModel)]="filter.solvent_2" name="solvent_2{{i}}">
+                  <mat-label>Solvent 2</mat-label>
+                  <input matInput
+                         type="text"
+                         [(ngModel)]="filter.solvent_2"
+                         name="solvent_2{{i}}"
+                         [matAutocomplete]="solvent2Auto">
+                  <mat-autocomplete #solvent2Auto>
+                    <mat-option *ngFor="let option of solvent2_Options" [value]="option">{{ option }}</mat-option>
+                  </mat-autocomplete>
                 </mat-form-field>
                 
-                    <!-- Solvent 3 (Optional) -->
+                <!-- Solvent 3 -->
                 <mat-form-field appearance="fill" *ngIf="filter.field === 'solvent'">
-                    <mat-label>Solvent 3</mat-label>
-                    <input matInput type="text" [(ngModel)]="filter.solvent_3" name="solvent_3{{i}}">
-                </mat-form-field>  
+                  <mat-label>Solvent 3</mat-label>
+                  <input matInput
+                         type="text"
+                         [(ngModel)]="filter.solvent_3"
+                         name="solvent_3{{i}}"
+                         [matAutocomplete]="solvent3Auto">
+                  <mat-autocomplete #solvent3Auto>
+                    <mat-option *ngFor="let option of solvent3_Options" [value]="option">{{ option }}</mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
               </div>
             </div>
             <button mat-raised-button class="clear-button" type="button" (click)="removeFilter(i)">

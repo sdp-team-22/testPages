@@ -142,6 +142,7 @@ def advancedSearch():
             continue
         if key == 'compound_name' and value:
             query = query.filter(solubility_data.compound_name.ilike(value))
+            print(query)
         elif key == 'xrpdf' and value:
             query = query.filter(solubility_data.xrpdf == value)
         elif key.startswith('solvent_') and value:
@@ -178,6 +179,57 @@ def api_upload():
     # print(data)
     return jsonify(data)
 
+def search_unique_form():
+    try:
+        # Connect and fetch unique form
+        conn = psycopg2.connect(
+            database="postgres",
+            user="sdp-dev",
+            password="sdp123",
+            host="24.62.166.59",
+            port="5432"
+        )
+        cur = conn.cursor()
+
+        # Fetch unique xrpdf, compound names, and solvent options
+        cur.execute("SELECT DISTINCT xrpdf, compound_name, solvent_1, solvent_2, solvent_3 FROM solubility_data")
+        all_options = cur.fetchall()
+
+        # Separate options into individual lists
+        xrpdf_options = set()
+        compound_name_options = set()
+        solvent_1_options = set()
+        solvent_2_options = set()
+        solvent_3_options = set()
+        solvent_combinations_options = set()
+
+        for row in all_options:
+            xrpdf_options.add(row[0])
+            compound_name_options.add(row[1])
+            solvent_1_options.add(row[2])
+            solvent_2_options.add(row[3])
+            solvent_3_options.add(row[4])
+            solvent_combinations_options.add(tuple(value if value != 'nan' else '' for value in row[2:5]))
+
+        cur.close()
+        conn.close()
+        
+        return {
+            "xrpdf_options": list(xrpdf_options),
+            "compound_name_options": list(compound_name_options),
+            "solvent_1_options": list(solvent_1_options),
+            "solvent_2_options": list(solvent_2_options),
+            "solvent_3_options": list(solvent_3_options),
+            "solvent_combinations_options": [list(combination) for combination in solvent_combinations_options]
+        }
+    except Exception as e:
+        print("Error fetching options from the database:", e)
+        return []
+        
+@app.route('/api/form', methods=['GET'])
+def populate_form():
+    options = search_unique_form()
+    return jsonify(options)
 
 USERNAME = "sdp-dev"
 PASSWORD = "sdp123"
