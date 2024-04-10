@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./table.component.scss'],
   templateUrl: 'table.component.html',
 })
-export class TableComponent implements OnInit  {
+export class TableComponent implements OnInit, OnDestroy  {
   tablesData: { 
     projectInfo: { 
       fileName: string,
@@ -66,7 +66,7 @@ export class TableComponent implements OnInit  {
                         return {
                             key: solvFracKey,
                             type: 'text',
-                            label: `Solv Frac ${solvFracKey.substring(5, 6)} (solute-free) wt`,
+                            label: `Solv Frac ${solvFracKey.substring(5, 6)} (solute-free)`,
                             required: true
                         };
                     }
@@ -76,9 +76,7 @@ export class TableComponent implements OnInit  {
         }
           const tableData = {
             projectInfo: projectInfo,
-            //columnsSchema: SolubilityDataColumns,
             columnsSchema: columnsSchema,
-            //displayedColumns: SolubilityDataColumns.map(col => col.key),
             displayedColumns: columnsSchema.map(col => col.key),
             dataSource: new MatTableDataSource<SolubilityData>()
           };
@@ -97,6 +95,7 @@ export class TableComponent implements OnInit  {
     });
   }
 
+  //clean up 
   ngOnDestroy() {
     if (this.subscription) {
       this.subscription.unsubscribe();
@@ -115,14 +114,14 @@ export class TableComponent implements OnInit  {
     // Check if all tables are valid
     if (this.tablesData.every(table => this.validateTable(table))) {
       // Prepare data to send
-
       const dataToSend = this.tablesData.map(table => ({
         projectInfo: table.projectInfo,
         rowData: table.dataSource.data.map((row: any) => {
           const newRow = { ...row };
           for (let key in newRow) {
             if (newRow[key] === '') {
-              newRow[key] = 'nan'; // Map empty string to 'nan'
+              // Map empty string to 'nan'
+              newRow[key] = 'nan'; 
             }
           }
           return newRow;

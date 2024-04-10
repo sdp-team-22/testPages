@@ -168,7 +168,7 @@ export class ViewComponent implements OnInit, OnDestroy {
                     (response) => {
                         this.searchResultFilter = response;
                     
-                        // Push current options arrays into History and reset them
+                        // Push current options arrays into History
                         this.History.push([
                             this.compoundOptions,
                             this.xrpdfOptions,
@@ -176,29 +176,31 @@ export class ViewComponent implements OnInit, OnDestroy {
                             this.solvent2_Options,
                             this.solvent3_Options,
                         ]);
-                        this.compoundOptions = [];
-                        this.xrpdfOptions = [];
-                        this.solvent1_Options = [];
-                        this.solvent2_Options = [];
-                        this.solvent3_Options = [];
                     
-                        // Define a mapping object to associate keys with options arrays
-                        const optionsMap: { [key: string]: any[] } = {
-                            compound_name: this.compoundOptions,
-                            xrpdf: this.xrpdfOptions,
-                            solvent_1: this.solvent1_Options,
-                            solvent_2: this.solvent2_Options,
-                            solvent_3: this.solvent3_Options,
+                        // Define a mapping object to associate keys with set to avoid duplicate
+                        const optionsMap: { [key: string]: Set<any> } = {
+                            compound_name: new Set(),
+                            xrpdf: new Set(),
+                            solvent_1: new Set(),
+                            solvent_2: new Set(),
+                            solvent_3: new Set(),
                         };
                     
-                        // Iterate over searchResultFilter to populate options arrays
+                        // Iterate over searchResultFilter to populate options set
                         this.searchResultFilter.forEach((row: any) => {
                             for (let key in row) {
                                 if (optionsMap.hasOwnProperty(key)) {
-                                    optionsMap[key].push(row[key]);
+                                    optionsMap[key].add(row[key]);
                                 }
                             }
                         });
+
+                        // Reset the value of each options
+                        this.compoundOptions = Array.from(optionsMap['compound_name']);
+                        this.xrpdfOptions = Array.from(optionsMap['xrpdf']);
+                        this.solvent1_Options = Array.from(optionsMap['solvent_1']);
+                        this.solvent2_Options = Array.from(optionsMap['solvent_2']);
+                        this.solvent3_Options = Array.from(optionsMap['solvent_3']);
                     },
                     (error) => {
                         console.error("no work", error);
@@ -287,11 +289,13 @@ export class ViewComponent implements OnInit, OnDestroy {
         this.xrpdfOptionsSubscription = this.http.get<any>('http://127.0.0.1:5000/api/form').subscribe(
             (response) => {
                 if (response) {
-                    this.processOptions(response.xrpdf_options, this.xrpdfOptions);
                     this.processOptions(response.compound_name_options, this.compoundOptions);
+                    this.processOptions(response.xrpdf_options, this.xrpdfOptions);
                     this.processOptions(response.solvent_1_options, this.solvent1_Options);
                     this.processOptions(response.solvent_2_options, this.solvent2_Options);
                     this.processOptions(response.solvent_3_options, this.solvent3_Options);
+
+                    this.History.push([this.compoundOptions, this.xrpdfOptions, this.solvent1_Options, this.solvent2_Options, this.solvent3_Options])
                 } else {
                     console.error('Invalid response format:', response);
                 }
@@ -331,6 +335,15 @@ export class ViewComponent implements OnInit, OnDestroy {
         this.filters = [{field:'', compound_name: '', solventMatch: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''}];
         this.searchQuery2 = '';
         this.searchResults2 = [];
+
+
+        const state = this.History[0];
+        this.compoundOptions = state[0];
+        this.xrpdfOptions = state[1];
+        this.solvent1_Options = state[2];
+        this.solvent2_Options = state[3];
+        this.solvent3_Options = state[4];
+
     }
 
     
