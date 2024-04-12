@@ -17,5 +17,5 @@ services:
       context: ./flask_db_conn_api
       dockerfile: Dockerfile
     ports:
-      - "5000:5000"
+      - "62000:5000"
     restart: unless-stopped
