@@ -189,7 +189,7 @@ export class ViewComponent implements OnInit, OnDestroy {
                         // Iterate over searchResultFilter to populate options set
                         this.searchResultFilter.forEach((row: any) => {
                             for (let key in row) {
-                                if (optionsMap.hasOwnProperty(key)) {
+                                if (optionsMap.hasOwnProperty(key) && row[key] !== "nan" ) {
                                     optionsMap[key].add(row[key]);
                                 }
                             }
@@ -219,8 +219,20 @@ export class ViewComponent implements OnInit, OnDestroy {
         }
     }
     removeFilter(i: number): void {
-        this.filters.splice(i, 1);
-        this.History.splice(i,1);
+        // Only can remove if there is atleast 1 filter. 
+        if (this.filters.length > 1){
+            this.filters.splice(i, 1);
+            this.History.splice(i,1);
+        }else {
+            // Display error message if trying to delete all filters.
+            this._snackBar.open('Need at least one filter', 'Close', {
+                duration: 3000, 
+                horizontalPosition: 'center', 
+                verticalPosition: 'bottom', 
+                panelClass: 'error-snackbar' // Custom CSS class for styling
+            });  
+        }     
+
     }
     advancedSearch(): void {
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
