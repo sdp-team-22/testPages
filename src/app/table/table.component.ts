@@ -51,29 +51,30 @@ export class TableComponent implements OnInit, OnDestroy  {
 
           let columnsSchema = SolubilityDataColumns.slice();
           const keyMappings: { [key: string]: string } = {
-            'SolvFrac1_wtfrac': 'SolvFrac1_volfrac',
-            'SolvFrac2_wtfrac': 'SolvFrac2_volfrac',
-            'SolvFrac3_wtfrac': 'SolvFrac3_volfrac'
-        };
-        
-        // Iterate over the keys in the response data
-        for (const solvFracKey in keyMappings) {
-            if (response[key]['Row Data'][0].hasOwnProperty(solvFracKey) &&
-                response[key]['Row Data'][0][solvFracKey] !== null &&
-                response[key]['Row Data'][0][solvFracKey] !== undefined) {
-                columnsSchema = columnsSchema.map(col => {
-                    if (col.key === keyMappings[solvFracKey]) {
-                        return {
-                            key: solvFracKey,
-                            type: 'text',
-                            label: `Solv Frac ${solvFracKey.substring(5, 6)} (solute-free)`,
-                            required: true
-                        };
-                    }
-                    return col;
-                });
-            }
-        }
+              'SolvFrac1_wtfrac': 'SolvFrac1_volfrac',
+              'SolvFrac2_wtfrac': 'SolvFrac2_volfrac',
+              'SolvFrac3_wtfrac': 'SolvFrac3_volfrac',
+              'wt %': 'wt%',
+          };
+          
+          // Iterate over the keys in the response data
+          for (const solvFracKey in keyMappings) {
+              if (response[key]['Row Data'][0].hasOwnProperty(solvFracKey) &&
+                  response[key]['Row Data'][0][solvFracKey] !== null &&
+                  response[key]['Row Data'][0][solvFracKey] !== undefined) {
+                  columnsSchema = columnsSchema.map(col => {
+                      const newKey = keyMappings[solvFracKey];
+                      if (col.key === newKey) {
+                          return {
+                              ...col,
+                              key: solvFracKey,
+                          };
+                      }
+                      return col;
+                  });
+              }
+          }
+          
           const tableData = {
             projectInfo: projectInfo,
             columnsSchema: columnsSchema,
