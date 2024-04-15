@@ -37,7 +37,7 @@ class Solubility_Data(Base):
     wtfrac3= Column(Float)
     
     temp= Column(Float)
-    xrpdf= Column(String)
+    xrpd= Column(String)
     
     solubility_mg_g_solvn= Column(Float)
     solubility_mg_g_solv= Column(Float)

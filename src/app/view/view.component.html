@@ -1,5 +1,5 @@
 <!-- Ask Sponsors
-advanced search solid form is same as xrpdf? 
+advanced search solid form is same as xrpd? 
 if yes remove additional column in database
 will the sub fields be form 3, solvate, hydrate? (will need to edit app.py for solvate query)
 will temp only be in C? (I have ℃ hardcoded in th temp column/will need to change)
@@ -117,13 +117,13 @@ add extra field in solvent, exact and contains. use current logic for contains
         <th mat-header-cell *matHeaderCellDef> Temp &#8451; </th>
         <td mat-cell *matCellDef="let result"> {{ result.temp }} </td>
       </ng-container>
-      <ng-container matColumnDef="xrpdf">
+      <ng-container matColumnDef="xrpd">
         <th mat-header-cell *matHeaderCellDef> Solid Form </th>
-        <td mat-cell *matCellDef="let result"> {{ result.xrpdf }} </td>
+        <td mat-cell *matCellDef="let result"> {{ result.xrpd }} </td>
       </ng-container>
       <!-- Define table columns -->
-      <tr mat-header-row *matHeaderRowDef="['select','compound_name', 'solubility', 'fraction', 'temp', 'xrpdf']"></tr>
-      <tr mat-row *matRowDef="let row; columns: ['select', 'compound_name', 'solubility', 'fraction', 'temp', 'xrpdf'];"></tr>
+      <tr mat-header-row *matHeaderRowDef="['select','compound_name', 'solubility', 'fraction', 'temp', 'xrpd']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['select', 'compound_name', 'solubility', 'fraction', 'temp', 'xrpd'];"></tr>
     </table>
     <button mat-raised-button class="graph-button" (click)="showGraph()">Graph It</button>
     <div class="graph-container">
@@ -139,7 +139,7 @@ add extra field in solvent, exact and contains. use current logic for contains
             <mat-select [(ngModel)]="filter.field" name="field"
                         [ngModelOptions]="{standalone: true}" >
                 <mat-option value="compound_name">Compound Name</mat-option>
-                <mat-option value="xrpdf">Solid Form</mat-option>
+                <mat-option value="xrpd">Solid Form</mat-option>
                 <mat-option value="solvent">Solvent</mat-option>
             </mat-select>
         </mat-form-field>
@@ -161,10 +161,10 @@ add extra field in solvent, exact and contains. use current logic for contains
                 </mat-autocomplete>
               </mat-form-field>
             
-                <mat-form-field appearance="fill" *ngIf="filter.field === 'xrpdf'">
+                <mat-form-field appearance="fill" *ngIf="filter.field === 'xrpd'">
                     <mat-label>Solid Form</mat-label>
-                    <mat-select placeholder="Select Solid Form" [(ngModel)]="filter.xrpdf" name="xrpdf{{i}}">
-                      <mat-option *ngFor="let option of xrpdfOptions" [value]="option">{{ option }}</mat-option>
+                    <mat-select placeholder="Select Solid Form" [(ngModel)]="filter.xrpd" name="xrpd{{i}}">
+                      <mat-option *ngFor="let option of xrpdOptions" [value]="option">{{ option }}</mat-option>
                     </mat-select>
                 </mat-form-field>
 
@@ -362,13 +362,13 @@ add extra field in solvent, exact and contains. use current logic for contains
             <th mat-header-cell *matHeaderCellDef> Temp &#8451; </th>
             <td mat-cell *matCellDef="let result"> {{ result.temp }} </td>
           </ng-container>
-          <ng-container matColumnDef="xrpdf">
+          <ng-container matColumnDef="xrpd">
             <th mat-header-cell *matHeaderCellDef> Solid Form </th>
-            <td mat-cell *matCellDef="let result"> {{ result.xrpdf }} </td>
+            <td mat-cell *matCellDef="let result"> {{ result.xrpd }} </td>
           </ng-container>
           <!-- Define table columns -->
-          <tr mat-header-row *matHeaderRowDef="[ 'select','compound_name', 'solubility', 'fraction', 'temp', 'xrpdf']"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['select', 'compound_name', 'solubility', 'fraction', 'temp', 'xrpdf'];"></tr>
+          <tr mat-header-row *matHeaderRowDef="[ 'select','compound_name', 'solubility', 'fraction', 'temp', 'xrpd']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['select', 'compound_name', 'solubility', 'fraction', 'temp', 'xrpd'];"></tr>
         </table>
         <button mat-raised-button class="graph-button" (click)="showGraph()">Graph It</button>
         <div class="graph-container">

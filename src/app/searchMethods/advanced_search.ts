@@ -5,7 +5,7 @@ export interface AdvancedSearchQuery {
     solvent_1: string;
     solvent_2: string;
     solvent_3: string;
-    xrpdf: string;
+    xrpd: string;
 }
 
 export function populateSearchQuery(filters: any[]) : string
@@ -17,7 +17,7 @@ export function populateSearchQuery(filters: any[]) : string
         solvent_1: '',
         solvent_2: '',
         solvent_3: '',
-        xrpdf: '',
+        xrpd: '',
     };
 
     for (const filter of filters) {
@@ -28,8 +28,8 @@ export function populateSearchQuery(filters: any[]) : string
             searchQuery.solvent_1 = filter.solvent_1;
             searchQuery.solvent_2 = filter.solvent_2;
             searchQuery.solvent_3 = filter.solvent_3;
-        } else if (filter.field === 'xrpdf') {
-            searchQuery.xrpdf = filter.xrpdf;
+        } else if (filter.field === 'xrpd') {
+            searchQuery.xrpd = filter.xrpd;
         }
     }
     return encodeURIComponent(JSON.stringify(searchQuery));

@@ -85,7 +85,7 @@ class solubility_data(db.Model):
     solvent_1 = db.Column(db.String(100))
     solvent_2 = db.Column(db.String(100))
     solvent_3 = db.Column(db.String(100))
-    xrpdf = db.Column(db.String(100))
+    xrpd = db.Column(db.String(100))
     temp = db.Column(db.Float)
     volfrac1 = db.Column(db.Float)
     volfrac2 = db.Column(db.Float)
@@ -105,7 +105,7 @@ class solubility_data(db.Model):
             'solvent_1': self.solvent_1,
             'solvent_2': self.solvent_2,
             'solvent_3': self.solvent_3,
-            'xrpdf': self.xrpdf,
+            'xrpd': self.xrpd,
             'temp': self.temp,
             'volfrac1': self.volfrac1,
             'volfrac2': self.volfrac2,
@@ -143,8 +143,8 @@ def advancedSearch():
         if key == 'compound_name' and value:
             query = query.filter(solubility_data.compound_name.ilike(value))
             print(query)
-        elif key == 'xrpdf' and value:
-            query = query.filter(solubility_data.xrpdf == value)
+        elif key == 'xrpd' and value:
+            query = query.filter(solubility_data.xrpd == value)
         elif key.startswith('solvent_') and value:
             solvent_number = int(key.split('_')[1])
             if search_criteria.get('solventMatch') == 'exact':
@@ -191,12 +191,12 @@ def search_unique_form():
         )
         cur = conn.cursor()
 
-        # Fetch unique xrpdf, compound names, and solvent options
-        cur.execute("SELECT DISTINCT xrpdf, compound_name, solvent_1, solvent_2, solvent_3 FROM solubility_data")
+        # Fetch unique xrpd, compound names, and solvent options
+        cur.execute("SELECT DISTINCT xrpd, compound_name, solvent_1, solvent_2, solvent_3 FROM solubility_data")
         all_options = cur.fetchall()
 
         # Separate options into individual lists
-        xrpdf_options = set()
+        xrpd_options = set()
         compound_name_options = set()
         solvent_1_options = set()
         solvent_2_options = set()
@@ -204,7 +204,7 @@ def search_unique_form():
         solvent_combinations_options = set()
 
         for row in all_options:
-            xrpdf_options.add(row[0])
+            xrpd_options.add(row[0])
             compound_name_options.add(row[1])
             solvent_1_options.add(row[2])
             solvent_2_options.add(row[3])
@@ -215,7 +215,7 @@ def search_unique_form():
         conn.close()
         
         return {
-            "xrpdf_options": list(xrpdf_options),
+            "xrpd_options": list(xrpd_options),
             "compound_name_options": list(compound_name_options),
             "solvent_1_options": list(solvent_1_options),
             "solvent_2_options": list(solvent_2_options),

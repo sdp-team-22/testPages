@@ -117,7 +117,7 @@ def file_excel_to_json1(file):
                 vol_frac_2['name']: vol_frac_2['data'],
                 vol_frac_3['name']: vol_frac_3['data'],
                 'Temp': temp_t,
-                'XRPDF': xrpd,
+                'XRPD': xrpd,
                 solubility_1['name']: solubility_1['data'],
                 solubility_2['name']: solubility_2['data'],
                 solubility_3['name']: solubility_3['data'],
@@ -226,7 +226,7 @@ def create_new_solubility_data_entry(session, data):
                 wtfrac3= None,
                 
                 temp= row_data['Temp'],
-                xrpdf= row_data['XRPDF'],
+                xrpd= row_data['XRPD'],
                 
                 solubility_mg_g_solvn= row_data['mg/g soln.'],
                 solubility_mg_g_solv= row_data['mg/g solv.'],
@@ -264,7 +264,7 @@ def create_new_solubility_data_entry(session, data):
                 wtfrac3= row_data['SolvFrac3_wtfrac'],
                 
                 temp= row_data['Temp'],
-                xrpdf= row_data['XRPDF'],
+                xrpd= row_data['XRPD'],
                 
                 solubility_mg_g_solvn= row_data['mg/g soln.'],
                 solubility_mg_g_solv= row_data['mg/g solv.'],

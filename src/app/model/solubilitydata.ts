@@ -7,7 +7,7 @@ export interface SolubilityData {
     'SolvFrac2_volfrac': number;
     'SolvFrac3_volfrac': number;
     'Temp': number;
-    'XRPDF': string;
+    'XRPD': string;
     'mg/mL solv.': number;
     'mg/g solv.': number;
     'mg/g soln.': number;

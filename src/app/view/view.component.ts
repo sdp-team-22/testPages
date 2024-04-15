@@ -61,7 +61,7 @@ export class ViewComponent implements OnInit, OnDestroy {
     solvent_1: string = '';
     solvent_2: string = '';
     solvent_3: string = '';
-    xrpdf: string = '';
+    xrpd: string = '';
     solubility_mg_g_solv: number = 0;
     solubility_mg_g_solvn: number = 0;
     solubility_mg_mL_solv: number = 0;
@@ -69,11 +69,11 @@ export class ViewComponent implements OnInit, OnDestroy {
 
     CurrentQuery: any[] = [];
 
-    filters: AdvancedSearchQuery[] = [{field: '', compound_name: '', solventMatch: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''}];
+    filters: AdvancedSearchQuery[] = [{field: '', compound_name: '', solventMatch: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpd: ''}];
     isNaN: Function = Number.isNaN;
     barChart: any;
 
-    xrpdfOptions: string[] = [];
+    xrpdOptions: string[] = [];
     compoundOptions: string[] = [];
     solvent1_Options: string[] = [];
     solvent2_Options: string[] = [];
@@ -82,7 +82,7 @@ export class ViewComponent implements OnInit, OnDestroy {
     History: any[] = [];
 
 
-    private xrpdfOptionsSubscription: Subscription | undefined;
+    private xrpdOptionsSubscription: Subscription | undefined;
     myControl = new FormControl();
 
     filteredOptions: Observable<string[]> | undefined;
@@ -106,8 +106,8 @@ export class ViewComponent implements OnInit, OnDestroy {
       }
 
     ngOnDestroy() {
-        if (this.xrpdfOptionsSubscription) {
-          this.xrpdfOptionsSubscription.unsubscribe();
+        if (this.xrpdOptionsSubscription) {
+          this.xrpdOptionsSubscription.unsubscribe();
         }
       }
 
@@ -156,7 +156,7 @@ export class ViewComponent implements OnInit, OnDestroy {
     addFilter(): void {
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     
-        const filtersEmpty = this.filters.every(filter => !filter.compound_name && !filter.solvent_1 && !filter.solvent_2 && !filter.solvent_3 && !filter.xrpdf);
+        const filtersEmpty = this.filters.every(filter => !filter.compound_name && !filter.solvent_1 && !filter.solvent_2 && !filter.solvent_3 && !filter.xrpd);
     
         // Check if any of the fields in the current filter are not empty
         if (!filtersEmpty) {
@@ -171,7 +171,7 @@ export class ViewComponent implements OnInit, OnDestroy {
                         // Push current options arrays into History
                         this.History.push([
                             this.compoundOptions,
-                            this.xrpdfOptions,
+                            this.xrpdOptions,
                             this.solvent1_Options,
                             this.solvent2_Options,
                             this.solvent3_Options,
@@ -180,7 +180,7 @@ export class ViewComponent implements OnInit, OnDestroy {
                         // Define a mapping object to associate keys with set to avoid duplicate
                         const optionsMap: { [key: string]: Set<any> } = {
                             compound_name: new Set(),
-                            xrpdf: new Set(),
+                            xrpd: new Set(),
                             solvent_1: new Set(),
                             solvent_2: new Set(),
                             solvent_3: new Set(),
@@ -197,7 +197,7 @@ export class ViewComponent implements OnInit, OnDestroy {
 
                         // Reset the value of each options
                         this.compoundOptions = Array.from(optionsMap['compound_name']);
-                        this.xrpdfOptions = Array.from(optionsMap['xrpdf']);
+                        this.xrpdOptions = Array.from(optionsMap['xrpd']);
                         this.solvent1_Options = Array.from(optionsMap['solvent_1']);
                         this.solvent2_Options = Array.from(optionsMap['solvent_2']);
                         this.solvent3_Options = Array.from(optionsMap['solvent_3']);
@@ -206,7 +206,7 @@ export class ViewComponent implements OnInit, OnDestroy {
                         console.error("no work", error);
                     });
     
-                this.filters.push({field:'', compound_name: '', solventMatch: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''});
+                this.filters.push({field:'', compound_name: '', solventMatch: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpd: ''});
             } else {
                 // Display error message if more than 3 filters are already added
                 this._snackBar.open('Cannot add more than 3 filters', 'Close', {
@@ -237,7 +237,7 @@ export class ViewComponent implements OnInit, OnDestroy {
     advancedSearch(): void {
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
         // Check if any filter fields are filled
-        const filtersEmpty = this.filters.every(filter => !filter.compound_name && !filter.solvent_1 && !filter.solvent_2 && !filter.solvent_3 && !filter.xrpdf);
+        const filtersEmpty = this.filters.every(filter => !filter.compound_name && !filter.solvent_1 && !filter.solvent_2 && !filter.solvent_3 && !filter.xrpd);
 
     // Show error message if filters are empty
         if (filtersEmpty) {
@@ -257,7 +257,7 @@ export class ViewComponent implements OnInit, OnDestroy {
             solvent_1: '',  
             solvent_2: '',  
             solvent_3: '',  
-            xrpdf: '',  
+            xrpd: '',  
         };
     
         // Loop through filters to populate searchQuery
@@ -269,8 +269,8 @@ export class ViewComponent implements OnInit, OnDestroy {
                 searchQuery2.solvent_1 = filter.solvent_1;
                 searchQuery2.solvent_2 = filter.solvent_2;
                 searchQuery2.solvent_3 = filter.solvent_3;
-            } else if (filter.field === 'xrpdf') {
-                searchQuery2.xrpdf = filter.xrpdf;
+            } else if (filter.field === 'xrpd') {
+                searchQuery2.xrpd = filter.xrpd;
             }
         }
         const searchQueryString = encodeURIComponent(JSON.stringify(searchQuery2));
@@ -299,16 +299,16 @@ export class ViewComponent implements OnInit, OnDestroy {
 
     fetchOptions() {
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-        this.xrpdfOptionsSubscription = this.http.get<any>('http://127.0.0.1:5000/api/form', { headers }).subscribe(
+        this.xrpdOptionsSubscription = this.http.get<any>('http://127.0.0.1:5000/api/form', { headers }).subscribe(
                     (response) => {
                 if (response) {
                     this.processOptions(response.compound_name_options, this.compoundOptions);
-                    this.processOptions(response.xrpdf_options, this.xrpdfOptions);
+                    this.processOptions(response.xrpd_options, this.xrpdOptions);
                     this.processOptions(response.solvent_1_options, this.solvent1_Options);
                     this.processOptions(response.solvent_2_options, this.solvent2_Options);
                     this.processOptions(response.solvent_3_options, this.solvent3_Options);
 
-                    this.History.push([this.compoundOptions, this.xrpdfOptions, this.solvent1_Options, this.solvent2_Options, this.solvent3_Options])
+                    this.History.push([this.compoundOptions, this.xrpdOptions, this.solvent1_Options, this.solvent2_Options, this.solvent3_Options])
                 } else {
                     console.error('Invalid response format:', response);
                 }
@@ -344,15 +344,15 @@ export class ViewComponent implements OnInit, OnDestroy {
         this.solvent_1 = '';
         this.solvent_2 = '';
         this.solvent_3 = '';
-        this.xrpdf = '';
-        this.filters = [{field:'', compound_name: '', solventMatch: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpdf: ''}];
+        this.xrpd = '';
+        this.filters = [{field:'', compound_name: '', solventMatch: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpd: ''}];
         this.searchQuery2 = '';
         this.searchResults2 = [];
 
 
         const state = this.History[0];
         this.compoundOptions = state[0];
-        this.xrpdfOptions = state[1];
+        this.xrpdOptions = state[1];
         this.solvent1_Options = state[2];
         this.solvent2_Options = state[3];
         this.solvent3_Options = state[4];
@@ -368,7 +368,7 @@ export class ViewComponent implements OnInit, OnDestroy {
             solvent_2: item.solvent_2,
             solvent_3: item.solvent_3,
             temp: item.temp,
-            xrpdf: item.xrpdf,
+            xrpd: item.xrpd,
             solubility: item[this.selectedUnit],
             fractions: [] as {unit: string, value: number}[],
             solubility_units: [] as {unit: string, value: number}[]
@@ -404,7 +404,7 @@ export class ViewComponent implements OnInit, OnDestroy {
                       data.solvent_2 === selectedData.solvent_2 &&
                       data.solvent_3 === selectedData.solvent_3 &&
                       data.temp === selectedData.temp &&
-                      data.xrpdf === selectedData.xrpdf &&
+                      data.xrpd === selectedData.xrpd &&
                       data.solubility === selectedData.solubility &&
                       this.arraysEqual(data.fractions, selectedData.fractions) &&
                       this.arraysEqual(data.solubility_units, selectedData.solubility_units))
@@ -435,7 +435,7 @@ export class ViewComponent implements OnInit, OnDestroy {
             solvent_2: item.solvent_2,
             solvent_3: item.solvent_3,
             temp: item.temp,
-            xrpdf: item.xrpdf,
+            xrpd: item.xrpd,
             ...item.fractions.reduce((acc: { [x: string]: any; }, fraction: { unit: string | number; value: any; }) => {
                 acc[fraction.unit] = fraction.value;
                 return acc; 
@@ -490,7 +490,7 @@ export class ViewComponent implements OnInit, OnDestroy {
                     solvent_2: item.solvent_2,
                     solvent_3: item.solvent_3,  
                     temp: item.temp,
-                    xrpdf: item.xrpdf,                     
+                    xrpd: item.xrpd,                     
                     solubility: item[this.selectedUnit]
             }));
     
@@ -512,7 +512,7 @@ export class ViewComponent implements OnInit, OnDestroy {
                     solvent_2: item.solvent_2,
                     solvent_3: item.solvent_3,  
                     temp: item.temp,
-                    xrpdf: item.xrpdf,                     
+                    xrpd: item.xrpd,                     
                     solubility: item[this.selectedUnit]
             }));
         
@@ -525,7 +525,7 @@ export class ViewComponent implements OnInit, OnDestroy {
     
         const labels = this.selectedItems.map(item => `${item.solvent_1} ${item.solvent_2} ${item.solvent_3} ${item.temp}°C`);
         const data = this.selectedItems.map(item => item.solubility);
-        const datasetsLabels = `${this.selectedItems[0].compound_name} ${this.selectedItems[0].xrpdf}`;
+        const datasetsLabels = `${this.selectedItems[0].compound_name} ${this.selectedItems[0].xrpd}`;
         // const yAxisTitle = this.selectedUnit; // try to print the selected unit on y axis label
 
         const canvas = document.getElementById('barCanvas') as HTMLCanvasElement;
