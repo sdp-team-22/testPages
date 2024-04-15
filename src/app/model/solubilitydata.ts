@@ -61,7 +61,7 @@ export const SolubilityDataColumns = [
         label: 'Temp'
     },
     {
-        key: 'XRPDF',
+        key: 'XRPD',
         type: 'text',
         label: 'XRPD',
         required: true
