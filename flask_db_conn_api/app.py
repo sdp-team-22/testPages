@@ -166,7 +166,7 @@ def advancedSearch():
     return jsonify(results)
 
 @app.route('/api/upload', methods=['GET', 'POST'])
-def api_upload():
+def api_upload_confirmation():
     if 'files' not in request.files:
         return jsonify({'error': 'No files part'})
 
@@ -218,35 +218,50 @@ def populate_form():
     options = search_unique_form()
     return jsonify(options)
 
-USERNAME = "sdp-dev"
-PASSWORD = "sdp123"
-HOSTNAME = "24.62.166.59"
-DBNAME = "postgres"
-@app.route('/api/db_upload', methods=['POST'])
-def database_upload():
-    #Upload to database
-    try:
-        data = request.get_json()[0]
-        engine = get_engine(
-            username= USERNAME,
-            password= PASSWORD,
-            hostname= HOSTNAME,
-            dbname = DBNAME
-        )
-        session = get_db_session(engine)
-        
-        #print(json.dumps(data, indent=1))
-
-        create_new_solubility_data_entry(
-        session= session,
-        data= data
-        )
-        session.close()
-            
-    except Exception as e:
-        return jsonify("failed")
+# USERNAME = "sdp-dev"
+# PASSWORD = "sdp123"
+# HOSTNAME = "24.62.166.59"
+# DBNAME = "postgres"
+# @app.route('/api/db_upload', methods=['POST'])
+# def database_upload():
     
-    return jsonify("success")
+#     #Upload to database
+#     try:
+#         data = request.get_json()[0]
+#         print("DATA!!!!\n", data, "\n")
+#         engine = get_engine(
+#             username= USERNAME,
+#             password= PASSWORD,
+#             hostname= HOSTNAME,
+#             dbname = DBNAME
+#         )
+#         session = get_db_session(engine)
+        
+#         #print(json.dumps(data, indent=1))
+
+#         create_new_solubility_data_entry(
+#         session= session,
+#         data= data
+#         )
+#         session.close()
+            
+#     except Exception as e:
+#         return jsonify("failed")
+    
+#     return jsonify("success")
+
+@app.route('/api/db_upload', methods=['POST'])
+def databaseUpload():
+    try:
+        from uploadHelper import uploadMultiple
+        data = request.get_json() # list of jsons
+        for file in data:
+            # print('\n', file, '\n')
+            uploadMultiple(conn, file)
+        return jsonify('upload successful')
+    except Exception as e:
+        print(e)
+        return jsonify('it did not work')
 
 if __name__ == '__main__':
     app.run(
