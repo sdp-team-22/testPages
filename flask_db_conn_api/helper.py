@@ -128,6 +128,7 @@ def file_excel_to_json1(file):
                 'Comments': comments,
                 'Status' : data_input_status
             }
+            print(json.dumps(row_data, indent=2))
             SOLUBILITY_DATA.append(row_data)
     
     DATASET_JSON['Row Data'] = SOLUBILITY_DATA
@@ -156,6 +157,7 @@ def convertToFloat(input):
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import extract
+from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from uuid import uuid4
 from random import randint
@@ -184,11 +186,21 @@ def load_schema(engine):
 
     This function creates tables if they do not exist already.
     """
-    UserBase.metadata.create_all(engine)
-    Filestore.metadata.create_all(engine)
-    LoginActivity.metadata.create_all(engine)
+    #UserBase.metadata.create_all(engine)
+    #Filestore.metadata.create_all(engine)
+    #LoginActivity.metadata.create_all(engine)
     
     SolubilityBase.metadata.create_all(engine)
+
+if False == True:
+    USERNAME = "sdp-dev"
+    PASSWORD = "sdp123"
+    HOSTNAME = "24.62.166.59"
+    DBNAME = "postgres"
+    eng = get_engine(USERNAME, PASSWORD, HOSTNAME, DBNAME)
+    load_schema(eng)
+
+
 
 def create_new_solubility_data_entry(session, data):
     """
@@ -201,81 +213,85 @@ def create_new_solubility_data_entry(session, data):
     Return:
     None
     """
-    for row_data in data['rowData']:
-        if 'SolvFrac1_volfrac' in row_data.keys():
-            solubility_entry = Solubility_Data(
-                file_name= data['projectInfo']['fileName'],
-                project_name= data['projectInfo']['projectName'],
-                scientist_name= data['projectInfo']['scientistName'],
-                compound_name= data['projectInfo']['compoundName'],
-                molecular_weight= data['projectInfo']['molecularWeight'],
-                
-                solid_form= data['projectInfo']['solidForm'],
-                tmelt= data['projectInfo']['Tmelt'],
-                hfus= data['projectInfo']['Hfus'],
-                
-                solvent_1= row_data['Solvent 1'],
-                solvent_2= row_data['Solvent 2'],
-                solvent_3= row_data['Solvent 3'],
-                
-                volfrac1= row_data['SolvFrac1_volfrac'],
-                volfrac2= row_data['SolvFrac2_volfrac'],
-                volfrac3= row_data['SolvFrac3_volfrac'],
-                wtfrac1= None,
-                wtfrac2= None,
-                wtfrac3= None,
-                
-                temp= row_data['Temp'],
-                xrpd= row_data['XRPD'],
-                
-                solubility_mg_g_solvn= row_data['mg/g soln.'],
-                solubility_mg_g_solv= row_data['mg/g solv.'],
-                solubility_wt= row_data['wt %'],
-                solubility_mg_mL_solv= row_data['mg/mL solv.'],
-                
-                solute_lot_num= row_data['Solute Lot Number'],
-                eln_sample_num_measure= row_data['ELN/Sample Number of Measurements'],
-                measure_method= row_data['Measurement Method'],
-                comments= row_data['Comments'],
-            )
-            session.add(solubility_entry)
+    try:
+        for row_data in data['rowData']:
+            if 'SolvFrac1_volfrac' in row_data.keys():
+                solubility_entry = Solubility_Data(
+                    file_name= data['projectInfo']['fileName'],
+                    project_name= data['projectInfo']['projectName'],
+                    scientist_name= data['projectInfo']['scientistName'],
+                    compound_name= data['projectInfo']['compoundName'],
+                    molecular_weight= data['projectInfo']['molecularWeight'],
+                    
+                    solid_form= data['projectInfo']['solidForm'],
+                    tmelt= data['projectInfo']['Tmelt'],
+                    hfus= data['projectInfo']['Hfus'],
+                    
+                    solvent_1= row_data['Solvent 1'],
+                    solvent_2= row_data['Solvent 2'],
+                    solvent_3= row_data['Solvent 3'],
+                    
+                    volfrac1= row_data['SolvFrac1_volfrac'],
+                    volfrac2= row_data['SolvFrac2_volfrac'],
+                    volfrac3= row_data['SolvFrac3_volfrac'],
+                    wtfrac1= None,
+                    wtfrac2= None,
+                    wtfrac3= None,
+                    
+                    temp= row_data['Temp'],
+                    xrpd= row_data['XRPD'],
+                    
+                    solubility_mg_g_solvn= row_data['mg/g soln.'],
+                    solubility_mg_g_solv= row_data['mg/g solv.'],
+                    solubility_wt= row_data['wt %'],
+                    solubility_mg_mL_solv= row_data['mg/mL solv.'],
+                    
+                    solute_lot_num= row_data['Solute Lot Number'],
+                    eln_sample_num_measure= row_data['ELN/Sample Number of Measurements'],
+                    measure_method= row_data['Measurement Method'],
+                    comments= row_data['Comments'],
+                )
+                session.add(solubility_entry)
 
-        elif 'SolvFrac1_wtfrac' in row_data.keys():
-            solubility_entry = Solubility_Data(
-                file_name= data['projectInfo']['fileName'],
-                project_name= data['projectInfo']['projectName'],
-                scientist_name= data['projectInfo']['scientistName'],
-                compound_name= data['projectInfo']['compoundName'],
-                molecular_weight= data['projectInfo']['molecularWeight'],
-                
-                solid_form= data['projectInfo']['solidForm'],
-                tmelt= data['projectInfo']['Tmelt'],
-                hfus= data['projectInfo']['Hfus'],
-                
-                solvent_1= row_data['Solvent 1'],
-                solvent_2= row_data['Solvent 2'],
-                solvent_3= row_data['Solvent 3'],
-                
-                volfrac1= None,
-                volfrac2= None,
-                volfrac3= None,
-                wtfrac1= row_data['SolvFrac1_wtfrac'],
-                wtfrac2= row_data['SolvFrac2_wtfrac'],
-                wtfrac3= row_data['SolvFrac3_wtfrac'],
-                
-                temp= row_data['Temp'],
-                xrpd= row_data['XRPD'],
-                
-                solubility_mg_g_solvn= row_data['mg/g soln.'],
-                solubility_mg_g_solv= row_data['mg/g solv.'],
-                solubility_wt= row_data['wt %'],
-                solubility_mg_mL_solv= row_data['mg/mL solv.'],
-                
-                solute_lot_num= row_data['Solute Lot Number'],
-                eln_sample_num_measure= row_data['ELN/Sample Number of Measurements'],
-                measure_method= row_data['Measurement Method'],
-                comments= row_data['Comments'],
-            )
-            session.add(solubility_entry)
-    session.commit()
+            elif 'SolvFrac1_wtfrac' in row_data.keys():
+                solubility_entry = Solubility_Data(
+                    file_name= data['projectInfo']['fileName'],
+                    project_name= data['projectInfo']['projectName'],
+                    scientist_name= data['projectInfo']['scientistName'],
+                    compound_name= data['projectInfo']['compoundName'],
+                    molecular_weight= data['projectInfo']['molecularWeight'],
+                    
+                    solid_form= data['projectInfo']['solidForm'],
+                    tmelt= data['projectInfo']['Tmelt'],
+                    hfus= data['projectInfo']['Hfus'],
+                    
+                    solvent_1= row_data['Solvent 1'],
+                    solvent_2= row_data['Solvent 2'],
+                    solvent_3= row_data['Solvent 3'],
+                    
+                    volfrac1= None,
+                    volfrac2= None,
+                    volfrac3= None,
+                    wtfrac1= row_data['SolvFrac1_wtfrac'],
+                    wtfrac2= row_data['SolvFrac2_wtfrac'],
+                    wtfrac3= row_data['SolvFrac3_wtfrac'],
+                    
+                    temp= row_data['Temp'],
+                    xrpd= row_data['XRPD'],
+                    
+                    solubility_mg_g_solvn= row_data['mg/g soln.'],
+                    solubility_mg_g_solv= row_data['mg/g solv.'],
+                    solubility_wt= row_data['wt %'],
+                    solubility_mg_mL_solv= row_data['mg/mL solv.'],
+                    
+                    solute_lot_num= row_data['Solute Lot Number'],
+                    eln_sample_num_measure= row_data['ELN/Sample Number of Measurements'],
+                    measure_method= row_data['Measurement Method'],
+                    comments= row_data['Comments'],
+                )
+                session.add(solubility_entry)
+        session.commit()
+    except SQLAlchemyError as e:
+        print("ERROR")
+        print(e)
     return None

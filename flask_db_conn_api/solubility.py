@@ -39,10 +39,10 @@ class Solubility_Data(Base):
     temp= Column(Float)
     xrpd= Column(String)
     
-    solubility_mg_g_solvn= Column(Float)
-    solubility_mg_g_solv= Column(Float)
-    solubility_wt= Column(Float)
-    solubility_mg_mL_solv= Column(Float)
+    solubility_mg_g_solvn= Column(String)
+    solubility_mg_g_solv= Column(String)
+    solubility_wt= Column(String)
+    solubility_mg_mL_solv= Column(String)
     
     solute_lot_num= Column(Float)
     eln_sample_num_measure= Column(Float)
