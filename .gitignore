@@ -50,3 +50,6 @@ pids
 
 # pycache
 /flask_db_conn_api/__pycache__
+
+# babel-webpack
+/.angular/cache/16.2.12/babel-webpack
