@@ -16,15 +16,16 @@ CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://sdp-dev:sdp123@24.62.166.59:5432/postgres'
 db = SQLAlchemy(app)
 
-def database_stats():
-    conn = psycopg2.connect(
+conn = conn = psycopg2.connect(
         database="postgres",
         user="sdp-dev",
         password="sdp123",
         host="24.62.166.59",
         port="5432"
     )
-    cur = conn.cursor()
+cur = conn.cursor()
+
+def database_stats():
     # make multiple queries as needed
     cur.execute("""
         SELECT COUNT(*) solubility_mg_g_solvn 
@@ -42,32 +43,31 @@ def database_stats():
     upload_history = cur.fetchall()
 
     # Fetch daily visits
-    cur.execute("""
-        SELECT DATE_TRUNC('day', f.time_uploaded) AS day, u.id AS user_id, u.username, COUNT(*) AS daily_visits
-        FROM filestore f
-        JOIN users u ON f.owner_id = u.id
-        WHERE f.time_uploaded > CURRENT_DATE - INTERVAL '1 day'
-        GROUP BY day, u.id, u.username
-        ORDER BY day
-    """)
-    daily_visits = cur.fetchall()
+    try:
+        from visitCount import getToday
+        daily_visits = getToday(conn)
+    except:
+        print("app.py: daily visits failed")
 
     # Fetch monthly visits
-    cur.execute("""
-        SELECT DATE_TRUNC('day', f.time_uploaded) AS day, u.id AS user_id, u.username, COUNT(*) AS daily_visits
-        FROM filestore f
-        JOIN users u ON f.owner_id = u.id
-        WHERE DATE_TRUNC('month', f.time_uploaded) = DATE_TRUNC('month', CURRENT_DATE)
-        GROUP BY day, u.id, u.username
-        ORDER BY day;
-    """)
-    monthly_visits = cur.fetchall()
-
-    cur.close()
-    conn.close()
-    
+    try:
+        from visitCount import getMonth
+        monthly_visits = getMonth(conn)
+    except:
+        print("app.py: monthly visits failed")
 
     return data_points, upload_history, daily_visits, monthly_visits
+
+@app.route('/api/updateVisits', methods=['POST'])
+def updateVisits():
+    try:
+        from visitCount import incrementToday
+        # Call the incrementDaily() method
+        incrementToday(conn)
+        return jsonify('Visit count incremented successfully')
+    except Exception as e:
+        return jsonify(f'Error incrementing visit count: {e}')
+
 @app.route('/api/data', methods=['GET'])
 def get_data():
     data_points, upload_history, daily_visits, monthly_visits = database_stats()
@@ -181,16 +181,6 @@ def api_upload():
 
 def search_unique_form():
     try:
-        # Connect and fetch unique form
-        conn = psycopg2.connect(
-            database="postgres",
-            user="sdp-dev",
-            password="sdp123",
-            host="24.62.166.59",
-            port="5432"
-        )
-        cur = conn.cursor()
-
         # Fetch unique xrpd, compound names, and solvent options
         cur.execute("SELECT DISTINCT xrpd, compound_name, solvent_1, solvent_2, solvent_3 FROM solubility_data")
         all_options = cur.fetchall()
@@ -210,9 +200,6 @@ def search_unique_form():
             solvent_2_options.add(row[3])
             solvent_3_options.add(row[4])
             solvent_combinations_options.add(tuple(value if value != 'nan' else '' for value in row[2:5]))
-
-        cur.close()
-        conn.close()
         
         return {
             "xrpd_options": list(xrpd_options),

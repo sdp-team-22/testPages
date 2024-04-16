@@ -34,20 +34,9 @@ export class StatsComponent {
           time_uploaded: upload[3]
         }
       })
-      this.daily_visits = data.daily_visits.map((dailyVisit: any) => {
-        return {
-          id: dailyVisit[1],
-          username:  dailyVisit[2],
-          daily_visited: dailyVisit[3]
-        }
-      })
-      this.monthly_visits = data.monthly_visits.map((monthlyVisit: any) => {
-        return {
-          id: monthlyVisit[1],
-          username: monthlyVisit[2],
-          monthly_visited: monthlyVisit[3]
-        }
-      })
+
+      this.daily_visits = data.daily_visits;
+      this.monthly_visits = data.monthly_visits;
     })
   }
 toggleUploadHistory(event: Event) {

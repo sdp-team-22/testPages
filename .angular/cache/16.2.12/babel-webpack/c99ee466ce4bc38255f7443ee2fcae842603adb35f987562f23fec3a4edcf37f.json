@@ -1,1 +1,0 @@
-{"ast":null,"code":"export * from './upload.component';","map":{"version":3,"names":[],"sources":["/Users/manizashaikh/Documents/CSE 4939W/website/src/app/upload/index.ts"],"sourcesContent":["export * from './upload.component';\n"],"mappings":"AAAA,cAAc,oBAAoB"},"metadata":{},"sourceType":"module","externalDependencies":[]}

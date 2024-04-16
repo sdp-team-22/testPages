@@ -4,55 +4,11 @@
         <div class="card">
             <!-- // make this links url_for in the backend  -->
             <p><a class="card-child" >Total Data Points as of {{ myDate | date: 'MMMM YYYY'}}: {{ data_points }}  </a></p> <!-- // database storage -->
+            
+            <p><a class="card-child" >Daily Visits: {{ daily_visits }}  </a></p> <!-- // database storage -->
+            
+            <p><a class="card-child" >Monthly Visits: {{ monthly_visits }}  </a></p> <!-- // database storage -->
 
-            <a class="card-child" href="" [hidden]="showUploadHistory || showMonthlyVisits" (click)="toggleDailyVisits($event)">
-                <span *ngIf="!showDailyVisits">Daily Visits</span>
-                <span class="arrow" *ngIf="showDailyVisits">&#x21e6;</span></a>
-                <div *ngIf="showDailyVisits">
-                    <h2>Today's Visits: </h2>
-                    <p class="date"> {{ myDate | date }}</p>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>UserID</th>
-                                <th>Username</th>
-                                <th>Total Visits</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let dailyVisit of daily_visits">
-                                <td>{{ dailyVisit.id }}</td>
-                                <td>{{ dailyVisit.username }}</td>
-                                <td>{{ dailyVisit.daily_visited }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            
-            <a class="card-child" href="" [hidden]="showUploadHistory || showDailyVisits" (click)="toggleMonthlyVisits($event)">
-                <span *ngIf="!showMonthlyVisits">Monthly Visits</span>
-                <span class="arrow" *ngIf="showMonthlyVisits">&#x21e6;</span></a>
-                <div *ngIf="showMonthlyVisits">
-                    <h2>Monthly Visits:</h2>
-                    <p class="date"> {{ myDate | date: 'MMMM yyyy' }}</p>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>UserID</th>
-                                <th>Username</th>
-                                <th>Monthly Visits</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let monthlyVisit of monthly_visits">
-                                <td>{{ monthlyVisit.id }}</td>
-                                <td>{{ monthlyVisit.username }}</td>
-                                <td>{{ monthlyVisit.monthly_visited }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            
             <a class="card-child" href="" [hidden]="showDailyVisits || showMonthlyVisits" (click)="toggleUploadHistory($event)">
                 <span *ngIf="!showUploadHistory">Upload History</span>
                 <span class="arrow" *ngIf="showUploadHistory">&#x21e6;</span>
