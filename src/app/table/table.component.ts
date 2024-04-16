@@ -51,9 +51,9 @@ export class TableComponent implements OnInit, OnDestroy  {
 
           let columnsSchema = SolubilityDataColumns.slice();
           const keyMappings: { [key: string]: string } = {
-              'SolvFrac1_wtfrac': 'SolvFrac1_volfrac',
-              'SolvFrac2_wtfrac': 'SolvFrac2_volfrac',
-              'SolvFrac3_wtfrac': 'SolvFrac3_volfrac',
+            'SolvFrac1_wtfrac': 'SolvFrac1_volfrac',
+            'SolvFrac2_wtfrac': 'SolvFrac2_volfrac',
+            'SolvFrac3_wtfrac': 'SolvFrac3_volfrac', 
               'wt %': 'wt%',
           };
           
@@ -62,11 +62,26 @@ export class TableComponent implements OnInit, OnDestroy  {
               if (response[key]['Row Data'][0].hasOwnProperty(solvFracKey) &&
                   response[key]['Row Data'][0][solvFracKey] !== null &&
                   response[key]['Row Data'][0][solvFracKey] !== undefined) {
-                  columnsSchema = columnsSchema.map(col => {
+                    columnsSchema = columnsSchema.map(col => {
                       const newKey = keyMappings[solvFracKey];
                       if (col.key === newKey) {
+                          let label;
+                          switch (solvFracKey) {
+                              case 'SolvFrac1_wtfrac':
+                                label = 'Solv Frac 1 (solute-free) wt frac';
+                                break;
+                              case 'SolvFrac2_wtfrac':
+                                label = 'Solv Frac 2 (solute-free) wt frac';
+                                break;
+                              case 'SolvFrac3_wtfrac':
+                                label = 'Solv Frac 3 (solute-free) wt frac';
+                                break;
+                              default:
+                                label = col.label; 
+                          }
                           return {
                               ...col,
+                              label: label,
                               key: solvFracKey,
                           };
                       }
