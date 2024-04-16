@@ -47,3 +47,6 @@ pids
 # Environment variables file
 .env
 .env.*
+
+# pycache
+/flask_db_conn_api/__pycache__
