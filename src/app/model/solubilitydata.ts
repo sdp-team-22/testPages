@@ -40,19 +40,19 @@ export const SolubilityDataColumns = [
     {
         key: 'SolvFrac1_volfrac',
         type: 'text',
-        label: 'Solv Frac 1 (solute-free)',
+        label: 'Solv Frac 1 (solute-free) vol frac',
         required: true
     },
     {
         key: 'SolvFrac2_volfrac',
         type: 'text',
-        label: 'Solv Frac 2 (solute-free)',
+        label: 'Solv Frac 2 (solute-free) vol frac',
         required: true
     },
     {
         key: 'SolvFrac3_volfrac',
         type: 'text',
-        label: 'Solv Frac 3 (solute-free)',
+        label: 'Solv Frac 3 (solute-free) vol frac',
         required: true
     },
     {
