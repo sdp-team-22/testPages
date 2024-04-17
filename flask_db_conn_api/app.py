@@ -93,10 +93,10 @@ class solubility_data(db.Model):
     wtfrac1 = db.Column(db.Float)
     wtfrac2 = db.Column(db.Float)
     wtfrac3 = db.Column(db.Float)
-    solubility_mg_g_solvn = db.Column(db.Float)
-    solubility_mg_g_solv = db.Column(db.Float)
-    solubility_mg_mL_solv = db.Column(db.Float)
-    solubility_wt = db.Column(db.Float)
+    solubility_mg_g_solvn = db.Column(db.String(100))
+    solubility_mg_g_solv = db.Column(db.String(100))
+    solubility_mg_mL_solv = db.Column(db.String(100))
+    solubility_wt = db.Column(db.String(100))
 
     def serialize(self):
         return {

@@ -128,7 +128,7 @@ def file_excel_to_json1(file):
                 'Comments': comments,
                 'Status' : data_input_status
             }
-            print(json.dumps(row_data, indent=2))
+            # print(json.dumps(row_data, indent=2))
             SOLUBILITY_DATA.append(row_data)
     
     DATASET_JSON['Row Data'] = SOLUBILITY_DATA

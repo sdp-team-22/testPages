@@ -173,15 +173,12 @@ def uploadMultiple(conn, data):
 
 def getFromDICT(data, searchTerm):
     temp = data.get(searchTerm, None)
+    floatColumns = {'SolvFrac1_wtfrac', 'SolvFrac2_wtfrac', 'SolvFrac3_wtfrac', 'SolvFrac1_volfrac', 'SolvFrac2_volfrac', 'SolvFrac3_volfrac', 'Solute Lot Number', 'ELN/Sample Number of Measurements'}
     if temp is None:
-        if searchTerm == 'SolvFrac1_wtfrac' or searchTerm == 'SolvFrac2_wtfrac' or searchTerm == 'SolvFrac3_wtfrac':
-            # calculate it later
-            temp = 0
-        elif searchTerm == 'SolvFrac1_volfrac' or searchTerm == 'SolvFrac2_volfrac' or searchTerm == 'SolvFrac3_volfrac':
-            # calculate it later
-            temp = 0
+        if searchTerm in floatColumns:
+            temp = 0.0
         else:
-            temp = ''
+            temp = 'nan'
     return temp
 
 if __name__=="__main__":
@@ -195,4 +192,4 @@ if __name__=="__main__":
     # printData(conn)
 
     data = {'projectInfo': {'fileName': 'D1_new_vol1.xlsx', 'projectName': 'XYZi / BI123456', 'scientistName': 'Paul Larson', 'molecularWeight': 530.3, 'compoundName': 'BI123456 XX', 'solidForm': 'Form III', 'Tmelt': 200.4, 'Hfus': 30.1}, 'rowData': [{'Comments': 'nan', 'ELN/Sample Number of Measurements': 'nan', 'Measurement Method': 'nan', 'Solute Lot Number': 'nan', 'SolvFrac1_volfrac': 1, 'SolvFrac2_volfrac': 0, 'SolvFrac3_volfrac': 0, 'Solvent 1': 'Ethyl acetate', 'Solvent 2': 'nan', 'Solvent 3': 'nan', 'Status': 'OK', 'Temp': 25, 'XRPD': 'Form III', 'mg/g soln.': 40.307, 'mg/g solv.': 42, 'mg/mL solv.': 37.884, 'wt %': 4.031}]}
-    uploadMultiple(conn, data)
+    # uploadMultiple(conn, data)
