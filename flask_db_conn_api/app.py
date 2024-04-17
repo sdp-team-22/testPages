@@ -5,7 +5,7 @@ from flask_cors import CORS
 import psycopg2
 from flask_sqlalchemy import SQLAlchemy
 import logging
-from helper import file_excel_to_json1
+from helper import file_excel_to_json
 
 logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
@@ -180,7 +180,7 @@ def api_upload_confirmation():
 
     data = []
     for f in uploaded_files:
-        data.append(file_excel_to_json1(f))
+        data.append(file_excel_to_json(f))
     # print(jsonify(data))
     # print(data)
     return jsonify(data)
