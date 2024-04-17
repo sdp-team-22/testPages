@@ -94,6 +94,10 @@ class solubility_data(db.Model):
     solubility_mg_g_solv = db.Column(db.String(100))
     solubility_mg_mL_solv = db.Column(db.String(100))
     solubility_wt = db.Column(db.String(100))
+    file_name = db.Column(db.String(200))
+    scientist_name = db.Column(db.String(200))
+    solute_lot_num = db.Column(db.Float(200))
+    eln_sample_num_measure = db.Column(db.Float(200))
 
     def serialize(self):
         return {
@@ -113,7 +117,11 @@ class solubility_data(db.Model):
             'solubility_mg_g_solvn': self.solubility_mg_g_solvn,
             'solubility_mg_g_solv': self.solubility_mg_g_solv,
             'solubility_mg_mL_solv': self.solubility_mg_mL_solv,
-            'solubility_wt': self.solubility_wt
+            'solubility_wt': self.solubility_wt,
+            'file_name': self.file_name,
+            'scientist_name': self.scientist_name,
+            'solute_lot_num': self.solute_lot_num,
+            'eln_sample_num_measure': self.eln_sample_num_measure
         }
 
 @app.route('/api/basicSearch', methods=[ 'GET' ,'POST', 'OPTIONS'])
