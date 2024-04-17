@@ -77,17 +77,39 @@
           </ng-container>
         </td>
       </ng-container>
+      <!-- temp Column -->
       <ng-container matColumnDef="temp">
         <th mat-header-cell *matHeaderCellDef> Temp &#8451; </th>
         <td mat-cell *matCellDef="let result"> {{ result.temp }} </td>
       </ng-container>
+      <!-- solid form Column -->
       <ng-container matColumnDef="xrpd">
         <th mat-header-cell *matHeaderCellDef> Solid Form </th>
         <td mat-cell *matCellDef="let result"> {{ result.xrpd }} </td>
       </ng-container>
+      <!-- Scientist Name Column -->
+      <ng-container matColumnDef="scientist_name">
+        <th mat-header-cell *matHeaderCellDef> Scientist Name </th>
+        <td mat-cell *matCellDef="let result"> {{ result.scientist_name }} </td>
+      </ng-container>
+      <!-- Solute Lot Number Column -->
+      <ng-container matColumnDef="solute_lot_num">
+        <th mat-header-cell *matHeaderCellDef> Solute Lot Number </th>
+        <td mat-cell *matCellDef="let result"> {{ result.solute_lot_num }} </td>
+      </ng-container>
+      <!-- eln sample Column -->
+      <ng-container matColumnDef="eln_sample_num_measure">
+        <th mat-header-cell *matHeaderCellDef> ELN Sample Number</th>
+        <td mat-cell *matCellDef="let result"> {{ result.eln_sample_num_measure}} </td>
+      </ng-container>
+      <!-- file name Column -->
+      <ng-container matColumnDef="file_name">
+        <th mat-header-cell *matHeaderCellDef> File Name </th>
+        <td mat-cell *matCellDef="let result"> {{ result.file_name }} </td>
+      </ng-container>
       <!-- Define table columns -->
-      <tr mat-header-row *matHeaderRowDef="['select','compound_name', 'solubility', 'fraction', 'temp', 'xrpd']"></tr>
-      <tr mat-row *matRowDef="let row; columns: ['select', 'compound_name', 'solubility', 'fraction', 'temp', 'xrpd'];"></tr>
+      <tr mat-header-row *matHeaderRowDef="['select','compound_name', 'solubility', 'fraction', 'temp', 'xrpd', 'scientist_name', 'solute_lot_num', 'eln_sample_num_measure', 'file_name',]"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['select', 'compound_name', 'solubility', 'fraction', 'temp', 'xrpd', 'scientist_name', 'solute_lot_num', 'eln_sample_num_measure', 'file_name',];"></tr>
     </table>
     <div class="graph-container">
       <mat-form-field appearance="fill">
@@ -97,12 +119,12 @@
           <mat-option  (click)="showGraph()" value="scatter">Scatter Plot</mat-option>
         </mat-select>
       </mat-form-field>
-      <canvas id="chartCanvas" width="400" height="400"></canvas>
       <!-- <button mat-raised-button class="graph-button" (click)="showGraph()">Graph It</button> -->
     </div>
     <div class="download-container">
       <button mat-raised-button class="download-button" (click)="exportToExcel(selectedItems)">Download</button>
     </div>
+    <canvas id="chartCanvas"></canvas>
 </div>
 
 <div class="advanced-container" *ngIf="showAdvancedSearch">
@@ -320,18 +342,40 @@
                 </div>
               </ng-container>
             </td>
+            <!-- Temp Column -->
           </ng-container>
           <ng-container matColumnDef="temp">
             <th mat-header-cell *matHeaderCellDef> Temp &#8451; </th>
             <td mat-cell *matCellDef="let result"> {{ result.temp }} </td>
           </ng-container>
+          <!-- solid form  Column -->
           <ng-container matColumnDef="xrpd">
             <th mat-header-cell *matHeaderCellDef> Solid Form </th>
             <td mat-cell *matCellDef="let result"> {{ result.xrpd }} </td>
           </ng-container>
+          <!-- Scientist Name Column -->
+          <ng-container matColumnDef="scientist_name">
+            <th mat-header-cell *matHeaderCellDef> Scientist Name </th>
+            <td mat-cell *matCellDef="let result"> {{ result.scientist_name }} </td>
+          </ng-container>
+          <!-- Solute Lot Number Column -->
+          <ng-container matColumnDef="solute_lot_num">
+            <th mat-header-cell *matHeaderCellDef> Solute Lot Number </th>
+            <td mat-cell *matCellDef="let result"> {{ result.solute_lot_num }} </td>
+          </ng-container>
+          <!-- eln sample Column -->
+          <ng-container matColumnDef="eln_sample_num_measure">
+            <th mat-header-cell *matHeaderCellDef> ELN Sample Number</th>
+            <td mat-cell *matCellDef="let result"> {{ result.eln_sample_num_measure}} </td>
+          </ng-container>
+          <!-- file name Column -->
+          <ng-container matColumnDef="file_name">
+            <th mat-header-cell *matHeaderCellDef> File Name </th>
+            <td mat-cell *matCellDef="let result"> {{ result.file_name }} </td>
+          </ng-container>
           <!-- Define table columns -->
-          <tr mat-header-row *matHeaderRowDef="[ 'select','compound_name', 'solubility', 'fraction', 'temp', 'xrpd']"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['select', 'compound_name', 'solubility', 'fraction', 'temp', 'xrpd'];"></tr>
+          <tr mat-header-row *matHeaderRowDef="['select','compound_name', 'solubility', 'fraction', 'temp', 'xrpd', 'scientist_name', 'solute_lot_num', 'eln_sample_num_measure', 'file_name',]"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['select', 'compound_name', 'solubility', 'fraction', 'temp', 'xrpd', 'scientist_name', 'solute_lot_num', 'eln_sample_num_measure', 'file_name',];"></tr>
         </table>
         <div class="graph-container">
           <mat-form-field appearance="fill">
@@ -341,13 +385,14 @@
               <mat-option  (click)="showGraph()" value="scatter">Scatter Plot</mat-option>
             </mat-select>
           </mat-form-field>
-          <canvas id="chartCanvas" width="400" height="400"></canvas>
           <!-- <button mat-raised-button class="graph-button" (click)="showGraph()">Graph It</button> -->
         </div>
         <div class="download-container">
             <button mat-raised-button class="download-button" (click)="exportToExcel(selectedItems)">Download</button>
         </div>
+        <canvas id="chartCanvas"></canvas>
     </div>    
 </div>
 <button mat-button *ngIf="showAdvancedSearch" (click)="toggleAdvancedSearch(); clearSearch()">Search by Compund Name?</button>
+
 
