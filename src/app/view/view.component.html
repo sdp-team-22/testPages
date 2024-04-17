@@ -126,7 +126,7 @@
     </div>
     <canvas id="chartCanvas"></canvas>
 </div>
-
+<button mat-raised-button class="advanced-button" *ngIf="showAdvancedSearch" (click)="toggleAdvancedSearch(); clearSearch()">Go back to basic search?</button>
 <div class="advanced-container" *ngIf="showAdvancedSearch">
     <form (ngSubmit)="advancedSearch()">
         <div class="filter-container" *ngFor="let filter of filters; let i = index">
@@ -393,6 +393,5 @@
         <canvas id="chartCanvas"></canvas>
     </div>    
 </div>
-<button mat-button *ngIf="showAdvancedSearch" (click)="toggleAdvancedSearch(); clearSearch()">Search by Compund Name?</button>
 
 
