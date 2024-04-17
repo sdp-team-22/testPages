@@ -609,7 +609,6 @@ showGraph() {
         console.error("Canvas element 'chartCanvas' not found.");
         return;
     }
-
     let chartInstances = Chart.instances;
     for (let chartInstance in chartInstances) {
         if (chartInstances.hasOwnProperty(chartInstance)) {
@@ -641,7 +640,6 @@ plotBarChart(canvas: HTMLCanvasElement) {
         });
         return;
     }
-
     const labels = this.selectedItems.map(item => `${item.solvent_1} ${item.solvent_2} ${item.solvent_3} ${item.temp}°C`);
     const data = this.selectedItems.map(item => item.solubility);
     const datasetsLabels = `${this.selectedItems[0].compound_name} ${this.selectedItems[0].xrpd}`;
@@ -688,7 +686,6 @@ plotScatterPlot(canvas: HTMLCanvasElement) {
             y: item.solubility
         };
     });
-
     const datasetsLabels = `${this.selectedItems[0].compound_name} ${this.selectedItems[0].xrpd}`;
 
     this.scatterChart = new Chart(canvas, {
