@@ -75,7 +75,7 @@ def uploadMultiple(conn, data):
         if response:
             try:
                 id = response[0][0]
-                print(f'exists in db with id = {id}')
+                # print(f'exists in db with id = {id}')
                 # exists already, we need to update entry
                 cur.execute("""
                     UPDATE solubility_data
