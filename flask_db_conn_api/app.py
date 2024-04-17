@@ -119,7 +119,7 @@ class solubility_data(db.Model):
 @app.route('/api/basicSearch', methods=[ 'GET' ,'POST', 'OPTIONS'])
 def basic_search():
         search_query = request.args.get('query')
-        query = solubility_data.query.filter(solubility_data.compound_name.ilike(search_query)) 
+        query = solubility_data.query.filter(solubility_data.compound_name.ilike(f'%{search_query}%')) 
         # query = solubility_data.query.filter(solubility_data.compound_name == search_query) #ilike will work better for case insensitive search, but both works fine
         results = [record.serialize() for record in query.all()]
         return jsonify(results)
@@ -138,7 +138,7 @@ def advancedSearch():
         if key == 'field':
             continue
         if key == 'compound_name' and value:
-            query = query.filter(solubility_data.compound_name.ilike(value))
+            query = query.filter(solubility_data.compound_name.ilike(f'%{value}%'))
             print(query)
         elif key == 'xrpd' and value:
             query = query.filter(solubility_data.xrpd == value)

@@ -72,6 +72,8 @@ export class ViewComponent implements OnInit, OnDestroy {
     filters: AdvancedSearchQuery[] = [{field: '', compound_name: '', solventMatch: '', solvent_1: '', solvent_2: '', solvent_3: '', xrpd: ''}];
     isNaN: Function = Number.isNaN;
     barChart: any;
+    scatterChart: any;
+    selectedGraphType: string = 'bar'; //default bar
 
     xrpdOptions: string[] = [];
     compoundOptions: string[] = [];
@@ -384,8 +386,7 @@ export class ViewComponent implements OnInit, OnDestroy {
     }
 
     
-    
-    onCheckboxChange(event: MatCheckboxChange, item: any) {
+  onCheckboxChange(event: MatCheckboxChange, item: any) {
         const selectedData = {
             compound_name: item.compound_name,
             solvent_1: item.solvent_1,
@@ -429,19 +430,11 @@ export class ViewComponent implements OnInit, OnDestroy {
                       data.solvent_3 === selectedData.solvent_3 &&
                       data.temp === selectedData.temp &&
                       data.xrpd === selectedData.xrpd &&
-                      data.solubility === selectedData.solubility &&
-                      this.arraysEqual(data.fractions, selectedData.fractions) &&
-                      this.arraysEqual(data.solubility_units, selectedData.solubility_units))
-            );
+                      data.solubility === selectedData.solubility))
+            ;
             console.log(this.selectedItems);}
         }    
-    arraysEqual(arr1: any[], arr2: any[]): boolean {
-        if (arr1.length !== arr2.length) return false;
-        for (let i = 0; i < arr1.length; i++) {
-            if (arr1[i] !== arr2[i]) return false;
-        }
-        return true;
-    }
+    
     exportToExcel(selectedItems: any[]): void {
         if (selectedItems.length === 0) {
             this._snackBar.open('Cannot export an empty table', 'Close', {
@@ -468,6 +461,7 @@ export class ViewComponent implements OnInit, OnDestroy {
                 acc[unit.unit] = unit.value;
                 return acc;
             }, {})
+            
         }));
 
         const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(flattenItems);
@@ -505,97 +499,225 @@ export class ViewComponent implements OnInit, OnDestroy {
     toggleSelectAll1(event: MatCheckboxChange) {
         this.searchResults.forEach(item => {
             item.selected = event.checked;
-        })
-
-        if (event.checked) {
-            this.selectedItems = this.searchResults.map(item => ({ 
+    
+            if (event.checked) {
+                const selectedData = {
                     compound_name: item.compound_name,
                     solvent_1: item.solvent_1,
                     solvent_2: item.solvent_2,
                     solvent_3: item.solvent_3,  
                     temp: item.temp,
                     xrpd: item.xrpd,                     
-                    solubility: item[this.selectedUnit]
-            }));
+                    solubility: item[this.selectedUnit],
+                    fractions: [] as {unit: string, value: number}[],
+                    solubility_units: [] as {unit: string, value: number}[]
+                };
     
-        } else {
-            this.selectedItems = [];
+                const fractionKeys = ['volfrac1', 'volfrac2', 'volfrac3', 'wtfrac1', 'wtfrac2', 'wtfrac3'];
+                for (const fractionKey of fractionKeys) {
+                    if (item[fractionKey] !== null) {
+                        selectedData.fractions.push({
+                            unit: fractionKey,
+                            value: item[fractionKey]
+                        });
+                    }
+                }
+    
+                const solubilityUnitKeys = ['solubility_mg_g_solv', 'solubility_mg_g_solvn', 'solubility_mg_mL_solv', 'solubility_wt'];
+                for (const unitKey of solubilityUnitKeys) {
+                    if (item[unitKey] !== null) {
+                        selectedData.solubility_units.push({
+                            unit: unitKey,
+                            value: item[unitKey]
+                        });
+                    }
+                }
+    
+                this.selectedItems.push(selectedData);
+            } else {
+                this.selectedItems = this.selectedItems.filter(
+                    data => 
+                        !(data.compound_name === item.compound_name &&
+                          data.solvent_1 === item.solvent_1 &&
+                          data.solvent_2 === item.solvent_2 &&
+                          data.solvent_3 === item.solvent_3 &&
+                          data.temp === item.temp &&
+                          data.xrpd === item.xrpd &&
+                          data.solubility === item[this.selectedUnit])
+                );
             }
-        }
+        });
+    }
+    
 
     toggleSelectAll2(event: MatCheckboxChange) {
         this.searchResults2.forEach(item => {
             item.selected = event.checked;
-        })
-
-
-        if (event.checked) {
-            this.selectedItems = this.searchResults2.map(item => ({ 
+        
+            if (event.checked) {
+                const selectedData = {
                     compound_name: item.compound_name,
                     solvent_1: item.solvent_1,
                     solvent_2: item.solvent_2,
                     solvent_3: item.solvent_3,  
                     temp: item.temp,
                     xrpd: item.xrpd,                     
-                    solubility: item[this.selectedUnit]
-            }));
-        
-        } else {
-            this.selectedItems = [];
+                    solubility: item[this.selectedUnit],
+                    fractions: [] as {unit: string, value: number}[],
+                    solubility_units: [] as {unit: string, value: number}[]
+                };
+    
+                const fractionKeys = ['volfrac1', 'volfrac2', 'volfrac3', 'wtfrac1', 'wtfrac2', 'wtfrac3'];
+                for (const fractionKey of fractionKeys) {
+                    if (item[fractionKey] !== null) {
+                        selectedData.fractions.push({
+                            unit: fractionKey,
+                            value: item[fractionKey]
+                        });
+                    }
+                }
+    
+                const solubilityUnitKeys = ['solubility_mg_g_solv', 'solubility_mg_g_solvn', 'solubility_mg_mL_solv', 'solubility_wt'];
+                for (const unitKey of solubilityUnitKeys) {
+                    if (item[unitKey] !== null) {
+                        selectedData.solubility_units.push({
+                            unit: unitKey,
+                            value: item[unitKey]
+                        });
+                    }
+                }
+    
+                this.selectedItems.push(selectedData);
+            } else {
+                this.selectedItems = this.selectedItems.filter(
+                    data => 
+                        !(data.compound_name === item.compound_name &&
+                          data.solvent_1 === item.solvent_1 &&
+                          data.solvent_2 === item.solvent_2 &&
+                          data.solvent_3 === item.solvent_3 &&
+                          data.temp === item.temp &&
+                          data.xrpd === item.xrpd &&
+                          data.solubility === item[this.selectedUnit])
+                );
             }
-        }    
-    showGraph() {
-        // console.log("Creating chart...");
-    
-        const labels = this.selectedItems.map(item => `${item.solvent_1} ${item.solvent_2} ${item.solvent_3} ${item.temp}°C`);
-        const data = this.selectedItems.map(item => item.solubility);
-        const datasetsLabels = `${this.selectedItems[0].compound_name} ${this.selectedItems[0].xrpd}`;
-        // const yAxisTitle = this.selectedUnit; // try to print the selected unit on y axis label
+        });
+    }
 
-        const canvas = document.getElementById('barCanvas') as HTMLCanvasElement;
-        if (!canvas) {
-            console.error("Canvas element 'barCanvas' not found.");
-            return;
-        }
-    
-        if (this.barChart) {
-            this.barChart.destroy();
-            // console.log("Destroyed old chart...");
+showGraph() {
+    let canvas = document.getElementById('chartCanvas') as HTMLCanvasElement;
+    if (!canvas) {
+        console.error("Canvas element 'chartCanvas' not found.");
+        return;
+    }
 
-        } //else {
-        //     // console.log("No existing chart to destroy.");
-        // }
+    if (this.barChart) {
+        this.barChart.destroy();
+    }
+    else if (this.scatterChart) {
+        this.scatterChart.destroy();
+    }
 
-        // console.log("Creating new chart...");
-        this.barChart = new Chart(canvas, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: datasetsLabels,
-                    data: data,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            text: this.selectedUnit, 
-                            display: true
-                        }
+    if (this.selectedGraphType === 'bar') {
+        this.plotBarChart(canvas);
+    } else if (this.selectedGraphType === 'scatter') {
+        this.plotScatterPlot(canvas);
+    }
+}
+
+plotBarChart(canvas: HTMLCanvasElement) {
+    if (this.selectedItems.length === 0) {
+        this._snackBar.open('Please select at least one item', 'Close', {
+            duration: 3000, 
+            horizontalPosition: 'center', 
+            verticalPosition: 'bottom', 
+            panelClass: 'error-snackbar' 
+        });
+        return;
+    }
+    const labels = this.selectedItems.map(item => `${item.solvent_1} ${item.solvent_2} ${item.solvent_3} ${item.temp}°C`);
+    const data = this.selectedItems.map(item => item.solubility);
+    const datasetsLabels = `${this.selectedItems[0].compound_name} ${this.selectedItems[0].xrpd}`;
+
+    this.barChart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: datasetsLabels,
+                data: data,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        text: this.selectedUnit,
+                        display: true
                     }
                 }
             }
+        }
+    });
+}
+
+plotScatterPlot(canvas: HTMLCanvasElement) {
+    if (this.selectedItems.length === 0) {
+        this._snackBar.open('Please select at least one item', 'Close', {
+            duration: 3000, 
+            horizontalPosition: 'center', 
+            verticalPosition: 'bottom', 
+            panelClass: 'error-snackbar' 
         });
-    
-        // console.log("Chart created successfully.");
+        return;
     }
+    const data = this.selectedItems.map(item => {
+        return {
+            x: item.temp,
+            y: item.solubility
+        };
+    });
+    const datasetsLabels = `${this.selectedItems[0].compound_name} ${this.selectedItems[0].xrpd}`;
+
+    this.scatterChart = new Chart(canvas, {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label: datasetsLabels,
+                data: data,
+                backgroundColor: 'rgba(3, 68, 38, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 7
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    type: 'linear',
+                    position: 'bottom',
+                    title: {
+                        text: 'Temperature (°C)',
+                        display: true
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        text: this.selectedUnit,
+                        display: true
+                    }
+                }
+            }
+        }
+    });
+}
     
 }
+
     
     
 

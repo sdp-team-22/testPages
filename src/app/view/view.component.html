@@ -1,24 +1,3 @@
-<!-- Ask Sponsors
-advanced search solid form is same as xrpd? 
-if yes remove additional column in database
-will the sub fields be form 3, solvate, hydrate? (will need to edit app.py for solvate query)
-will temp only be in C? (I have ℃ hardcoded in th temp column/will need to change)
-
--->
-
-<!-- some things to work on
-layout of advanced search filter fields;
-try to make them look good, side by side preferably -- mostly done
-adjust clear button in advanced search -- done
-adjust checkbox color, it has color=primary by default but css is not working
-adjust select all checkbox in full window -- done
-reset button in advanced search should reset search results;
-currently basic search resets, used resetSearch() -- done
-do we need a reset button to reset graph? 
-add extra field in solvent, exact and contains. use current logic for contains
--->
-
-
 <div class="search-container" *ngIf="!showAdvancedSearch">
     <input type="text" placeholder="Search by Compound Name" class="search-input" [(ngModel)]="searchQuery" (keyup.enter)="basicSearch()">
     <button mat-raised-button class="search-button" (click)="basicSearch()">Search</button>
@@ -58,22 +37,7 @@ add extra field in solvent, exact and contains. use current logic for contains
         <th mat-header-cell *matHeaderCellDef> Compound Name </th>
         <td mat-cell *matCellDef="let result"> {{ result.compound_name }} </td>
       </ng-container>
-    <!-- Solvent Column
-      <ng-container matColumnDef="solvent1">
-        <th mat-header-cell *matHeaderCellDef> Solvent 1 </th>
-        <td mat-cell *matCellDef="let result"> {{ result.solvent_1 }} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="solvent2">
-        <th mat-header-cell *matHeaderCellDef> Solvent 2 </th>
-        <td mat-cell *matCellDef="let result"> {{ result.solvent_2 }} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="solvent3">
-        <th mat-header-cell *matHeaderCellDef> Solvent 3 </th>
-        <td mat-cell *matCellDef="let result"> {{ result.solvent_3 }} </td>
-      </ng-container> -->
-
+  
       <!-- Solubility Column -->
       <ng-container matColumnDef="solubility">
         <th mat-header-cell *matHeaderCellDef> Solubility </th>
@@ -125,9 +89,19 @@ add extra field in solvent, exact and contains. use current logic for contains
       <tr mat-header-row *matHeaderRowDef="['select','compound_name', 'solubility', 'fraction', 'temp', 'xrpd']"></tr>
       <tr mat-row *matRowDef="let row; columns: ['select', 'compound_name', 'solubility', 'fraction', 'temp', 'xrpd'];"></tr>
     </table>
-    <button mat-raised-button class="graph-button" (click)="showGraph()">Graph It</button>
     <div class="graph-container">
-        <canvas id="barCanvas" width="400" height="400"></canvas>
+      <mat-form-field appearance="fill">
+        <mat-label>Graph Type</mat-label>
+        <mat-select [(ngModel)]="selectedGraphType" name="selectedGraphType">
+          <mat-option  (click)="showGraph()" value="bar">Bar Graph</mat-option>
+          <mat-option  (click)="showGraph()" value="scatter">Scatter Plot</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <canvas id="chartCanvas" width="400" height="400"></canvas>
+      <!-- <button mat-raised-button class="graph-button" (click)="showGraph()">Graph It</button> -->
+    </div>
+    <div class="download-container">
+      <button mat-raised-button class="download-button" (click)="exportToExcel(selectedItems)">Download</button>
     </div>
 </div>
 
@@ -307,21 +281,6 @@ add extra field in solvent, exact and contains. use current logic for contains
             <th mat-header-cell *matHeaderCellDef> Compound Name </th>
             <td mat-cell *matCellDef="let result"> {{ result.compound_name }} </td>
           </ng-container>
-        <!-- Solvent Column
-          <ng-container matColumnDef="solvent1">
-            <th mat-header-cell *matHeaderCellDef> Solvent 1 </th>
-            <td mat-cell *matCellDef="let result"> {{ result.solvent_1 }} </td>
-          </ng-container>
-    
-          <ng-container matColumnDef="solvent2">
-            <th mat-header-cell *matHeaderCellDef> Solvent 2 </th>
-            <td mat-cell *matCellDef="let result"> {{ result.solvent_2 }} </td>
-          </ng-container>
-    
-          <ng-container matColumnDef="solvent3">
-            <th mat-header-cell *matHeaderCellDef> Solvent 3 </th>
-            <td mat-cell *matCellDef="let result"> {{ result.solvent_3 }} </td>
-          </ng-container> -->
     
           <!-- Solubility Column -->
           <ng-container matColumnDef="solubility">
@@ -374,12 +333,19 @@ add extra field in solvent, exact and contains. use current logic for contains
           <tr mat-header-row *matHeaderRowDef="[ 'select','compound_name', 'solubility', 'fraction', 'temp', 'xrpd']"></tr>
           <tr mat-row *matRowDef="let row; columns: ['select', 'compound_name', 'solubility', 'fraction', 'temp', 'xrpd'];"></tr>
         </table>
-        <button mat-raised-button class="graph-button" (click)="showGraph()">Graph It</button>
         <div class="graph-container">
-          <canvas id="barCanvas" width="400" height="400"></canvas>
+          <mat-form-field appearance="fill">
+            <mat-label>Graph Type</mat-label>
+            <mat-select [(ngModel)]="selectedGraphType" name="selectedGraphType">
+              <mat-option  (click)="showGraph()" value="bar">Bar Graph</mat-option>
+              <mat-option  (click)="showGraph()" value="scatter">Scatter Plot</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <canvas id="chartCanvas" width="400" height="400"></canvas>
+          <!-- <button mat-raised-button class="graph-button" (click)="showGraph()">Graph It</button> -->
         </div>
         <div class="download-container">
-          <button mat-raised-button class="download-button" (click)="exportToExcel(selectedItems)">Download</button>
+            <button mat-raised-button class="download-button" (click)="exportToExcel(selectedItems)">Download</button>
         </div>
     </div>    
 </div>
