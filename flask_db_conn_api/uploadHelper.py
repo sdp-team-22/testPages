@@ -174,7 +174,7 @@ def uploadMultiple(conn, data):
 def getFromDICT(data, searchTerm):
     temp = data.get(searchTerm, None)
     floatColumns = {'SolvFrac1_wtfrac', 'SolvFrac2_wtfrac', 'SolvFrac3_wtfrac', 'SolvFrac1_volfrac', 'SolvFrac2_volfrac', 'SolvFrac3_volfrac', 'Solute Lot Number', 'ELN/Sample Number of Measurements'}
-    if temp is None:
+    if temp is None or temp == 'nan':
         if searchTerm in floatColumns:
             temp = 0.0
         else:
