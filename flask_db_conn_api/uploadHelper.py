@@ -50,15 +50,32 @@ def uploadMultiple(conn, data):
             AND solvent_1 = %s
             AND solvent_2 = %s
             AND solvent_3 = %s
+            AND volfrac1 = %s
+            AND volfrac2 = %s
+            AND volfrac3 = %s
+            AND wtfrac1 = %s
+            AND wtfrac2 = %s
+            AND wtfrac3 = %s
+            AND temp = %s
+            AND xrpd = %s
         """, (compoundName,
             solv1,
             solv2,
-            solv3))
+            solv3,
+            # new ones
+            volfrac1,
+            volfrac2,
+            volfrac3,
+            wtfrac1,
+            wtfrac2,
+            wtfrac3,
+            temp,
+            xrpd))
         response = cur.fetchall()
         if response:
             try:
                 id = response[0][0]
-                # print(f'exists in db with id = {id}')
+                print(f'exists in db with id = {id}')
                 # exists already, we need to update entry
                 cur.execute("""
                     UPDATE solubility_data
@@ -70,14 +87,6 @@ def uploadMultiple(conn, data):
                         solid_form = %s,
                         tmelt = %s,
                         hfus = %s,
-                        volfrac1 = %s,
-                        volfrac2 = %s,
-                        volfrac3 = %s,
-                        wtfrac1 = %s,
-                        wtfrac2 = %s,
-                        wtfrac3 = %s,
-                        temp = %s,
-                        xrpd = %s,
                         solubility_mg_g_solvn = %s,
                         solubility_mg_g_solv = %s,
                         solubility_wt = %s,
@@ -90,6 +99,14 @@ def uploadMultiple(conn, data):
                         AND solvent_1 = %s
                         AND solvent_2 = %s
                         AND solvent_3 = %s
+                        AND volfrac1 = %s
+                        AND volfrac2 = %s
+                        AND volfrac3 = %s
+                        AND wtfrac1 = %s
+                        AND wtfrac2 = %s
+                        AND wtfrac3 = %s
+                        AND temp = %s
+                        AND xrpd = %s
                 """, (id,
                     fileName, 
                     projectName,
@@ -98,14 +115,6 @@ def uploadMultiple(conn, data):
                     solidForm,
                     tmelt,
                     hfus,
-                    volfrac1,
-                    volfrac2,
-                    volfrac3,
-                    wtfrac1,
-                    wtfrac2,
-                    wtfrac3,
-                    temp,
-                    xrpd,
                     solu1,
                     solu2,
                     solu4,
@@ -117,7 +126,15 @@ def uploadMultiple(conn, data):
                     compoundName,
                     solv1,
                     solv2,
-                    solv3))
+                    solv3,
+                    volfrac1,
+                    volfrac2,
+                    volfrac3,
+                    wtfrac1,
+                    wtfrac2,
+                    wtfrac3,
+                    temp,
+                    xrpd,))
                 conn.commit()
             except Exception as e:
                 print(e)
