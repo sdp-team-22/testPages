@@ -25,13 +25,14 @@ export class StatsComponent {
     let date = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.stats.getData().subscribe((data: any) => {
       console.log(data)
-      this.data_points = data.data_points; // change data1 to data1[0]-[1] if calling multiple elements 
+      this.data_points = data.data_points; // change data1 to data1[0]-[1] if calling multiple elements
       this.upload_history = data.upload_history.map((upload: any) => {
         return {
           id: upload[0],
-          compound_name: upload[1],
-          username: upload[2],
-          time_uploaded: upload[3]
+          scientist: upload[1],
+          time_uploaded: upload[2],
+          file_name: upload[3],
+          compound_name: upload[4],
         }
       })
 

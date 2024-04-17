@@ -20,18 +20,20 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>File No.</th>
-                                <th>Compound Name</th>
-                                <th>Uploaded By</th>
+                                <th>Upload ID</th>
+                                <th>Scientist</th>
                                 <th>Time Uploaded</th>
+                                <th>File Name</th>
+                                <th>Compound Name</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr *ngFor="let upload of upload_history">
                                 <td>{{ upload.id }}</td>
-                                <td>{{ upload.compound_name }}</td>
-                                <td>{{ upload.username }}</td>
+                                <td>{{ upload.scientist }}</td>
                                 <td>{{ upload.time_uploaded }}</td>
+                                <td>{{ upload.file_name }}</td>
+                                <td>{{ upload.compound_name }}</td>
                             </tr>
                         </tbody>
                     </table>

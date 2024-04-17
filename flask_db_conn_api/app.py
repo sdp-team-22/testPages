@@ -28,17 +28,14 @@ cur = conn.cursor()
 def database_stats():
     # make multiple queries as needed
     cur.execute("""
-        SELECT COUNT(*) solubility_mg_g_solvn 
-        FROM solubility_data
+        SELECT COUNT(*) FROM solubility_data
     """)
     data_points = cur.fetchone()[0]
 
-    # Fetch user upload history
     cur.execute("""
-        SELECT  f.id, f.compound_name, u.username, f.time_uploaded
-        FROM filestore f
-        JOIN users u ON f.owner_id = u.id
-        ORDER BY f.time_uploaded DESC
+        SELECT  id, scientist, time_uploaded, file_name, compound_name
+        FROM filestore
+        ORDER BY time_uploaded DESC
     """)
     upload_history = cur.fetchall()
 
@@ -221,10 +218,11 @@ def populate_form():
 @app.route('/api/db_upload', methods=['POST'])
 def databaseUpload():
     try:
-        from uploadHelper import uploadMultiple
+        from uploadHelper import uploadMultiple, uploadToFilestore
         data = request.get_json() # list of jsons
         for file in data:
             # print('\n', file, '\n')
+            uploadToFilestore(conn, file)
             uploadMultiple(conn, file)
         return jsonify('upload successful')
     except Exception as e:

@@ -1,4 +1,5 @@
 import psycopg2
+from datetime import datetime
 
 def printData(cur):
     cur = conn.cursor()
@@ -181,6 +182,30 @@ def getFromDICT(data, searchTerm):
             temp = 'nan'
     return temp
 
+def uploadToFilestore(conn, data):
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT max(id) FROM filestore
+        """)
+        response = cur.fetchone()[0]
+        nextID = 0
+        if response is not None:
+            nextID = response + 1
+        projectInfo = data['projectInfo']
+        fileName = getFromDICT(projectInfo, 'fileName')
+        scientistName = getFromDICT(projectInfo, 'scientistName')
+        compoundName = getFromDICT(projectInfo, 'compoundName')
+        current_datetime = datetime.now()
+        formatted_datetime = current_datetime.strftime('%Y-%m-%d %H:%M:%S')
+        cur.execute("""
+            INSERT INTO filestore
+            VALUES(%s, %s, %s, %s, %s)
+        """, (nextID, fileName, formatted_datetime, compoundName, scientistName))
+        conn.commit()
+    except Exception as e:
+        print("filestore didn't work")
+
 if __name__=="__main__":
     conn = conn = psycopg2.connect(
         database="postgres",
@@ -193,3 +218,5 @@ if __name__=="__main__":
 
     data = {'projectInfo': {'fileName': 'D1_new_vol1.xlsx', 'projectName': 'XYZi / BI123456', 'scientistName': 'Paul Larson', 'molecularWeight': 530.3, 'compoundName': 'BI123456 XX', 'solidForm': 'Form III', 'Tmelt': 200.4, 'Hfus': 30.1}, 'rowData': [{'Comments': 'nan', 'ELN/Sample Number of Measurements': 'nan', 'Measurement Method': 'nan', 'Solute Lot Number': 'nan', 'SolvFrac1_volfrac': 1, 'SolvFrac2_volfrac': 0, 'SolvFrac3_volfrac': 0, 'Solvent 1': 'Ethyl acetate', 'Solvent 2': 'nan', 'Solvent 3': 'nan', 'Status': 'OK', 'Temp': 25, 'XRPD': 'Form III', 'mg/g soln.': 40.307, 'mg/g solv.': 42, 'mg/mL solv.': 37.884, 'wt %': 4.031}]}
     # uploadMultiple(conn, data)
+
+    # uploadToFilestore(conn, data)
