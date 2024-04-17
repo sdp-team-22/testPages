@@ -17,22 +17,23 @@ import { NavigationExtras, Router } from '@angular/router';
     constructor(private service: UploadService,  private dataService: DataService, private router: Router) {}
   
     simulateInputClick() {
-      console.log("input click simulated");
+      // console.log("input click simulated");
       this.hiddenInput.nativeElement.click();
     }
   
     uploadData() {
-      console.log("upload data run");
+      // console.log("upload data run");
       const formData = new FormData();
       const files: FileList = this.hiddenInput.nativeElement.files;
-      console.log(files);
+      // console.log(files);
   
       for (let i = 0; i < files.length; i++) {
         formData.append('files', files[i], files[i].name);
       }
   
       this.service.uploadData(formData).subscribe(response => {
-        console.log('Upload successful:', response);
+        console.log('Preliminary upload successful');
+        // console.log('Preliminary upload successful:', response);
         this.dataService.setResponseData(response);
         this.router.navigateByUrl('/edit');
         

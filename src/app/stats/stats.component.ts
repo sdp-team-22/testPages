@@ -24,7 +24,7 @@ export class StatsComponent {
   constructor(private stats: StatsService, public datePipe: DatePipe) {
     let date = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.stats.getData().subscribe((data: any) => {
-      console.log(data)
+      // console.log(data)
       this.data_points = data.data_points; // change data1 to data1[0]-[1] if calling multiple elements
       this.upload_history = data.upload_history.map((upload: any) => {
         return {

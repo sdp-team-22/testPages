@@ -1,6 +1,24 @@
 import psycopg2
 from datetime import date
 
+# total data points
+def getTotalRows(conn):
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT COUNT(*) FROM solubility_data
+    """)
+    return cur.fetchone()[0]
+
+# upload history
+def getUploadHistory(conn):
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT  id, scientist, time_uploaded, file_name, compound_name
+        FROM filestore
+        ORDER BY time_uploaded DESC
+    """)
+    return cur.fetchall()
+
 # total number of user visits today
 def getToday(conn):
     today = date.today()

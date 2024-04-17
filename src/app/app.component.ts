@@ -14,7 +14,7 @@ export class AppComponent implements OnInit {
       // Flask endpoint request to update visits
       this.http.post('http://127.0.0.1:5000/api/updateVisits', {}).subscribe(
         (response) => {
-          console.log('Visit count incremented successfully');
+          // console.log('Visit count incremented successfully');
         },
         (error) => {
           console.error('Error incrementing visit count:', error);

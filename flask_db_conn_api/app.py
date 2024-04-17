@@ -26,29 +26,30 @@ conn = conn = psycopg2.connect(
 cur = conn.cursor()
 
 def database_stats():
-    # make multiple queries as needed
-    cur.execute("""
-        SELECT COUNT(*) FROM solubility_data
-    """)
-    data_points = cur.fetchone()[0]
+    # Fetch total data points
+    try:
+        from statsHelper import getTotalRows
+        data_points = getTotalRows(conn)
+    except:
+        print("app.py: total data points failed")
 
-    cur.execute("""
-        SELECT  id, scientist, time_uploaded, file_name, compound_name
-        FROM filestore
-        ORDER BY time_uploaded DESC
-    """)
-    upload_history = cur.fetchall()
+    # Fetch upload history
+    try:
+        from statsHelper import getUploadHistory
+        upload_history = getUploadHistory(conn)
+    except:
+        print("app.py: upload history failed")
 
     # Fetch daily visits
     try:
-        from visitCount import getToday
+        from statsHelper import getToday
         daily_visits = getToday(conn)
     except:
         print("app.py: daily visits failed")
 
     # Fetch monthly visits
     try:
-        from visitCount import getMonth
+        from statsHelper import getMonth
         monthly_visits = getMonth(conn)
     except:
         print("app.py: monthly visits failed")
@@ -58,7 +59,7 @@ def database_stats():
 @app.route('/api/updateVisits', methods=['POST'])
 def updateVisits():
     try:
-        from visitCount import incrementToday
+        from statsHelper import incrementToday
         # Call the incrementDaily() method
         incrementToday(conn)
         return jsonify('Visit count incremented successfully')
