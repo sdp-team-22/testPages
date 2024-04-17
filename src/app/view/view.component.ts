@@ -83,12 +83,21 @@ export class ViewComponent implements OnInit, OnDestroy {
 
 
     private xrpdOptionsSubscription: Subscription | undefined;
-    myControl = new FormControl();
 
+    //set up auto-complete for compound name
+    myControl = new FormControl();
     filteredOptions: Observable<string[]> | undefined;
 
-    
+    solvent1Control = new FormControl();
+    filterSolvent1: Observable<string[]> | undefined;
 
+    solvent2Control = new FormControl();
+    filterSolvent2: Observable<string[]> | undefined;
+
+    solvent3Control = new FormControl();
+    filterSolvent3: Observable<string[]> | undefined;
+
+    
 
     constructor(private http: HttpClient, private _snackBar: MatSnackBar) { }
 
@@ -96,13 +105,28 @@ export class ViewComponent implements OnInit, OnDestroy {
         this.fetchOptions();
         this.filteredOptions = this.myControl.valueChanges.pipe(
             startWith(''),
-            map(value => this._filter(value))
+            map(value => this._filter(value, this.compoundOptions))
           );
+
+        this.filterSolvent1 = this.solvent1Control.valueChanges.pipe(
+            startWith(''),
+            map(value => this._filter(value, this.solvent1_Options))
+        );
+
+        this.filterSolvent2 = this.solvent2Control.valueChanges.pipe(
+            startWith(''),
+            map(value => this._filter(value, this.solvent2_Options))
+        );
+
+        this.filterSolvent3 = this.solvent3Control.valueChanges.pipe(
+            startWith(''),
+            map(value => this._filter(value, this.solvent3_Options))
+        );
       }
 
-      private _filter(value: string): string[] {
+      private _filter(value: string, arrayToFilter: string[]): string[] {
         const filterValue = value.toLowerCase();
-        return this.compoundOptions.filter(option => option.toLowerCase().includes(filterValue));
+        return arrayToFilter.filter(option => option.toLowerCase().includes(filterValue));
       }
 
     ngOnDestroy() {
