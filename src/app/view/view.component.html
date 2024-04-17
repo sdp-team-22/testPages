@@ -153,6 +153,7 @@ add extra field in solvent, exact and contains. use current logic for contains
                        aria-label="Compound Name"
                        [matAutocomplete]="auto"
                        [(ngModel)]="filter.compound_name"
+                       [formControl] = "myControl"
                        [name]="'compound_name' + i">
                 <mat-autocomplete #auto="matAutocomplete">
                     <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
@@ -183,9 +184,10 @@ add extra field in solvent, exact and contains. use current logic for contains
                          type="text"
                          [(ngModel)]="filter.solvent_1"
                          name="solvent_1{{i}}"
+                         [formControl] = "solvent1Control"
                          [matAutocomplete]="solvent1Auto">
                   <mat-autocomplete #solvent1Auto>
-                    <mat-option *ngFor="let option of solvent1_Options" [value]="option">{{ option }}</mat-option>
+                    <mat-option *ngFor="let option of filterSolvent1 | async" [value]="option">{{ option }}</mat-option>
                   </mat-autocomplete>
                 </mat-form-field>
                 
@@ -196,9 +198,10 @@ add extra field in solvent, exact and contains. use current logic for contains
                          type="text"
                          [(ngModel)]="filter.solvent_2"
                          name="solvent_2{{i}}"
+                         [formControl] = "solvent2Control"
                          [matAutocomplete]="solvent2Auto">
                   <mat-autocomplete #solvent2Auto>
-                    <mat-option *ngFor="let option of solvent2_Options" [value]="option">{{ option }}</mat-option>
+                    <mat-option *ngFor="let option of filterSolvent2 | async" [value]="option">{{ option }}</mat-option>
                   </mat-autocomplete>
                 </mat-form-field>
                 
@@ -209,9 +212,10 @@ add extra field in solvent, exact and contains. use current logic for contains
                          type="text"
                          [(ngModel)]="filter.solvent_3"
                          name="solvent_3{{i}}"
+                         [formControl] = "solvent3Control"
                          [matAutocomplete]="solvent3Auto">
                   <mat-autocomplete #solvent3Auto>
-                    <mat-option *ngFor="let option of solvent3_Options" [value]="option">{{ option }}</mat-option>
+                    <mat-option *ngFor="let option of filterSolvent3 | async" [value]="option">{{ option }}</mat-option>
                   </mat-autocomplete>
                 </mat-form-field>
               </div>
