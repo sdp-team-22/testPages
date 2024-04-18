@@ -58,7 +58,7 @@ export const SolubilityDataColumns = [
     {
         key: 'Temp',
         type: 'text',
-        label: 'Temp'
+        label: 'Temp \u00B0C'
     },
     {
         key: 'XRPD',

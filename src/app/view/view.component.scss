@@ -44,7 +44,7 @@
     border: none;
     border-radius: 4px;
     background-color: #034426;
-    font-size: 16px;
+    font-size: 14px;
     cursor: pointer;
   }
   
@@ -53,6 +53,9 @@
     color: white;
   }
  
+  .download-button{
+    margin-top: 15px;
+  }
   
   /* Styles for the advanced search button */
   .advanced-search-button {
