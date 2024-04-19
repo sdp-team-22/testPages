@@ -171,6 +171,26 @@ def advancedSearch():
     results = [record.serialize() for record in query.all()]
     return jsonify(results)
 
+@app.route('/api/grabAllCompounds', methods=['GET'])
+def grabAllCompounds():
+    from searchHelper import getAllCompoundNames
+    return jsonify(getAllCompoundNames(conn))
+
+@app.route('/api/grabAllXRPD', methods=['GET'])
+def grabAllXRPD():
+    from searchHelper import getAllXRPD
+    return jsonify(getAllXRPD(conn))
+
+@app.route('/api/grabAllSolvents', methods=['GET'])
+def grabAllSolvents():
+    from searchHelper import getAllSolvent
+    return jsonify(getAllSolvent(conn))
+
+@app.route('/api/basicSearch2', methods=['POST'])
+def basicSearch2():
+    from searchHelper import basicSearch2
+    return jsonify(basicSearch2(conn, request.json.get('searchQuery')))
+
 @app.route('/api/upload', methods=['GET', 'POST'])
 def api_upload_confirmation():
     if 'files' not in request.files:

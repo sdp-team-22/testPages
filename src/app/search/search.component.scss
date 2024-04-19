@@ -1,0 +1,18 @@
+.filter-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center; /* Center vertically */
+}
+
+.filter-div button {
+    height: auto; /* Override the height property to adjust according to content */
+}
+
+.solvent-filters {
+    display: block; /* Use flexbox */
+    flex-wrap: wrap; /* Allow items to wrap onto multiple lines */
+}
+
+.start-invisible {
+    display: none;
+}

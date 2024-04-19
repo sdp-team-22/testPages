@@ -41,5 +41,10 @@ export class AppComponent implements OnInit {
     // Navigate to the "/stats" route
     this.router.navigate(['/stats']);
   }
+
+  handleSearchClick(): void {
+    // Navigate to the "/stats" route
+    this.router.navigate(['/search']);
+  }
   
 }

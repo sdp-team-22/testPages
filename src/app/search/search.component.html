@@ -1,0 +1,103 @@
+<div>
+    <button (click)="toggleSearchType()">{{ toggleSearchButtonText }}</button>
+</div>
+
+<!--
+    Basic Search Components
+-->
+<div *ngIf="useBasicSearch">
+    <input type="text" placeholder="Search by Compound Name" [(ngModel)]="searchQuery" (keyup.enter)="basicSearch()">
+
+</div>
+
+<!--
+    Advanced Search Components
+    *ngIf helps display and hide
+    *ngFor creates the divs dynamically
+-->
+<div *ngIf="!useBasicSearch">
+    <ng-container>
+        <button (click)="addFilter()">Add Filter</button>
+    </ng-container>
+    <ng-container>
+        <button (click)="resetFilters()">Reset Filters</button>
+    </ng-container>
+    <ng-container>
+        <button (click)="advancedSearch()">Search</button>
+    </ng-container>
+    <div *ngFor="let filter of filters; let i = index">
+        <div [id]="'filterDiv_' + i" class="filter-div">
+            <!--Delete filter button-->
+            <button (click)="deleteFilter('filterDiv_' + i)">
+                X
+            </button>
+            <!--General filter (compound name, solid form, etc.)-->
+            <mat-form-field>
+                <input type="text" placeholder="Select Filter Type" matInput [formControl]="filter.controls.mainControl" [matAutocomplete]="autoMainFilter">
+                <mat-autocomplete #autoMainFilter="matAutocomplete" (optionSelected)="onFilterL1Changed($event, 'filterDiv_' + i)">
+                    <mat-option *ngFor="let option of filter.mainOptions" [value]="option">
+                        {{ option }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <!--(optional) compound name input-->
+            <mat-form-field class="start-invisible" [id]="'compoundName_' + i">
+                <input type="text" placeholder="Name" matInput [formControl]="filter.controls.compoundNameControl" [matAutocomplete]="autoCompoundName">
+                <mat-autocomplete #autoCompoundName="matAutocomplete">
+                    <mat-option *ngFor="let option of filter.compoundNameOptions" [value]="option">
+                        {{ option }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <!--(optional) XRPD autocomplete-->
+            <mat-form-field class="start-invisible" [id]="'XRPD_' + i">
+                <input type="text" placeholder="example xrpd" matInput [formControl]="filter.controls.xrpdControl" [matAutocomplete]="autoXRPD">
+                <mat-autocomplete #autoXRPD="matAutocomplete">
+                    <mat-option *ngFor="let option of filter.xrpdOptions" [value]="option">
+                        {{ option }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <!--(optional) solubility autocomplete exact/contains-->
+            <mat-form-field class="start-invisible" [id]="'solubilityExactContains_' + i">
+                <input type="text" placeholder="exact/contains" matInput [formControl]="filter.controls.solventControl1" [matAutocomplete]="autoSolventOptions1">
+                <mat-autocomplete #autoSolventOptions1="matAutocomplete" (optionSelected)="onFilterL2SolventChanged($event, 'filterDiv_' + i)">
+                    <mat-option *ngFor="let option of filter.solventOptions1" [value]="option">
+                        {{ option }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>         
+        </div>
+        <!--(optional) solubility autocomplete 'has exact combination'-->
+        <div class="start-invisible solvent-filters" [id]="'solubilityExactData_' + i">
+            <mat-form-field *ngFor="let _ of generateArray(filter.solventExactDataCount); let j = index">
+                <input type="text" placeholder="solvent" matInput [formControl]="filter.controls.solventExactDataControl[j]" [matAutocomplete]="autoSolventExactData">
+                <mat-autocomplete #autoSolventExactData="matAutocomplete" (optionSelected)="filterSolventExactChanged($event, i, j)">
+                    <mat-option *ngFor="let option of filter.solventAnyDataOptions[j]" [value]="option">
+                        {{ option }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>   
+        <!--(optional) solubility autocomplete 'has any data on'-->
+        <div class="start-invisible solvent-filters" [id]="'solubilityAnyData_' + i">
+            <mat-form-field *ngFor="let _ of generateArray(filter.solventAnyDataCount); let j = index">
+                <input type="text" placeholder="solvent" matInput [formControl]="filter.controls.solventAnyDataControl[j]" [matAutocomplete]="autoSolventAnyDataOn">
+                <mat-autocomplete #autoSolventAnyDataOn="matAutocomplete" (optionSelected)="filterSolventHasAnyChanged($event, i, j)">
+                    <mat-option *ngFor="let option of filter.solventAnyDataOptions[j]" [value]="option">
+                        {{ option }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>     
+    </div>
+    <ng-container>
+        <button (click)="addFilter()">Add Filter</button>
+    </ng-container>
+    <ng-container>
+        <button (click)="resetFilters()">Reset Filters</button>
+    </ng-container>
+    <ng-container>
+        <button (click)="advancedSearch()">Search</button>
+    </ng-container>
+</div>

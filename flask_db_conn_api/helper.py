@@ -8,8 +8,8 @@ def file_excel_to_json(file):
     
     excel_df = pd.read_excel(file)
 
-    #DATASET_JSON['File Name'] = file.filename
-    DATASET_JSON['File Name'] = 'D1.xlsx' # !!!
+    DATASET_JSON['File Name'] = file.filename
+    #DATASET_JSON['File Name'] = 'D1.xlsx' # !!!
     DATASET_JSON['Project Name'] = excel_df.iloc[8]['Unnamed: 1']
     DATASET_JSON['Scientist Name'] = excel_df.iloc[9]['Unnamed: 1']
     DATASET_JSON['Compound Name'] = excel_df.iloc[15]['Unnamed: 1']
@@ -155,17 +155,17 @@ def find_duplicates(input_json, conn):
             temp = row['Temp']
             xrpd = row['XRPD']
             
-            if i == 5 or i == 6:
-                print(
-                    f"""
-                    SELECT * FROM solubility_data
-                    WHERE compound_name = {compound_name}
-                    AND solvent_1 = {solvent_1} AND solvent_2 = {solvent_2} AND solvent_3 = {solvent_3}
-                    AND ((volfrac1 = {volfrac1} AND volfrac2 = {volfrac2} AND volfrac3 = {volfrac3}) 
-                    OR (wtfrac1 = {wtfrac1} AND wtfrac2 = {wtfrac2} AND wtfrac3 = {wtfrac3}))
-                    AND temp = {temp} AND xrpd = {xrpd}
-                    """
-                )
+            # if i == 5 or i == 6:
+            #     print(
+            #         f"""
+            #         SELECT * FROM solubility_data
+            #         WHERE compound_name = {compound_name}
+            #         AND solvent_1 = {solvent_1} AND solvent_2 = {solvent_2} AND solvent_3 = {solvent_3}
+            #         AND ((volfrac1 = {volfrac1} AND volfrac2 = {volfrac2} AND volfrac3 = {volfrac3}) 
+            #         OR (wtfrac1 = {wtfrac1} AND wtfrac2 = {wtfrac2} AND wtfrac3 = {wtfrac3}))
+            #         AND temp = {temp} AND xrpd = {xrpd}
+            #         """
+            #     )
             
             
             cur.execute(

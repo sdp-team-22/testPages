@@ -17,7 +17,6 @@ import { DataService } from './services/solubility-data.service';
 import { MatTabsModule } from '@angular/material/tabs';
 
 
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -26,7 +25,7 @@ import { MatTabsModule } from '@angular/material/tabs';
     EditComponent,
     // ViewComponent,
     StatsComponent,
-    TableComponent
+    TableComponent,
   ],
   imports: [
     BrowserModule,
