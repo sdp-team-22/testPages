@@ -5,7 +5,7 @@ from flask_cors import CORS
 import psycopg2
 from flask_sqlalchemy import SQLAlchemy
 import logging
-from helper import file_excel_to_json
+from helper import file_excel_to_json, find_duplicates
 
 logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
@@ -180,7 +180,11 @@ def api_upload_confirmation():
 
     data = []
     for f in uploaded_files:
-        data.append(file_excel_to_json(f))
+        f_json = file_excel_to_json(f)
+        row_dups = find_duplicates(f_json, conn)
+        f_json['row_dups'] = row_dups
+        data.append(f_json)
+        
     # print(jsonify(data))
     # print(data)
     return jsonify(data)

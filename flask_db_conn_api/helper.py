@@ -8,7 +8,8 @@ def file_excel_to_json(file):
     
     excel_df = pd.read_excel(file)
 
-    DATASET_JSON['File Name'] = file.filename
+    #DATASET_JSON['File Name'] = file.filename
+    DATASET_JSON['File Name'] = 'D1.xlsx' # !!!
     DATASET_JSON['Project Name'] = excel_df.iloc[8]['Unnamed: 1']
     DATASET_JSON['Scientist Name'] = excel_df.iloc[9]['Unnamed: 1']
     DATASET_JSON['Compound Name'] = excel_df.iloc[15]['Unnamed: 1']
@@ -128,3 +129,83 @@ def convertToFloat(input):
     except:
         print(f'could not convert {input} to float')
         return input
+
+def find_duplicates(input_json, conn):
+    row_duplicates = []
+    compound_name = input_json['Compound Name']
+    
+    with conn.cursor() as cur:
+        for i, row in enumerate(input_json['Row Data']):    
+            solvent_1 = row['Solvent 1']
+            solvent_2 = row['Solvent 2']
+            solvent_3 = row['Solvent 3']
+            
+            volfrac1 = volfrac2 = volfrac3 = 0.0
+            if 'SolvFrac1_volfrac' in row:
+                volfrac1 = row['SolvFrac1_volfrac']
+                volfrac2 = row['SolvFrac2_volfrac']
+                volfrac3 = row['SolvFrac3_volfrac']
+
+            wtfrac1 = wtfrac2 = wtfrac3 = 0.0
+            if 'SolvFrac1_wtfrac' in row:
+                wtfrac1 = row['SolvFrac1_wtfrac']
+                wtfrac2 = row['SolvFrac2_wtfrac']
+                wtfrac3 = row['SolvFrac3_wtfrac']
+            
+            temp = row['Temp']
+            xrpd = row['XRPD']
+            
+            if i == 5 or i == 6:
+                print(
+                    f"""
+                    SELECT * FROM solubility_data
+                    WHERE compound_name = {compound_name}
+                    AND solvent_1 = {solvent_1} AND solvent_2 = {solvent_2} AND solvent_3 = {solvent_3}
+                    AND ((volfrac1 = {volfrac1} AND volfrac2 = {volfrac2} AND volfrac3 = {volfrac3}) 
+                    OR (wtfrac1 = {wtfrac1} AND wtfrac2 = {wtfrac2} AND wtfrac3 = {wtfrac3}))
+                    AND temp = {temp} AND xrpd = {xrpd}
+                    """
+                )
+            
+            
+            cur.execute(
+            """
+            SELECT * FROM solubility_data
+            WHERE compound_name = %s
+            AND solvent_1 = %s AND solvent_2 = %s AND solvent_3 = %s
+            AND ((volfrac1 = %s AND volfrac2 = %s AND volfrac3 = %s) 
+            OR (wtfrac1 = %s AND wtfrac2 = %s AND wtfrac3 = %s))
+            AND temp = %s AND xrpd = %s
+            """, (compound_name, solvent_1, solvent_2, solvent_3, volfrac1, volfrac2, volfrac3, wtfrac1, wtfrac2, wtfrac3, temp, xrpd))
+            
+            duplicate = cur.fetchone()
+            
+            if duplicate is not None:
+                row_duplicates.append(i)
+    
+    return row_duplicates
+            
+            
+if __name__ == '__main__':
+    import os
+    import json
+    import psycopg2
+    
+    x = file_excel_to_json(
+        file= os.path.join(os.getcwd(), 'flask_db_conn_api', 'D1.xlsx')
+    )
+    print(json.dumps(x, indent=1))
+    
+    
+    conn = conn = psycopg2.connect(
+        database="postgres",
+        user="sdp-dev",
+        password="sdp123",
+        host="24.62.166.59",
+        port="5432"
+    )
+    y = find_duplicates(
+        input_json= x,
+        conn = conn
+    )
+    print(y)

@@ -36,6 +36,7 @@ export class TableComponent implements OnInit, OnDestroy  {
     this.subscription = this.dataService.getResponseData(
     ).subscribe(response => {
       if (response != null) {
+        console.log(response)
         for (const key in response) {
           console.log()
           const projectInfo = {
