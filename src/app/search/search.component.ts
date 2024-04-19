@@ -60,6 +60,7 @@ export class SearchComponent {
     toggleSearchType() {
         if (this.useBasicSearch) {
             this.useBasicSearch = false;
+            this.searchQuery = "";
             this.toggleSearchButtonText = "Switch to Basic Search?";
             this.resetFilters();
         } else {
@@ -330,7 +331,48 @@ export class SearchComponent {
     }
 
     advancedSearch() {
-        
+        var advancedQuery = {'Compound Name':[] as string[], 'XRPD':[] as string[], 'Solvent Exact': [[]] as [string[]], 'Solvent Contains': [] as string[]}
+        for (let i = 0; i < this.filters.length; i++) {
+            var mainSelection = this.filters[i].controls.mainControl.value;
+            switch (mainSelection) {
+                case 'Compound Name':
+                    const tempName: string = this.filters[i].controls.compoundNameControl.value;
+                    advancedQuery['Compound Name'].push(tempName);
+                    break;
+                case 'XRPD':
+                    const tempXRPD: string = this.filters[i].controls.xrpdControl.value;
+                    advancedQuery['XRPD'].push(tempXRPD);
+                    break;
+                case 'Solvent':
+                    const Solvent2: string = this.filters[i].controls.solventControl1.value;
+                    switch(Solvent2) {
+                        case 'has exact combination':
+                            var tempControls = this.filters[i].controls.solventExactDataControl;
+                            var tempList = []
+                            for (let j = 0; j < tempControls.length; j++) {
+                                tempList.push(tempControls[j].value);
+                            }
+                            advancedQuery['Solvent Exact'].push(tempList);
+                            break;
+                        case 'has any data on':
+                            var tempControls = this.filters[i].controls.solventAnyDataControl;
+                            for (let j = 0; j < tempControls.length; j++) {
+                                advancedQuery['Solvent Contains'].push(tempControls[j].value);
+                            }
+                            break;
+                    }
+                break;
+            }
+        }
+        // console.log(advancedQuery);
+        this.flaskConnectionService.advancedSearch(advancedQuery).subscribe (
+            (response) => {
+                console.log(response);
+            },
+            (error) => {
+                console.log('Error search.component.ts: advancedSearch');
+            }
+        );
     }
 
     getId(inputString: string) {

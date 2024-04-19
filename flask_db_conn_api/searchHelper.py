@@ -43,13 +43,134 @@ def getAllSolvent(conn):
     return list(distinctSolvents)
 
 def basicSearch2(conn, searchQuery):
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT * FROM solubility_data
+            WHERE LOWER(compound_name) LIKE LOWER(%s)
+        """, ('%' + searchQuery + '%',))
+        # Fetch and return the results
+        return cur.fetchall()
+    except Exception as e:
+        return { 'Error': e }
+
+def advancedSearch2(conn, searchQuery):
     cur = conn.cursor()
+    compoundNames = searchQuery['Compound Name']
+    xrpd = searchQuery['XRPD']
+    solvExact = searchQuery['Solvent Exact']
+    solvHas = searchQuery['Solvent Contains']
+    result = []
+    try:
+        # query through compound names
+        for name in compoundNames:
+            cur.execute("SELECT * FROM solubility_data WHERE LOWER(compound_name) = LOWER(%s)", (name,))
+        result.extend(cur.fetchall())
+    except Exception as e:
+        pass
+    try:
+        # query through xrpd
+        for x in xrpd:
+            cur.execute("SELECT * FROM solubility_data WHERE LOWER(xrpd) = LOWER(%s)", (x,))
+        result.extend(cur.fetchall())
+    except Exception as e:
+        pass
+    try:
+        # query through exact solvent combinations
+        for combination in solvExact:
+            cleanCombo = [str(x) for x in combination if x is not None]
+            print(cleanCombo)
+            if len(cleanCombo) == 1:
+                cur.execute("""
+                    SELECT * FROM solubility_data 
+                    WHERE (LOWER(solvent_1) = LOWER(%s) and solvent_2 = 'nan' and solvent_3 = 'nan')
+                    OR (solvent_1 = 'nan' and LOWER(solvent_2) = LOWER(%s) and solvent_3 = 'nan')
+                    OR (solvent_1 = 'nan' and solvent_2 = 'nan' and LOWER(solvent_3) = LOWER(%s))
+                """, (cleanCombo[0], cleanCombo[0], cleanCombo[0],))
+                result.extend(cur.fetchall())
+            elif len(cleanCombo) == 2:
+                cur.execute("""
+                    SELECT * FROM solubility_data 
+                    WHERE (LOWER(solvent_1) = LOWER(%s) and LOWER(solvent_2) = LOWER(%s) and solvent_3 = 'nan')
+                    OR (LOWER(solvent_1) = LOWER(%s) and LOWER(solvent_2) = LOWER(%s) and solvent_3 = 'nan')
+                    OR (LOWER(solvent_1) = LOWER(%s) and solvent_2 = 'nan' and LOWER(solvent_3) = LOWER(%s))
+                    OR (LOWER(solvent_1) = LOWER(%s) and solvent_2 = 'nan' and LOWER(solvent_3) = LOWER(%s))
+                    OR (solvent_1 = 'nan' and LOWER(solvent_2) = LOWER(%s) and LOWER(solvent_3) = LOWER(%s))
+                    OR (solvent_1 = 'nan' and LOWER(solvent_2) = LOWER(%s) and LOWER(solvent_3) = LOWER(%s))
+                """, (cleanCombo[0], cleanCombo[1],
+                    cleanCombo[1], cleanCombo[0],
+                    cleanCombo[0], cleanCombo[1],
+                    cleanCombo[1], cleanCombo[0],
+                    cleanCombo[0], cleanCombo[1],
+                    cleanCombo[1], cleanCombo[0],
+                ))
+                result.extend(cur.fetchall())
+            elif len(cleanCombo) == 3:
+                cur.execute("""
+                    SELECT * FROM solubility_data 
+                    WHERE (LOWER(solvent_1) = LOWER(%s) and LOWER(solvent_2) = LOWER(%s) and LOWER(solvent_3) = LOWER(%s))
+                    OR (LOWER(solvent_1) = LOWER(%s) and LOWER(solvent_2) = LOWER(%s) and LOWER(solvent_3) = LOWER(%s))
+                    OR (LOWER(solvent_1) = LOWER(%s) and LOWER(solvent_2) = LOWER(%s) and LOWER(solvent_3) = LOWER(%s))
+                    OR (LOWER(solvent_1) = LOWER(%s) and LOWER(solvent_2) = LOWER(%s) and LOWER(solvent_3) = LOWER(%s))
+                    OR (LOWER(solvent_1) = LOWER(%s) and LOWER(solvent_2) = LOWER(%s) and LOWER(solvent_3) = LOWER(%s))
+                    OR (LOWER(solvent_1) = LOWER(%s) and LOWER(solvent_2) = LOWER(%s) and LOWER(solvent_3) = LOWER(%s))
+                """, (cleanCombo[0], cleanCombo[1], cleanCombo[2],
+                    cleanCombo[0], cleanCombo[2], cleanCombo[1],
+                    cleanCombo[1], cleanCombo[0], cleanCombo[2],
+                    cleanCombo[1], cleanCombo[2], cleanCombo[0],
+                    cleanCombo[2], cleanCombo[0], cleanCombo[1],
+                    cleanCombo[2], cleanCombo[1], cleanCombo[0],
+                ))
+                result.extend(cur.fetchall())
+    except Exception as e:
+        pass
+    try:
+        # now query through has any
+        for solvent in solvHas:
+            cur.execute("""
+                SELECT * FROM solubility_data
+                WHERE solvent_1 = %s
+                OR solvent_2 = %s
+                OR solvent_3 = %s
+            """, (solvent, solvent, solvent))
+            result.extend(cur.fetchall())
+    except Exception as e:
+        pass
+    unique_rows = set(result)
+    print(list(unique_rows))
+    return list(unique_rows)
+
+def test(conn):
+    cur = conn.cursor()
+    cleanCombo = ['2-Butanol', '1,2-Dimethoxyethane', 'Formic acid']
     cur.execute("""
-        SELECT * FROM solubility_data
-        WHERE LOWER(compound_name) LIKE LOWER(%s)
-    """, ('%' + searchQuery + '%',))
-    # Fetch and return the results
-    return cur.fetchall()
+                    SELECT * FROM solubility_data 
+                    WHERE (LOWER(solvent_1) = LOWER(%s) and solvent_2 = LOWER(%s) and LOWER(solvent_3) = LOWER(%s))
+                    OR (LOWER(solvent_1) = LOWER(%s) and solvent_2 = LOWER(%s) and LOWER(solvent_3) = LOWER(%s))
+                    OR (LOWER(solvent_1) = LOWER(%s) and solvent_2 = LOWER(%s) and LOWER(solvent_3) = LOWER(%s))
+                    OR (LOWER(solvent_1) = LOWER(%s) and solvent_2 = LOWER(%s) and LOWER(solvent_3) = LOWER(%s))
+                    OR (LOWER(solvent_1) = LOWER(%s) and solvent_2 = LOWER(%s) and LOWER(solvent_3) = LOWER(%s))
+                    OR (LOWER(solvent_1) = LOWER(%s) and solvent_2 = LOWER(%s) and LOWER(solvent_3) = LOWER(%s))
+                """, (cleanCombo[0], cleanCombo[1], cleanCombo[2],
+                    cleanCombo[0], cleanCombo[2], cleanCombo[1],
+                    cleanCombo[1], cleanCombo[0], cleanCombo[2],
+                    cleanCombo[1], cleanCombo[2], cleanCombo[0],
+                    cleanCombo[2], cleanCombo[0], cleanCombo[1],
+                    cleanCombo[2], cleanCombo[1], cleanCombo[0],
+                ))
+    cur.execute("""
+                    SELECT * FROM solubility_data 
+                    WHERE (LOWER(solvent_1) = LOWER(%s) and solvent_2 = LOWER(%s) and LOWER(solvent_3) = LOWER(%s))
+                """, (
+                    cleanCombo[1], cleanCombo[2], cleanCombo[0],
+                ))
+    cur.execute("""
+                    SELECT * FROM solubility_data 
+                    WHERE solvent_1 = '1,2-Dimethoxyethane'""")
+    #cur.execute("""
+    #                SELECT DISTINCT(solvent_1) FROM solubility_data where solvent_1 = '1,2-Dimethoxyethane';
+    #            """)
+    print(cur.fetchall())
 
 def search_unique_form(cur):
     try:
@@ -168,3 +289,10 @@ if __name__ == "__main__":
     # print(basicSearch(conn, 'XX'))
 
     # search_restricted_form(conn, 'water')
+
+    # print(advancedSearch2(conn, 
+    #                       {'Compound Name': ['BI654321 XX'], 
+    #                         'XRPD': ['Form III', 'Acetone Solvate'], 
+    #                         'Solvent Exact': [[], ['Isobutanol', 'Methylethyl ketone', 'Water'], ['Isobutanol', 'Methylethyl ketone', 'Water']], 
+    #                         'Solvent Contains': ['Ethyl acetate', 't-Butanol', 'Heptane', None]}))
+    test(conn)

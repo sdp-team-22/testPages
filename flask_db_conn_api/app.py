@@ -191,6 +191,11 @@ def basicSearch2():
     from searchHelper import basicSearch2
     return jsonify(basicSearch2(conn, request.json.get('searchQuery')))
 
+@app.route('/api/advancedSearch2', methods=['POST'])
+def advancedSearch2():
+    from searchHelper import advancedSearch2
+    return jsonify(advancedSearch2(conn, request.json.get('searchQuery')))
+
 @app.route('/api/constrainFilter', methods=['POST'])
 def getConstrained():
     from searchHelper import search_restricted_form

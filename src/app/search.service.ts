@@ -32,4 +32,9 @@ export class SearchService {
         return this.http.post(url, { searchQuery });
     }
 
+    advancedSearch(searchQuery: any) {
+        let url = 'http://127.0.0.1:5000/api/advancedSearch2';
+        return this.http.post(url, { searchQuery });
+    }
+
 }
