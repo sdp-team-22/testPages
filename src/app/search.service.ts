@@ -27,7 +27,7 @@ export class SearchService {
         return this.http.post(url, selected);
     }
 
-    basicSearch(searchQuery: string) {
+    basicSearch(searchQuery: any) {
         let url = 'http://127.0.0.1:5000/api/basicSearch2';
         return this.http.post(url, { searchQuery });
     }

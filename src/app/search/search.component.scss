@@ -16,3 +16,81 @@
 .start-invisible {
     display: none;
 }
+
+button {
+    font-family: var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, Roboto, sans-serif));
+    font-size: var(--mdc-typography-button-font-size, 14px);
+}
+
+.round-button {
+    border-radius: 10px;
+    border: 0px;
+}
+
+.give-me-room {
+    margin-bottom: 1rem;
+    margin-right: 1rem;
+}
+
+.filter-buttons {
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+}
+
+.search-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #055c33;
+    border-radius: 4px;
+    font-size: 16px;
+    width: 100%;
+}
+
+.search-input:focus {
+    outline: #034426;
+}
+
+.light-green-background {
+    background-color: rgb(138, 214, 172);
+}
+
+.light-yellow-background {
+    background-color: rgb(233, 232, 171);
+}
+
+.light-yellow-background:hover {
+    background-color: rgb(148, 147, 85);
+}
+
+.search-button {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+}
+
+.search-button:hover {
+    background-color: #246346;
+    color: #ffffff;
+}
+
+.delete-div {
+    width: 30px;
+    height: 40px;
+}
+
+.delete-button {
+    background-color: rgb(255, 158, 158);
+    padding: 1.1rem;
+    margin-bottom: 1.3rem;
+    margin-right: 0.3rem;
+}
+
+.delete-button:hover {
+    background-color: rgb(255, 0, 0);
+}

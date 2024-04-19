@@ -1,13 +1,12 @@
-<div>
-    <button (click)="toggleSearchType()">{{ toggleSearchButtonText }}</button>
+<div class="give-me-room">
+    <button mat-raised-button class="round-button search-button light-green-background" (click)="toggleSearchType()">{{ toggleSearchButtonText }}</button>
 </div>
 
 <!--
     Basic Search Components
 -->
-<div *ngIf="useBasicSearch">
-    <input type="text" placeholder="Search by Compound Name" [(ngModel)]="searchQuery" (keyup.enter)="basicSearch()">
-
+<div class="give-me-room" *ngIf="useBasicSearch">
+    <input class="search-input" type="text" placeholder="Search by Compound Name" [(ngModel)]="searchQuery" (keyup.enter)="basicSearch()">
 </div>
 
 <!--
@@ -17,24 +16,27 @@
 -->
 <div *ngIf="!useBasicSearch">
     <ng-container>
-        <button (click)="addFilter()">Add Filter</button>
+        <button class="round-button give-me-room filter-buttons light-yellow-background" (click)="addFilter()">Add Filter</button>
     </ng-container>
     <ng-container>
-        <button (click)="resetFilters()">Reset Filters</button>
+        <button class="round-button give-me-room filter-buttons light-yellow-background" (click)="resetFilters()">Reset Filters</button>
     </ng-container>
     <ng-container>
-        <button (click)="advancedSearch()">Search</button>
+        <button class="round-button give-me-room filter-buttons light-yellow-background" (click)="advancedSearch()">Search</button>
     </ng-container>
     <div *ngFor="let filter of filters; let i = index">
         <div [id]="'filterDiv_' + i" class="filter-div">
             <!--Delete filter button-->
-            <button (click)="deleteFilter('filterDiv_' + i)">
-                X
-            </button>
+            <div>
+                <button class="delete-button round-button button" (click)="deleteFilter('filterDiv_' + i)">
+                </button>
+            </div>
             <!--General filter (compound name, solid form, etc.)-->
             <mat-form-field>
-                <input type="text" placeholder="Select Filter Type" matInput [formControl]="filter.controls.mainControl" [matAutocomplete]="autoMainFilter">
-                <mat-autocomplete #autoMainFilter="matAutocomplete" (optionSelected)="onFilterL1Changed($event, 'filterDiv_' + i)">
+                <input type="text" placeholder="Select Filter Type" matInput [formControl]="filter.controls.mainControl"
+                    [matAutocomplete]="autoMainFilter">
+                <mat-autocomplete #autoMainFilter="matAutocomplete"
+                    (optionSelected)="onFilterL1Changed($event, 'filterDiv_' + i)">
                     <mat-option *ngFor="let option of filter.mainOptions" [value]="option">
                         {{ option }}
                     </mat-option>
@@ -42,7 +44,8 @@
             </mat-form-field>
             <!--(optional) compound name input-->
             <mat-form-field class="start-invisible" [id]="'compoundName_' + i">
-                <input type="text" placeholder="Name" matInput [formControl]="filter.controls.compoundNameControl" [matAutocomplete]="autoCompoundName">
+                <input type="text" placeholder="Name" matInput [formControl]="filter.controls.compoundNameControl"
+                    [matAutocomplete]="autoCompoundName">
                 <mat-autocomplete #autoCompoundName="matAutocomplete">
                     <mat-option *ngFor="let option of filter.compoundNameOptions" [value]="option">
                         {{ option }}
@@ -51,7 +54,8 @@
             </mat-form-field>
             <!--(optional) XRPD autocomplete-->
             <mat-form-field class="start-invisible" [id]="'XRPD_' + i">
-                <input type="text" placeholder="example xrpd" matInput [formControl]="filter.controls.xrpdControl" [matAutocomplete]="autoXRPD">
+                <input type="text" placeholder="example xrpd" matInput [formControl]="filter.controls.xrpdControl"
+                    [matAutocomplete]="autoXRPD">
                 <mat-autocomplete #autoXRPD="matAutocomplete">
                     <mat-option *ngFor="let option of filter.xrpdOptions" [value]="option">
                         {{ option }}
@@ -60,44 +64,171 @@
             </mat-form-field>
             <!--(optional) solubility autocomplete exact/contains-->
             <mat-form-field class="start-invisible" [id]="'solubilityExactContains_' + i">
-                <input type="text" placeholder="exact/contains" matInput [formControl]="filter.controls.solventControl1" [matAutocomplete]="autoSolventOptions1">
-                <mat-autocomplete #autoSolventOptions1="matAutocomplete" (optionSelected)="onFilterL2SolventChanged($event, 'filterDiv_' + i)">
+                <input type="text" placeholder="exact/contains" matInput [formControl]="filter.controls.solventControl1"
+                    [matAutocomplete]="autoSolventOptions1">
+                <mat-autocomplete #autoSolventOptions1="matAutocomplete"
+                    (optionSelected)="onFilterL2SolventChanged($event, 'filterDiv_' + i)">
                     <mat-option *ngFor="let option of filter.solventOptions1" [value]="option">
                         {{ option }}
                     </mat-option>
                 </mat-autocomplete>
-            </mat-form-field>         
+            </mat-form-field>
         </div>
         <!--(optional) solubility autocomplete 'has exact combination'-->
         <div class="start-invisible solvent-filters" [id]="'solubilityExactData_' + i">
             <mat-form-field *ngFor="let _ of generateArray(filter.solventExactDataCount); let j = index">
-                <input type="text" placeholder="solvent" matInput [formControl]="filter.controls.solventExactDataControl[j]" [matAutocomplete]="autoSolventExactData">
-                <mat-autocomplete #autoSolventExactData="matAutocomplete" (optionSelected)="filterSolventExactChanged($event, i, j)">
+                <input type="text" placeholder="solvent" matInput
+                    [formControl]="filter.controls.solventExactDataControl[j]" [matAutocomplete]="autoSolventExactData">
+                <mat-autocomplete #autoSolventExactData="matAutocomplete"
+                    (optionSelected)="filterSolventExactChanged($event, i, j)">
                     <mat-option *ngFor="let option of filter.solventExactDataOptions[j]" [value]="option">
                         {{ option }}
                     </mat-option>
                 </mat-autocomplete>
             </mat-form-field>
-        </div>   
+        </div>
         <!--(optional) solubility autocomplete 'has any data on'-->
         <div class="start-invisible solvent-filters" [id]="'solubilityAnyData_' + i">
             <mat-form-field *ngFor="let _ of generateArray(filter.solventAnyDataCount); let j = index">
-                <input type="text" placeholder="solvent" matInput [formControl]="filter.controls.solventAnyDataControl[j]" [matAutocomplete]="autoSolventAnyDataOn">
-                <mat-autocomplete #autoSolventAnyDataOn="matAutocomplete" (optionSelected)="filterSolventHasAnyChanged($event, i, j)">
+                <input type="text" placeholder="solvent" matInput
+                    [formControl]="filter.controls.solventAnyDataControl[j]" [matAutocomplete]="autoSolventAnyDataOn">
+                <mat-autocomplete #autoSolventAnyDataOn="matAutocomplete"
+                    (optionSelected)="filterSolventHasAnyChanged($event, i, j)">
                     <mat-option *ngFor="let option of filter.solventAnyDataOptions[j]" [value]="option">
                         {{ option }}
                     </mat-option>
                 </mat-autocomplete>
             </mat-form-field>
-        </div>     
+        </div>
     </div>
-    <ng-container>
-        <button (click)="addFilter()">Add Filter</button>
-    </ng-container>
-    <ng-container>
-        <button (click)="resetFilters()">Reset Filters</button>
-    </ng-container>
-    <ng-container>
-        <button (click)="advancedSearch()">Search</button>
-    </ng-container>
+    <div *ngIf="filters.length > 0">
+        <ng-container>
+            <button class="round-button give-me-room filter-buttons light-yellow-background" (click)="addFilter()">Add Filter</button>
+        </ng-container>
+        <ng-container>
+            <button class="round-button give-me-room filter-buttons light-yellow-background" (click)="resetFilters()">Reset Filters</button>
+        </ng-container>
+        <ng-container>
+            <button class="round-button give-me-room filter-buttons light-yellow-background" (click)="advancedSearch()">Search</button>
+        </ng-container>
+    </div>
+</div>
+<div>
+    <div>
+        <!--Vol frac, wt frac-->
+        <mat-form-field class="give-me-room">
+            <input type="text" placeholder="Vol/Wt frac" matInput [formControl]="selectedFractionControl">
+            <mat-autocomplete>
+                <mat-option [value]="selectedFraction">
+                    {{ selectedFraction }}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+        <!--units-->
+        <mat-form-field class="give-me-room">
+            <input type="text" placeholder="Select Units" matInput [formControl]="selectedUnitControl">
+            <mat-autocomplete>
+                <mat-option [value]="selectedUnit">
+                    {{ selectedUnit }}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+    </div>
+    <!--actual table-->
+    <table mat-table [dataSource]="result">
+        <!-- checkbox Column -->
+        <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>Select All
+                <mat-checkbox color="primary" class="checkbox"></mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let result">
+                <mat-checkbox color="primary" class="checkbox" [(ngModel)]="result.selected"></mat-checkbox>
+            </td>
+        </ng-container>
+        <!-- Compound Name Column -->
+        <ng-container matColumnDef="compound_name">
+            <th mat-header-cell *matHeaderCellDef> Compound Name </th>
+            <td mat-cell *matCellDef="let result"> {{ result.compound_name }} </td>
+        </ng-container>
+
+        <!-- Solubility Column -->
+        <ng-container matColumnDef="solubility">
+            <th mat-header-cell *matHeaderCellDef> Solubility </th>
+            <td mat-cell *matCellDef="let result">
+                <ng-container> {{ result.solubility_mg_g_solvn }}
+                </ng-container>
+                <ng-container> {{ result.solubility_mg_g_solv }}
+                </ng-container>
+                <ng-container> {{ result.solubility_mg_mL_solv }}
+                </ng-container>
+                <ng-container> {{ result.solubility_wt }} </ng-container>
+            </td>
+        </ng-container>
+
+        <!-- Fraction Column -->
+        <ng-container matColumnDef="fraction">
+            <th mat-header-cell *matHeaderCellDef> Fraction </th>
+            <td mat-cell class="mat-cell" *matCellDef="let result">
+                <ng-container>
+                    <div>
+                        {{ result.solvent_1 }} Volume Fraction: {{ result.volfrac1 }}
+                    </div>
+                    <div>
+                        {{ result.solvent_2 }} Volume Fraction: {{ result.volfrac2 }}
+                    </div>
+                    <div>
+                        {{ result.solvent_3 }} Volume Fraction: {{ result.volfrac3 }}
+                    </div>
+                </ng-container>
+                <ng-container>
+                    <div>
+                        {{ result.solvent_1 }} Weight Fraction: {{ result.wtfrac1 }}
+                    </div>
+                    <div>
+                        {{ result.solvent_2 }} Weight Fraction: {{ result.wtfrac2 }}
+                    </div>
+                    <div>
+                        {{ result.solvent_3 }} Weight Fraction: {{ result.wtfrac3 }}
+                    </div>
+                </ng-container>
+            </td>
+        </ng-container>
+        <!-- temp Column -->
+        <ng-container matColumnDef="temp">
+            <th mat-header-cell *matHeaderCellDef> Temp &#8451; </th>
+            <td mat-cell *matCellDef="let result"> {{ result.temp }} </td>
+        </ng-container>
+        <!-- solid form Column -->
+        <ng-container matColumnDef="xrpd">
+            <th mat-header-cell *matHeaderCellDef> Solid Form </th>
+            <td mat-cell *matCellDef="let result"> {{ result.xrpd }} </td>
+        </ng-container>
+        <!-- Scientist Name Column -->
+        <ng-container matColumnDef="scientist_name">
+            <th mat-header-cell *matHeaderCellDef> Scientist Name </th>
+            <td mat-cell *matCellDef="let result"> {{ result.scientist_name }} </td>
+        </ng-container>
+        <!-- Solute Lot Number Column -->
+        <ng-container matColumnDef="solute_lot_num">
+            <th mat-header-cell *matHeaderCellDef> Solute Lot Number </th>
+            <td mat-cell *matCellDef="let result"> {{ result.solute_lot_num }} </td>
+        </ng-container>
+        <!-- eln sample Column -->
+        <ng-container matColumnDef="eln_sample_num_measure">
+            <th mat-header-cell *matHeaderCellDef> ELN Sample Number</th>
+            <td mat-cell *matCellDef="let result"> {{ result.eln_sample_num_measure}} </td>
+        </ng-container>
+        <!-- file name Column -->
+        <ng-container matColumnDef="file_name">
+            <th mat-header-cell *matHeaderCellDef> File Name </th>
+            <td mat-cell *matCellDef="let result"> {{ result.file_name }} </td>
+        </ng-container>
+        <!-- Define table columns -->
+        <tr mat-header-row
+            *matHeaderRowDef="['select','compound_name', 'solubility', 'fraction', 'temp', 'xrpd', 'scientist_name', 'solute_lot_num', 'eln_sample_num_measure', 'file_name',]">
+        </tr>
+        <tr mat-row
+            *matRowDef="let row; columns: ['select', 'compound_name', 'solubility', 'fraction', 'temp', 'xrpd', 'scientist_name', 'solute_lot_num', 'eln_sample_num_measure', 'file_name',];">
+        </tr>
+    </table>
 </div>

@@ -156,6 +156,7 @@ export class ViewComponent implements OnInit, OnDestroy {
         this.http.get<any>(`http://127.0.0.1:5000/api/basicSearch?query=${this.searchQuery}`,{ headers }).subscribe(
                 (response) => {
                 this.searchResults = response;
+                console.log(response);
             },
             (error) => {
                 if (error.status === 404) {

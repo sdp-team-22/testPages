@@ -42,6 +42,18 @@ def getAllSolvent(conn):
         distinctSolvents.add(element[0])
     return list(distinctSolvents)
 
+keys = [
+    'id', 'file_name', 'project_name', 
+    'scientist_name', 'compound_name', 'molecular_weight', 
+    'solid_form', 'tmelt', 'hfus', 
+    'solvent_1', 'solvent_2', 'solvent_3', 
+    'volfrac1', 'volfrac2', 'volfrac3', 
+    'wtfrac1', 'wtfrac2', 'wtfrac3', 
+    'temp', 'xrpd', 'solubility_mg_g_solvn', 
+    'solubility_mg_g_solv', 'solubility_wt', 'solubility_mg_mL_solv', 
+    'solute_lot_num', 'eln_sample_num_measure', 'measure_method', 
+    'comments']
+
 def basicSearch2(conn, searchQuery):
     try:
         cur = conn.cursor()
@@ -50,9 +62,17 @@ def basicSearch2(conn, searchQuery):
             WHERE LOWER(compound_name) LIKE LOWER(%s)
         """, ('%' + searchQuery + '%',))
         # Fetch and return the results
-        return cur.fetchall()
+        temp = cur.fetchall()
+        finalResult = []
+        for i in range(len(temp)):
+            tempResult = {key: value for key, value in zip(keys, temp[i])}
+            finalResult.append(tempResult)
+        return finalResult
     except Exception as e:
-        return { 'Error': e }
+        for i in range(len(temp)):
+            tempResult = {key: value for key, value in zip(keys, None)}
+            finalResult.append(tempResult)
+        return finalResult
 
 def advancedSearch2(conn, searchQuery):
     cur = conn.cursor()
@@ -137,8 +157,16 @@ def advancedSearch2(conn, searchQuery):
     except Exception as e:
         pass
     unique_rows = set(result)
-    print(list(unique_rows))
-    return list(unique_rows)
+    finalResult = []
+    if len(unique_rows) == 0:
+        for i in range(len(unique_rows)):
+            tempResult = {key: value for key, value in zip(keys, None)}
+            finalResult.append(tempResult)
+        return finalResult
+    for i in range(len(unique_rows)):
+        tempResult = {key: value for key, value in zip(keys, unique_rows[i])}
+        finalResult.append(tempResult)
+    return finalResult
 
 def test(conn):
     cur = conn.cursor()

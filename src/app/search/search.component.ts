@@ -1,11 +1,15 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common'; // to use *ngIf
-import { Form, FormControl, FormsModule } from '@angular/forms'; // to use ngModel
+import { FormControl, FormsModule } from '@angular/forms'; // to use ngModel
 // for filters
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SearchService } from '../search.service';
+// for table
+import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
     selector: 'search-root',
@@ -19,6 +23,9 @@ import { SearchService } from '../search.service';
         MatAutocompleteModule,
         MatInputModule,
         ReactiveFormsModule,
+        MatTableModule,
+        MatCheckboxModule,
+        MatSnackBarModule,
     ]
   })
 export class SearchComponent {
@@ -26,9 +33,16 @@ export class SearchComponent {
     useBasicSearch: boolean = true;
     toggleSearchButtonText: string = this.useBasicSearch === true ? "Switch to Advanced Search?": "Switch to Basic Search?";
     
+    // for graph
+    selectedUnit: string = 'solubility_mg_g_solv'; //default
+    selectedFraction: string = 'wtfrac'; //default
+    selectedFractionControl = new FormControl();
+    selectedUnitControl = new FormControl();
+
     // basic search variables
     searchQuery: any;
-
+    
+    result: string[] = [];
     // advanced search variables
     filters = [
         { 
@@ -51,7 +65,7 @@ export class SearchComponent {
         },
     ]
 
-    constructor(private flaskConnectionService: SearchService){}
+    constructor(private flaskConnectionService: SearchService, private _snackBar: MatSnackBar){}
 
     /**
      * void toggleSearchType()
@@ -297,13 +311,14 @@ export class SearchComponent {
             var value1 = this.filters[i].controls.solventExactDataControl[0].value;
             var value2 = this.filters[i].controls.solventExactDataControl[1].value;
             this.flaskConnectionService.grabConstrained([value1, value2]).subscribe(
-                (response: {[key: string]: any}) => {
+                (response: any) => {
+                    // console.log(response);
                     var temp = response['solvent_3_options'];
                     this.filters[i].solventExactDataOptions[j] = temp;
                     this.filters[i].solventExactDataCount++;
-                },
+                }, 
                 error => {
-
+                    console.log("error with advanced search");
                 }
             )
         }
@@ -319,11 +334,21 @@ export class SearchComponent {
     }
 
     basicSearch() {
-        console.log("enter pressed");
+        console.log(this.searchQuery);
+        if (!this.searchQuery) {
+            this._snackBar.open('Please enter Compound Name', 'Close', {
+                duration: 3000, 
+                horizontalPosition: 'center', 
+                verticalPosition: 'bottom', 
+                panelClass: 'error-snackbar' // Custom CSS class for styling
+            });
+            return;
+        }
         this.flaskConnectionService.basicSearch(this.searchQuery).subscribe(
-            response => {
-                console.log(response);
-            },
+            (response: any) => {
+                // console.log(response);
+                this.result = response;
+            },            
             error => {
                 console.error('Error: search.component.ts basicSearch() failed');
             }
@@ -366,8 +391,9 @@ export class SearchComponent {
         }
         // console.log(advancedQuery);
         this.flaskConnectionService.advancedSearch(advancedQuery).subscribe (
-            (response) => {
-                console.log(response);
+            (response: any) => {
+                // console.log(response);
+                this.result = response;
             },
             (error) => {
                 console.log('Error search.component.ts: advancedSearch');
