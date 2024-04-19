@@ -114,17 +114,16 @@
     <div id="download-button" class="download-container">
       <button mat-raised-button class="download-button" (click)="exportToExcel(selectedItems)">Download</button>
     </div>
-    <div class="graph-container">
+    <div class="graph-container" data-type="basic">
       <mat-form-field appearance="fill">
         <mat-label>Graph Type</mat-label>
         <mat-select [(ngModel)]="selectedGraphType" name="selectedGraphType">
-          <mat-option  (click)="showGraph()" value="bar">Bar Graph</mat-option>
-          <mat-option  (click)="showGraph()" value="scatter">Scatter Plot</mat-option>
+          <mat-option  (click)="showGraph($event)" value="bar">Bar Graph</mat-option>
+          <mat-option  (click)="showGraph($event)" value="scatter">Scatter Plot</mat-option>
         </mat-select>
       </mat-form-field>
-      <!-- <button mat-raised-button class="graph-button" (click)="showGraph()">Graph It</button> -->
     </div>
-    <canvas id="chartCanvas"></canvas>
+    <canvas id="chartCanvas" height="10" width="10"></canvas>
 </div>
 <button mat-raised-button class="advanced-button" *ngIf="showAdvancedSearch" (click)="toggleAdvancedSearch(); clearSearch()">Go back to basic search?</button>
 <div class="advanced-container" *ngIf="showAdvancedSearch">
@@ -377,20 +376,19 @@
           <tr mat-header-row *matHeaderRowDef="['select','compound_name', 'solubility', 'fraction', 'temp', 'xrpd', 'scientist_name', 'solute_lot_num', 'eln_sample_num_measure', 'file_name',]"></tr>
           <tr mat-row *matRowDef="let row; columns: ['select', 'compound_name', 'solubility', 'fraction', 'temp', 'xrpd', 'scientist_name', 'solute_lot_num', 'eln_sample_num_measure', 'file_name',];"></tr>
         </table>
-        <div class="graph-container">
+        <div class="graph-container" data-type="advanced">
           <mat-form-field appearance="fill">
             <mat-label>Graph Type</mat-label>
             <mat-select [(ngModel)]="selectedGraphType" name="selectedGraphType">
-              <mat-option  (click)="showGraph()" value="bar">Bar Graph</mat-option>
-              <mat-option  (click)="showGraph()" value="scatter">Scatter Plot</mat-option>
+              <mat-option  (click)="showGraph($event)" value="bar">Bar Graph</mat-option>
+              <mat-option  (click)="showGraph($event)" value="scatter">Scatter Plot</mat-option>
             </mat-select>
           </mat-form-field>
-          <!-- <button mat-raised-button class="graph-button" (click)="showGraph()">Graph It</button> -->
         </div>
         <div class="download-container">
             <button mat-raised-button class="download-button" (click)="exportToExcel(selectedItems)">Download</button>
         </div>
-        <canvas id="chartCanvas"></canvas>
+        <canvas id="chartCanvas" height="10" width="10"></canvas>
     </div>    
 </div>
 

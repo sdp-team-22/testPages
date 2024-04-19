@@ -152,7 +152,7 @@ export class ViewComponent implements OnInit, OnDestroy {
             });
             return;
         }
-
+        this.resetGraph();
         this.http.get<any>(`http://127.0.0.1:5000/api/basicSearch?query=${this.searchQuery}`,{ headers }).subscribe(
                 (response) => {
                 this.searchResults = response;
@@ -177,6 +177,8 @@ export class ViewComponent implements OnInit, OnDestroy {
                 }
                 }
                 ));
+        if (this.selectedItems.length > 0){
+            this.showGraph({});}
     }
 
     addFilter(): void {
@@ -264,7 +266,7 @@ export class ViewComponent implements OnInit, OnDestroy {
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
         // Check if any filter fields are filled
         const filtersEmpty = this.filters.every(filter => !filter.compound_name && !filter.solvent_1 && !filter.solvent_2 && !filter.solvent_3 && !filter.xrpd);
-
+        this.resetGraph();
     // Show error message if filters are empty
         if (filtersEmpty) {
         this._snackBar.open('Please fill in at least one filter', 'Close', {
@@ -321,6 +323,8 @@ export class ViewComponent implements OnInit, OnDestroy {
           }
         )
         );
+        if (this.selectedItems.length >0){
+            this.showGraph({});}
     }
 
     fetchOptions() {
@@ -602,8 +606,21 @@ export class ViewComponent implements OnInit, OnDestroy {
             }
         });
     }
+resetGraph() {
+    this.selectedItems = [];
+    if (this.barChart) {
+        this.barChart.destroy();
+        this.barChart = null;
+    }
+    if (this.scatterChart) {
+        this.scatterChart.destroy();
+        this.scatterChart = null;
+    }
+}
+showGraph(event: any) {
+    const container = document.querySelector('.graph-container[data-type]');
+    const searchType = container?.getAttribute('data-type') ?? 'basic';
 
-showGraph() {
     let canvas = document.getElementById('chartCanvas') as HTMLCanvasElement;
     if (!canvas) {
         console.error("Canvas element 'chartCanvas' not found.");
@@ -624,13 +641,30 @@ showGraph() {
     }
 
     if (this.selectedGraphType === 'bar') {
-        this.plotBarChart(canvas);
+        this.plotBarChart(canvas, searchType);
     } else if (this.selectedGraphType === 'scatter') {
-        this.plotScatterPlot(canvas);
+        this.plotScatterPlot(canvas, searchType);
     }
 }
+parseDataValue(value: string | number): number {
+    if (typeof value === 'number') {
+        return value; 
+    }
+    
+    // Check for  signs in the value
+    if (typeof value === 'string') {
+        if (value.startsWith('>')) {
+            const numericValue = parseFloat(value.substring(1));
+            return numericValue;
+        } else if (value.startsWith('<')) {
+            const numericValue = parseFloat(value.substring(1));
+            return numericValue;
+        }
+    }
 
-plotBarChart(canvas: HTMLCanvasElement) {
+    return parseFloat(value);
+}
+plotBarChart(canvas: HTMLCanvasElement, searchType: string) {
     if (this.selectedItems.length === 0) {
         this._snackBar.open('Please select at least one item', 'Close', {
             duration: 3000, 
@@ -641,36 +675,41 @@ plotBarChart(canvas: HTMLCanvasElement) {
         return;
     }
     const labels = this.selectedItems.map(item => `${item.solvent_1} ${item.solvent_2} ${item.solvent_3} ${item.temp}°C`);
-    const data = this.selectedItems.map(item => item.solubility);
-    const datasetsLabels = `${this.selectedItems[0].compound_name} ${this.selectedItems[0].xrpd}`;
-
-    this.barChart = new Chart(canvas, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: datasetsLabels,
-                data: data,
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        text: this.selectedUnit,
-                        display: true
+    const data = this.selectedItems.map(item => this.parseDataValue(item.solubility));
+    let datasetsLabels: string;
+    if (searchType === 'advanced') {
+        datasetsLabels = `${this.selectedItems[0].compound_name} ${this.selectedItems[0].xrpd}`;
+    } else {
+        datasetsLabels = `${this.selectedItems[0].compound_name}`;
+    }
+        this.barChart = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: datasetsLabels,
+                    data: data,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            text: this.selectedUnit,
+                            display: true
+                        }
                     }
-                }
             }
         }
     });
 }
 
-plotScatterPlot(canvas: HTMLCanvasElement) {
+
+plotScatterPlot(canvas: HTMLCanvasElement, searchType: string) {
     if (this.selectedItems.length === 0) {
         this._snackBar.open('Please select at least one item', 'Close', {
             duration: 3000, 
@@ -683,11 +722,15 @@ plotScatterPlot(canvas: HTMLCanvasElement) {
     const data = this.selectedItems.map(item => {
         return {
             x: item.temp,
-            y: item.solubility
+            y: this.parseDataValue(item.solubility)
         };
     });
-    const datasetsLabels = `${this.selectedItems[0].compound_name} ${this.selectedItems[0].xrpd}`;
-
+    let datasetsLabels: string;
+    if (searchType === 'advanced') {
+        datasetsLabels = `${this.selectedItems[0].compound_name} ${this.selectedItems[0].xrpd}`;
+    } else {
+        datasetsLabels = `${this.selectedItems[0].compound_name}`;
+    }
     this.scatterChart = new Chart(canvas, {
         type: 'scatter',
         data: {
