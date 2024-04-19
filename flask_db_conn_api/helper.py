@@ -186,26 +186,26 @@ def find_duplicates(input_json, conn):
     return row_duplicates
             
             
-if __name__ == '__main__':
-    import os
-    import json
-    import psycopg2
+# if __name__ == '__main__':
+#     import os
+#     import json
+#     import psycopg2
     
-    x = file_excel_to_json(
-        file= os.path.join(os.getcwd(), 'flask_db_conn_api', 'D1.xlsx')
-    )
-    print(json.dumps(x, indent=1))
+#     x = file_excel_to_json(
+#         file= os.path.join(os.getcwd(), 'flask_db_conn_api', 'D1.xlsx')
+#     )
+#     print(json.dumps(x, indent=1))
     
     
-    conn = conn = psycopg2.connect(
-        database="postgres",
-        user="sdp-dev",
-        password="sdp123",
-        host="24.62.166.59",
-        port="5432"
-    )
-    y = find_duplicates(
-        input_json= x,
-        conn = conn
-    )
-    print(y)
+#     conn = conn = psycopg2.connect(
+#         database="postgres",
+#         user="sdp-dev",
+#         password="sdp123",
+#         host="24.62.166.59",
+#         port="5432"
+#     )
+#     y = find_duplicates(
+#         input_json= x,
+#         conn = conn
+#     )
+#     print(y)

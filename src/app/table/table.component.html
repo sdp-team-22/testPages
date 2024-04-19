@@ -25,7 +25,7 @@
   
       <!-- Set up table rows -->
       <tr mat-header-row *matHeaderRowDef="table.displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: table.displayedColumns;" [ngClass]="statusCheck(row.Status)"></tr>
+      <tr mat-row *matRowDef="let row; columns: table.displayedColumns; let i = index" [ngClass]="statusCheck(row.Status, i)"></tr>
     </table>
     <div class="delete-button-container">
         <button class="delete-button" (click)="deleteTable(index)">Delete Table</button>

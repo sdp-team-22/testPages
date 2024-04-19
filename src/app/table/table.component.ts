@@ -31,14 +31,14 @@ export class TableComponent implements OnInit, OnDestroy  {
   private subscription: Subscription | undefined;
 
   constructor(private dataService: DataService, private router : Router ) {}
+  duplicateRow: any[] = []
 
   ngOnInit() {
     this.subscription = this.dataService.getResponseData(
     ).subscribe(response => {
       if (response != null) {
-        console.log(response)
         for (const key in response) {
-          console.log()
+          this.duplicateRow = response[key]['row_dups']
           const projectInfo = {
             fileName: response[key]['File Name'],
             projectName: response[key]['Project Name'],
@@ -119,8 +119,13 @@ export class TableComponent implements OnInit, OnDestroy  {
     }
   }
 
-  statusCheck(status: any): string {
-    return status === 'OK' ? 'green-row' : 'red-row';
+  statusCheck(status: any, index : any): string {
+    if(this.duplicateRow.includes(index)){
+      return 'purple-row';
+    }
+    else{
+      return status === 'OK' ? 'green-row' : 'red-row';
+    }
   }
 
   deleteTable(index: number): void {
