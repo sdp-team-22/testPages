@@ -22,6 +22,11 @@ export class SearchService {
         return this.http.get<string[]>(url);
     }
 
+    grabConstrained(selected: string[]) {
+        let url = 'http://127.0.0.1:5000/api/constrainFilter';
+        return this.http.post(url, selected);
+    }
+
     basicSearch(searchQuery: string) {
         let url = 'http://127.0.0.1:5000/api/basicSearch2';
         return this.http.post(url, { searchQuery });

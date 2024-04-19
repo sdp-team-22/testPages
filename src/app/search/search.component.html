@@ -73,7 +73,7 @@
             <mat-form-field *ngFor="let _ of generateArray(filter.solventExactDataCount); let j = index">
                 <input type="text" placeholder="solvent" matInput [formControl]="filter.controls.solventExactDataControl[j]" [matAutocomplete]="autoSolventExactData">
                 <mat-autocomplete #autoSolventExactData="matAutocomplete" (optionSelected)="filterSolventExactChanged($event, i, j)">
-                    <mat-option *ngFor="let option of filter.solventAnyDataOptions[j]" [value]="option">
+                    <mat-option *ngFor="let option of filter.solventExactDataOptions[j]" [value]="option">
                         {{ option }}
                     </mat-option>
                 </mat-autocomplete>

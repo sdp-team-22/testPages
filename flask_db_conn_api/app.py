@@ -191,6 +191,11 @@ def basicSearch2():
     from searchHelper import basicSearch2
     return jsonify(basicSearch2(conn, request.json.get('searchQuery')))
 
+@app.route('/api/constrainFilter', methods=['POST'])
+def getConstrained():
+    from searchHelper import search_restricted_form
+    return search_restricted_form(conn, request.json)
+
 @app.route('/api/upload', methods=['GET', 'POST'])
 def api_upload_confirmation():
     if 'files' not in request.files:

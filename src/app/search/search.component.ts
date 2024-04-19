@@ -191,13 +191,29 @@ export class SearchComponent {
     }
 
     resetContains(id: number) {
+        this.filters[id].solventExactDataCount = 0;
+        this.filters[id].solventExactDataOptions = [];
+        this.filters[id].controls.solventExactDataControl = [];
         this.filters[id].solventAnyDataCount = 0;
         this.filters[id].solventAnyDataOptions = [];
         this.filters[id].controls.solventAnyDataControl = [];
     }
 
     filterSolventExactChanged(event: MatAutocompleteSelectedEvent, i: number, j: number) {
-        console.log("changed exact");
+        // 1st or 2nd filter selection, and we are selecting newest filter
+        if (j < 2 && j == this.filters[i].solventExactDataCount - 1) {
+            this.addSolventExactFilter(event, i, j + 1);
+        } else if (j < this.filters[i].solventExactDataCount - 1) {
+            // selecting older filter (delete all new ones, start from last changed)
+            // console.log(this.filters[i].solventExactDataCount - 1, j);
+            console.log("hmmm");
+            for (let k = this.filters[i].solventExactDataCount - 1; k > j; k--) {
+                this.filters[i].solventExactDataCount--;
+                this.filters[i].solventExactDataOptions.pop();
+                this.filters[i].controls.solventExactDataControl.pop();
+            }
+            this.addSolventExactFilter(event, i, j + 1);
+        }
     }
 
     filterSolventHasAnyChanged(event: MatAutocompleteSelectedEvent, i: number, j: number) {
@@ -225,7 +241,7 @@ export class SearchComponent {
         this.flaskConnectionService.grabAllSolvents().subscribe(
             (response) => {
                 // console.log(response);
-                console.log(j, this.filters[i].solventAnyDataOptions);
+                // console.log(j, this.filters[i].solventAnyDataOptions);
                 this.filters[i].solventAnyDataOptions[j] = response;
                 this.filters[i].solventAnyDataCount++;
             },
@@ -244,12 +260,52 @@ export class SearchComponent {
      */
     addSolventExactFilter(event: MatAutocompleteSelectedEvent, i: number, j: number) {
         // console.log(this.filters[i]);
-        console.log("hello");
         var options: string[] = [];
         var tempControl = new FormControl();
         this.filters[i].solventExactDataOptions.push(options);
-        this.filters[i].controls.solventExactDataControl[j] = tempControl;
-        this.filters[i].solventExactDataCount++;
+        this.filters[i].controls.solventExactDataControl.push(tempControl);
+        if (j == 0) {
+            // writing first filter
+            this.flaskConnectionService.grabAllSolvents().subscribe(
+                (response) => {
+                    // console.log(response);
+                    // console.log(j, this.filters[i].solventExactDataOptions);
+                    this.filters[i].solventExactDataOptions[j] = response;
+                    this.filters[i].solventExactDataCount++;
+                },
+                (error) => {
+                    console.log(error);
+                }
+            )
+        } else if (j == 1) {
+            // 1 filter selected, find options for second
+            console.log('preparing second filter');
+            this.flaskConnectionService.grabConstrained([this.filters[i].controls.solventExactDataControl[0].value]).subscribe(
+                (response: {[key: string]: any}) => {
+                    var temp = response['solvent_2_options'];
+                    this.filters[i].solventExactDataOptions[j] = temp;
+                    this.filters[i].solventExactDataCount++;
+                },
+                error => {
+
+                }
+            )
+        } else if (j == 2) {
+            // 2 filters selected, find options for third
+            console.log('preparing second filter');
+            var value1 = this.filters[i].controls.solventExactDataControl[0].value;
+            var value2 = this.filters[i].controls.solventExactDataControl[1].value;
+            this.flaskConnectionService.grabConstrained([value1, value2]).subscribe(
+                (response: {[key: string]: any}) => {
+                    var temp = response['solvent_3_options'];
+                    this.filters[i].solventExactDataOptions[j] = temp;
+                    this.filters[i].solventExactDataCount++;
+                },
+                error => {
+
+                }
+            )
+        }
     }
 
     deleteFilter(filterId: string) {
@@ -274,7 +330,7 @@ export class SearchComponent {
     }
 
     advancedSearch() {
-
+        
     }
 
     getId(inputString: string) {
