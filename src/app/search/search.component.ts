@@ -624,6 +624,7 @@ export class SearchComponent {
                 return true;
             });
         }
+        this.selectedItems = [];
     }
 
     deleteFromDatabase(item: any) {
