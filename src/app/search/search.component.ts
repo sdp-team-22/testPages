@@ -17,6 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 //for graph
 import {Chart} from 'chart.js/auto';
+import * as XLSX from 'xlsx';
 
 @Component({
     selector: 'search-root',
@@ -771,15 +772,14 @@ export class SearchComponent {
         });
     }
     
-    removeZeros(inputData : any[]){
+    removeZeros(inputData : any[]) {
         inputData.forEach((row: any) => {
             for (let key in row) {
-              if (row[key] == 'nan') { 
-                row[key] = '';
+                if (row[key] == 'nan') { 
+                    row[key] = '';
+                }
             }
-        }
-    }
-    )
+        });
     }
     
     getId(inputString: string) {
@@ -810,5 +810,56 @@ export class SearchComponent {
      */
     generateArray(n: number): any[] {
         return Array(n);
+    }
+
+    downloadSelection() {
+        // console.log('download selection');
+        const flattenItems = this.selectedItems.map(item => ({
+            compound_name: item.compound_name,
+            solvent_1: item.solvent_1,
+            solvent_2: item.solvent_2,
+            solvent_3: item.solvent_3,
+            temp: item.temp,
+            xrpd: item.xrpd,
+            ...item.fractions.reduce((acc: { [x: string]: any; }, fraction: { unit: string | number; value: any; }) => {
+                acc[fraction.unit] = fraction.value;
+                return acc; 
+            }, {}),
+            ...item.solubility_units.reduce((acc: { [x: string]: any; }, unit: { unit: string | number; value: any; }) => {
+                acc[unit.unit] = unit.value;
+                return acc;
+            }, {})   
+        }));
+
+        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(flattenItems);
+
+        // Create a workbook
+        const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+
+        // Convert workbook to binary Excel file
+        const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+        // Save the file
+        let fileName = 'Solubility.xlsx';
+        const existingFiles = window.localStorage.getItem('excelFiles');
+        if (existingFiles) {
+            const files = JSON.parse(existingFiles);
+            let index = 1;
+            while (files.includes(fileName)) {
+                fileName = `Solubility ${index}.xlsx`;
+                index++;
+            }
+            files.push(fileName);
+            window.localStorage.setItem('excelFiles', JSON.stringify(files));
+        } else {
+            window.localStorage.setItem('excelFiles', JSON.stringify([fileName]));
+        }
+
+        const data: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+        const url = window.URL.createObjectURL(data);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
     }
 }
