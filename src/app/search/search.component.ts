@@ -8,8 +8,13 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { SearchService } from '../search.service';
 // for table
 import { MatTableModule } from '@angular/material/table';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCheckbox,MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+// for cool buttons 
+import { MatButtonModule } from '@angular/material/button';
+//for selection box
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
     selector: 'search-root',
@@ -26,6 +31,11 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
         MatTableModule,
         MatCheckboxModule,
         MatSnackBarModule,
+        // for buttons
+        MatButtonModule,
+        // for selection box
+        MatFormFieldModule,
+        MatSelectModule,
     ]
   })
 export class SearchComponent {
@@ -36,13 +46,11 @@ export class SearchComponent {
     // for graph
     selectedUnit: string = 'solubility_mg_g_solv'; //default
     selectedFraction: string = 'wtfrac'; //default
-    selectedFractionControl = new FormControl();
-    selectedUnitControl = new FormControl();
+    selectedItems: any[] = [];
 
     // basic search variables
     searchQuery: any;
-    
-    result: string[] = [];
+    result: any[] = [];
     // advanced search variables
     filters = [
         { 
@@ -346,13 +354,15 @@ export class SearchComponent {
         }
         this.flaskConnectionService.basicSearch(this.searchQuery).subscribe(
             (response: any) => {
-                // console.log(response);
+                //console.log(response);
                 this.result = response;
+                this.removeZeros(this.result);
             },            
             error => {
                 console.error('Error: search.component.ts basicSearch() failed');
-            }
+            },
         );
+        
     }
 
     advancedSearch() {
@@ -392,8 +402,9 @@ export class SearchComponent {
         // console.log(advancedQuery);
         this.flaskConnectionService.advancedSearch(advancedQuery).subscribe (
             (response: any) => {
-                // console.log(response);
+                console.log(response);
                 this.result = response;
+                this.removeZeros(this.result);
             },
             (error) => {
                 console.log('Error search.component.ts: advancedSearch');
@@ -401,6 +412,149 @@ export class SearchComponent {
         );
     }
 
+
+
+    /**
+     * void toggleSelectAll
+     * select or de-select all the rows and keep track of them
+     * - if select
+     *      - check all the available checkboxes
+     *      - adds the data from each row to selectedItems[]
+     * - if de-select
+     *      - uncheck all the available checkboxes
+     *      - remove the data of each row from selectedItems[]
+     */
+    toggleSelectAll(event : MatCheckboxChange){
+        // highlights the checkboxes
+        this.result.forEach(item => {
+            item.selected = event.checked;
+
+            // add all checked rows to selectedItems[]
+            if (event.checked) {
+                const selectedData = {
+                    compound_name: item.compound_name,
+                    solvent_1: item.solvent_1,
+                    solvent_2: item.solvent_2,
+                    solvent_3: item.solvent_3,  
+                    temp: item.temp,
+                    xrpd: item.xrpd,                     
+                    solubility: item[this.selectedUnit],
+                    fractions: [] as {unit: string, value: number}[],
+                    solubility_units: [] as {unit: string, value: number}[]
+                };
+    
+                const fractionKeys = ['volfrac1', 'volfrac2', 'volfrac3', 'wtfrac1', 'wtfrac2', 'wtfrac3'];
+                for (const fractionKey of fractionKeys) {
+                    if (item[fractionKey] !== null) {
+                        selectedData.fractions.push({
+                            unit: fractionKey,
+                            value: item[fractionKey]
+                        });
+                    }
+                }
+    
+                const solubilityUnitKeys = ['solubility_mg_g_solv', 'solubility_mg_g_solvn', 'solubility_mg_mL_solv', 'solubility_wt'];
+                for (const unitKey of solubilityUnitKeys) {
+                    if (item[unitKey] !== null) {
+                        selectedData.solubility_units.push({
+                            unit: unitKey,
+                            value: item[unitKey]
+                        });
+                    }
+                }
+    
+                this.selectedItems.push(selectedData);
+            } else {
+                this.selectedItems = this.selectedItems.filter(
+                    data => 
+                        !(data.compound_name === item.compound_name &&
+                          data.solvent_1 === item.solvent_1 &&
+                          data.solvent_2 === item.solvent_2 &&
+                          data.solvent_3 === item.solvent_3 &&
+                          data.temp === item.temp &&
+                          data.xrpd === item.xrpd &&
+                          data.solubility === item[this.selectedUnit])
+                );
+            }
+        });
+
+        console.log(this.selectedItems)
+    }
+
+    /**
+     * void onCheckboxChange
+     * select or de-select the user selected box and keeps track of the corresponding row data
+     * - if select
+     *      - check the selected checkbox
+     *      - adds the data in row to selectedItems[]
+     * - if de-select
+     *      - uncheck the selected checkbox
+     *      - remove the data in the row from selectedItems[]
+     *
+     */
+    onCheckboxChange(event: MatCheckboxChange, item: any) {
+        const selectedData = {
+            compound_name: item.compound_name,
+            solvent_1: item.solvent_1,
+            solvent_2: item.solvent_2,
+            solvent_3: item.solvent_3,
+            temp: item.temp,
+            xrpd: item.xrpd,
+            solubility: item[this.selectedUnit],
+            fractions: [] as {unit: string, value: number}[],
+            solubility_units: [] as {unit: string, value: number}[]
+        };
+        const fractionKeys = ['volfrac1', 'volfrac2', 'volfrac3', 'wtfrac1', 'wtfrac2', 'wtfrac3'];
+        for (const fractionKey of fractionKeys) {
+            if (item[fractionKey] !== null) {
+                selectedData.fractions.push({
+                    unit: fractionKey,
+                    value: item[fractionKey]
+                });
+            }
+        }
+
+        const solubilityUnitKeys = ['solubility_mg_g_solv', 'solubility_mg_g_solvn', 'solubility_mg_mL_solv', 'solubility_wt'];
+        for (const unitKey of solubilityUnitKeys) {
+            if (item[unitKey] !== null) {
+                selectedData.solubility_units.push({
+                    unit: unitKey,
+                    value: item[unitKey]
+            });
+        }
+    }
+
+    if (event.checked) {
+        this.selectedItems.push(selectedData);
+        console.log(this.selectedItems);
+    } else {
+        this.selectedItems = this.selectedItems.filter(
+            data => 
+                !(data.compound_name === selectedData.compound_name &&
+                    data.solvent_1 === selectedData.solvent_1 &&
+                    data.solvent_2 === selectedData.solvent_2 &&
+                    data.solvent_3 === selectedData.solvent_3 &&
+                    data.temp === selectedData.temp &&
+                    data.xrpd === selectedData.xrpd &&
+                    data.solubility === selectedData.solubility))
+        ;
+        console.log(this.selectedItems);}
+    }
+    
+    
+
+
+    removeZeros(inputData : any[]){
+        inputData.forEach((row: any) => {
+            for (let key in row) {
+              if (row[key] == 'nan') { 
+                row[key] = '';
+            }
+        }
+    }
+    )
+    }
+    
     getId(inputString: string) {
         const strId = inputString.substring(inputString.lastIndexOf("_") + 1);
         const intId = parseInt(strId, 10);

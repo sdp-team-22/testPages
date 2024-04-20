@@ -157,6 +157,8 @@ def advancedSearch2(conn, searchQuery):
     except Exception as e:
         pass
     unique_rows = set(result)
+    #set are not iterable 
+    unique_rows = list(unique_rows)
     finalResult = []
     if len(unique_rows) == 0:
         for i in range(len(unique_rows)):

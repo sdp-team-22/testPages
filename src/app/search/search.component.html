@@ -1,5 +1,5 @@
 <div class="give-me-room">
-    <button mat-raised-button class="round-button search-button light-green-background" (click)="toggleSearchType()">{{ toggleSearchButtonText }}</button>
+    <button mat-raised-button class="round-button search-button light-green-background" (click)="toggleSearchType() ;">{{ toggleSearchButtonText }}</button>
 </div>
 
 <!--
@@ -7,6 +7,7 @@
 -->
 <div class="give-me-room" *ngIf="useBasicSearch">
     <input class="search-input" type="text" placeholder="Search by Compound Name" [(ngModel)]="searchQuery" (keyup.enter)="basicSearch()">
+    <button mat-raised-button class="search-button" (click)="basicSearch()">Search</button>
 </div>
 
 <!--
@@ -16,19 +17,23 @@
 -->
 <div *ngIf="!useBasicSearch">
     <ng-container>
-        <button class="round-button give-me-room filter-buttons light-yellow-background" (click)="addFilter()">Add Filter</button>
+        <button mat-raised-button class="round-button give-me-room filter-buttons light-yellow-background" (click)="addFilter()">Add Filter</button>
     </ng-container>
     <ng-container>
-        <button class="round-button give-me-room filter-buttons light-yellow-background" (click)="resetFilters()">Reset Filters</button>
+        <button mat-raised-button class="round-button give-me-room filter-buttons light-yellow-background" (click)="resetFilters()">Reset Filters</button>
     </ng-container>
     <ng-container>
-        <button class="round-button give-me-room filter-buttons light-yellow-background" (click)="advancedSearch()">Search</button>
+        <button mat-raised-button class="round-button give-me-room filter-buttons light-yellow-background" (click)="advancedSearch()">Search</button>
     </ng-container>
     <div *ngFor="let filter of filters; let i = index">
         <div [id]="'filterDiv_' + i" class="filter-div">
             <!--Delete filter button-->
             <div>
                 <button class="delete-button round-button button" (click)="deleteFilter('filterDiv_' + i)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                      </svg>
                 </button>
             </div>
             <!--General filter (compound name, solid form, etc.)-->
@@ -116,33 +121,33 @@
 <div>
     <div>
         <!--Vol frac, wt frac-->
-        <mat-form-field class="give-me-room">
-            <input type="text" placeholder="Vol/Wt frac" matInput [formControl]="selectedFractionControl">
-            <mat-autocomplete>
-                <mat-option [value]="selectedFraction">
-                    {{ selectedFraction }}
-                </mat-option>
-            </mat-autocomplete>
-        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Select Fraction:</mat-label>
+            <mat-select [(ngModel)]="selectedFraction">
+              <mat-option value="volfrac">Volume Fraction</mat-option>
+              <mat-option value="wtfrac">Weight Fraction</mat-option>
+            </mat-select>
+          </mat-form-field>
         <!--units-->
-        <mat-form-field class="give-me-room">
-            <input type="text" placeholder="Select Units" matInput [formControl]="selectedUnitControl">
-            <mat-autocomplete>
-                <mat-option [value]="selectedUnit">
-                    {{ selectedUnit }}
-                </mat-option>
-            </mat-autocomplete>
-        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Select Solubility Unit:</mat-label>
+            <mat-select [(ngModel)]="selectedUnit">
+              <mat-option value="solubility_mg_g_solvn">mg/g solvent</mat-option>
+              <mat-option value="solubility_mg_g_solv">mg/g soln</mat-option>
+              <mat-option value="solubility_mg_mL_solv">mg/mL solvent</mat-option>
+              <mat-option value="solubility_wt">Solubility wt</mat-option>
+            </mat-select>
+          </mat-form-field>
     </div>
     <!--actual table-->
     <table mat-table [dataSource]="result">
         <!-- checkbox Column -->
         <ng-container matColumnDef="select">
             <th mat-header-cell *matHeaderCellDef>Select All
-                <mat-checkbox color="primary" class="checkbox"></mat-checkbox>
+                <mat-checkbox color="primary" class="checkbox" (change)="toggleSelectAll($event)"></mat-checkbox>
             </th>
             <td mat-cell *matCellDef="let result">
-                <mat-checkbox color="primary" class="checkbox" [(ngModel)]="result.selected"></mat-checkbox>
+                <mat-checkbox color="primary" class="checkbox" [(ngModel)]="result.selected" (change)="onCheckboxChange($event, result)"></mat-checkbox>
             </td>
         </ng-container>
         <!-- Compound Name Column -->
@@ -155,13 +160,18 @@
         <ng-container matColumnDef="solubility">
             <th mat-header-cell *matHeaderCellDef> Solubility </th>
             <td mat-cell *matCellDef="let result">
-                <ng-container> {{ result.solubility_mg_g_solvn }}
+                <ng-container *ngIf="selectedUnit === 'solubility_mg_g_solvn'">
+                     {{ result.solubility_mg_g_solvn }}
                 </ng-container>
-                <ng-container> {{ result.solubility_mg_g_solv }}
+                <ng-container *ngIf="selectedUnit === 'solubility_mg_g_solv'"> 
+                    {{ result.solubility_mg_g_solv }}
                 </ng-container>
-                <ng-container> {{ result.solubility_mg_mL_solv }}
+                <ng-container *ngIf="selectedUnit === 'solubility_mg_mL_solv'"> 
+                    {{ result.solubility_mg_mL_solv }}
                 </ng-container>
-                <ng-container> {{ result.solubility_wt }} </ng-container>
+                <ng-container *ngIf="selectedUnit === 'solubility_wt'">  
+                    {{ result.solubility_wt }} 
+                </ng-container>
             </td>
         </ng-container>
 
@@ -169,25 +179,25 @@
         <ng-container matColumnDef="fraction">
             <th mat-header-cell *matHeaderCellDef> Fraction </th>
             <td mat-cell class="mat-cell" *matCellDef="let result">
-                <ng-container>
-                    <div>
+                <ng-container *ngIf="selectedFraction === 'volfrac'">
+                    <div *ngIf="result.solvent_1 !== undefined && result.solvent_1 !== '' ">
                         {{ result.solvent_1 }} Volume Fraction: {{ result.volfrac1 }}
                     </div>
-                    <div>
+                    <div *ngIf="result.solvent_2 !== undefined && result.solvent_2 !== '' ">
                         {{ result.solvent_2 }} Volume Fraction: {{ result.volfrac2 }}
                     </div>
-                    <div>
+                    <div *ngIf="result.solvent_3 !== undefined && result.solvent_3 !== '' ">
                         {{ result.solvent_3 }} Volume Fraction: {{ result.volfrac3 }}
                     </div>
                 </ng-container>
-                <ng-container>
-                    <div>
+                <ng-container  *ngIf="selectedFraction === 'wtfrac'">
+                    <div *ngIf="result.solvent_1 !== undefined && result.solvent_1 !== '' ">
                         {{ result.solvent_1 }} Weight Fraction: {{ result.wtfrac1 }}
                     </div>
-                    <div>
+                    <div *ngIf="result.solvent_2 !== undefined && result.solvent_2 !== '' ">
                         {{ result.solvent_2 }} Weight Fraction: {{ result.wtfrac2 }}
                     </div>
-                    <div>
+                    <div *ngIf="result.solvent_3 !== undefined && result.solvent_3 !== '' ">
                         {{ result.solvent_3 }} Weight Fraction: {{ result.wtfrac3 }}
                     </div>
                 </ng-container>
