@@ -86,6 +86,7 @@ export class SearchComponent {
      */
     toggleSearchType() {
         this.result = [];
+        this.selectedItems = [];
         if (this.useBasicSearch) {
             this.useBasicSearch = false;
             this.searchQuery = "";
