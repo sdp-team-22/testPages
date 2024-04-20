@@ -15,6 +15,8 @@ import { MatButtonModule } from '@angular/material/button';
 //for selection box
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+//for graph
+import {Chart} from 'chart.js/auto';
 
 @Component({
     selector: 'search-root',
@@ -44,9 +46,12 @@ export class SearchComponent {
     toggleSearchButtonText: string = this.useBasicSearch === true ? "Switch to Advanced Search?": "Switch to Basic Search?";
     
     // for graph
+    barChart: any;
+    scatterChart: any;
     selectedUnit: string = 'solubility_mg_g_solv'; //default
     selectedFraction: string = 'wtfrac'; //default
     selectedItems: any[] = [];
+    selectedGraphType: string = 'bar'; //default bar
 
     // basic search variables
     searchQuery: any;
@@ -539,6 +544,139 @@ export class SearchComponent {
                     data.solubility === selectedData.solubility))
         ;
         console.log(this.selectedItems);}
+    }
+
+
+
+    showGraph() {
+        let canvas = document.getElementById('chartCanvas') as HTMLCanvasElement;
+        if (!canvas) {
+            console.error("Canvas element 'chartCanvas' not found.");
+            return;
+        }
+        let chartInstances = Chart.instances;
+        for (let chartInstance in chartInstances) {
+            if (chartInstances.hasOwnProperty(chartInstance)) {
+                chartInstances[chartInstance].destroy();
+            }
+        }
+    
+        if (this.barChart) {
+            this.barChart.destroy();
+        }
+        else if (this.scatterChart) {
+            this.scatterChart.destroy();
+        }
+    
+        if (this.selectedGraphType === 'bar') {
+            this.plotBarChart(canvas);
+        } else if (this.selectedGraphType === 'scatter') {
+            this.plotScatterPlot(canvas);
+        }
+    }
+    
+    plotBarChart(canvas: HTMLCanvasElement) {
+        if (this.selectedItems.length === 0) {
+            this._snackBar.open('Please select at least one item', 'Close', {
+                duration: 3000, 
+                horizontalPosition: 'center', 
+                verticalPosition: 'bottom', 
+                panelClass: 'error-snackbar' 
+            });
+            return;
+        }
+        const labels = this.selectedItems.map(item => `${item.solvent_1} ${item.solvent_2} ${item.solvent_3} ${item.temp}°C`);
+        const data = this.selectedItems.map(item => item.solubility);
+        const datasetsLabels = `${this.selectedItems[0].compound_name} ${this.selectedItems[0].xrpd}`;
+    
+        this.barChart = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: datasetsLabels,
+                    data: data,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            text: this.selectedUnit,
+                            display: true,
+                            font:{
+                                size: 20,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    plotScatterPlot(canvas: HTMLCanvasElement) {
+        if (this.selectedItems.length === 0) {
+            this._snackBar.open('Please select at least one item', 'Close', {
+                duration: 3000, 
+                horizontalPosition: 'center', 
+                verticalPosition: 'bottom', 
+                panelClass: 'error-snackbar' 
+            });
+            return;
+        }
+        const data = this.selectedItems.map(item => {
+            return {
+                x: item.temp,
+                y: item.solubility
+            };
+        });
+        const datasetsLabels = `${this.selectedItems[0].compound_name} ${this.selectedItems[0].xrpd}`;
+    
+        this.scatterChart = new Chart(canvas, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: datasetsLabels,
+                    data: data,
+                    backgroundColor: 'rgba(3, 68, 38, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 7
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            text: 'Temperature (°C)',
+                            display: true,
+                            font:{
+                                size: 20,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            text: this.selectedUnit,
+                            display: true,
+                            font:{
+                                size: 20,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
     
     

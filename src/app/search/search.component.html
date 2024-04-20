@@ -138,6 +138,15 @@
               <mat-option value="solubility_wt">Solubility wt</mat-option>
             </mat-select>
           </mat-form-field>
+
+        <!--graph_selection-->
+        <mat-form-field appearance="fill">
+            <mat-label>Graph Type</mat-label>
+            <mat-select [(ngModel)]="selectedGraphType" name="selectedGraphType">
+                <mat-option  (click)="showGraph()" value="bar">Bar Graph</mat-option>
+                <mat-option  (click)="showGraph()" value="scatter">Scatter Plot</mat-option>
+            </mat-select>
+        </mat-form-field>
     </div>
     <!--actual table-->
     <table mat-table [dataSource]="result">
@@ -241,4 +250,12 @@
             *matRowDef="let row; columns: ['select', 'compound_name', 'solubility', 'fraction', 'temp', 'xrpd', 'scientist_name', 'solute_lot_num', 'eln_sample_num_measure', 'file_name',];">
         </tr>
     </table>
+
+    <div class="give-me-room">
+        
+    </div>
+
+    <div class="give-me-room">
+        <canvas id="chartCanvas"></canvas>
+    </div>
 </div>

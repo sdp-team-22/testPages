@@ -34,3 +34,7 @@ export function populateSearchQuery(filters: any[]) : string
     }
     return encodeURIComponent(JSON.stringify(searchQuery));
 }
+
+
+
+
