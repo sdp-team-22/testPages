@@ -37,4 +37,9 @@ export class SearchService {
         return this.http.post(url, { searchQuery });
     }
 
+    deleteRow(item: any) {
+        let url = 'http://127.0.0.1:5000/api/deleteRow';
+        return this.http.post(url, { item });
+    }
+
 }

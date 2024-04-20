@@ -84,15 +84,15 @@ def advancedSearch2(conn, searchQuery):
     try:
         # query through compound names
         for name in compoundNames:
-            cur.execute("SELECT * FROM solubility_data WHERE LOWER(compound_name) = LOWER(%s)", (name,))
-        result.extend(cur.fetchall())
+            cur.execute("SELECT * FROM solubility_data WHERE LOWER(compound_name) LIKE LOWER(%s)", ('%' + name + '%',))
+            result.extend(cur.fetchall())
     except Exception as e:
         pass
     try:
         # query through xrpd
         for x in xrpd:
             cur.execute("SELECT * FROM solubility_data WHERE LOWER(xrpd) = LOWER(%s)", (x,))
-        result.extend(cur.fetchall())
+            result.extend(cur.fetchall())
     except Exception as e:
         pass
     try:
@@ -302,6 +302,51 @@ def search_restricted_form(conn, selectedOptions):
             }
     except Exception as e:
         print("Error in searchHelper.py:", e)
+
+def deleteRow(conn, item):
+    print(item)
+    if (item['solvent_1'] == ''):
+        item['solvent_1'] = 'nan'
+    if (item['solvent_2'] == ''):
+        item['solvent_2'] = 'nan'
+    if (item['solvent_3'] == ''):
+        item['solvent_3'] = 'nan'
+    cur = conn.cursor()
+    try:
+        cur.execute("""
+            DELETE FROM solubility_data
+            WHERE 
+                compound_name = %s
+                AND solvent_1 = %s
+                AND solvent_2 = %s
+                AND solvent_3 = %s
+                AND volfrac1 = %s
+                AND volfrac2 = %s
+                AND volfrac3 = %s
+                AND wtfrac1 = %s
+                AND wtfrac2 = %s
+                AND wtfrac3 = %s
+                AND temp = %s
+                AND xrpd = %s
+        """, (
+            item['compound_name'],
+            item['solvent_1'],
+            item['solvent_2'],
+            item['solvent_3'],
+            item['volfrac1'],
+            item['volfrac2'],
+            item['volfrac3'],
+            item['wtfrac1'],
+            item['wtfrac2'],
+            item['wtfrac3'],
+            item['temp'],
+            item['xrpd'],
+        ))
+        conn.commit()
+        return 'Deleted successfully from database'
+    except Exception as e:
+        print(e)
+        return 'Failed to delete from database'
 
 
 if __name__ == "__main__":

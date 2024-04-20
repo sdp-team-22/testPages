@@ -8,7 +8,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { SearchService } from '../search.service';
 // for table
 import { MatTableModule } from '@angular/material/table';
-import { MatCheckbox,MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 // for cool buttons 
 import { MatButtonModule } from '@angular/material/button';
@@ -85,6 +85,7 @@ export class SearchComponent {
      * calling this switches between basic and advanced search
      */
     toggleSearchType() {
+        this.result = [];
         if (this.useBasicSearch) {
             this.useBasicSearch = false;
             this.searchQuery = "";
@@ -347,10 +348,10 @@ export class SearchComponent {
     }
 
     basicSearch() {
-        console.log(this.searchQuery);
+        // console.log(this.searchQuery);
         if (!this.searchQuery) {
             this._snackBar.open('Please enter Compound Name', 'Close', {
-                duration: 3000, 
+                duration: 2000, 
                 horizontalPosition: 'center', 
                 verticalPosition: 'bottom', 
                 panelClass: 'error-snackbar' // Custom CSS class for styling
@@ -360,6 +361,16 @@ export class SearchComponent {
         this.flaskConnectionService.basicSearch(this.searchQuery).subscribe(
             (response: any) => {
                 //console.log(response);
+                if (response.length == 0) {
+                    // console.log('no results');
+                    this._snackBar.open('No results found', 'Close', {
+                        duration: 2000, 
+                        horizontalPosition: 'center', 
+                        verticalPosition: 'bottom', 
+                        panelClass: 'error-snackbar' // Custom CSS class for styling
+                    });
+                    return;
+                }
                 this.result = response;
                 this.removeZeros(this.result);
             },            
@@ -407,7 +418,17 @@ export class SearchComponent {
         // console.log(advancedQuery);
         this.flaskConnectionService.advancedSearch(advancedQuery).subscribe (
             (response: any) => {
-                console.log(response);
+                // console.log(response);
+                if (response.length == 0) {
+                    // console.log('no results');
+                    this._snackBar.open('No results found', 'Close', {
+                        duration: 2000, 
+                        horizontalPosition: 'center', 
+                        verticalPosition: 'bottom', 
+                        panelClass: 'error-snackbar' // Custom CSS class for styling
+                    });
+                    return;
+                }
                 this.result = response;
                 this.removeZeros(this.result);
             },
@@ -416,8 +437,6 @@ export class SearchComponent {
             }
         );
     }
-
-
 
     /**
      * void toggleSelectAll
@@ -482,8 +501,7 @@ export class SearchComponent {
                 );
             }
         });
-
-        console.log(this.selectedItems)
+        // console.log(this.selectedItems)
     }
 
     /**
@@ -518,35 +536,107 @@ export class SearchComponent {
                 });
             }
         }
-
         const solubilityUnitKeys = ['solubility_mg_g_solv', 'solubility_mg_g_solvn', 'solubility_mg_mL_solv', 'solubility_wt'];
         for (const unitKey of solubilityUnitKeys) {
             if (item[unitKey] !== null) {
                 selectedData.solubility_units.push({
                     unit: unitKey,
                     value: item[unitKey]
+                });
+            }
+        }
+        if (event.checked) {
+            this.selectedItems.push(selectedData);
+            // console.log(this.selectedItems);
+        } else {
+            this.selectedItems = this.selectedItems.filter(
+                data => 
+                    !(data.compound_name === selectedData.compound_name &&
+                        data.solvent_1 === selectedData.solvent_1 &&
+                        data.solvent_2 === selectedData.solvent_2 &&
+                        data.solvent_3 === selectedData.solvent_3 &&
+                        data.temp === selectedData.temp &&
+                        data.xrpd === selectedData.xrpd &&
+                        data.solubility === selectedData.solubility))
+            ;
+            // console.log(this.selectedItems);
+        }
+    }
+
+    deleteSelection() {
+        console.log("delete selected items");
+        for (let singleSelected of this.selectedItems) {
+            var cname = singleSelected['compound_name'];
+            var solv1 = singleSelected['solvent_1'];
+            var solv2 = singleSelected['solvent_2'];
+            var solv3 = singleSelected['solvent_3'];
+            var temp = singleSelected['temp'];
+            var xrpd = singleSelected['xrpd'];
+            var vfrac1 = singleSelected['fractions'][0]['value'];
+            var vfrac2 = singleSelected['fractions'][1]['value'];
+            var vfrac3 = singleSelected['fractions'][2]['value'];
+            var wfrac1 = singleSelected['fractions'][3]['value'];
+            var wfrac2 = singleSelected['fractions'][4]['value'];
+            var wfrac3 = singleSelected['fractions'][5]['value'];
+            // console.log(singleSelected['fractions']);
+            this.result = this.result.filter(singleResult => {
+                if (singleResult['compound_name'] == cname) {
+                    // console.log('\n\n\n', singleSelected);
+                    // console.log(singleResult);
+                    // console.log('identical compound name');
+                    if (singleResult['solvent_1'] == solv1) {
+                        // console.log('identical solvent 1');
+                        if (singleResult['solvent_2'] == solv2) {
+                            // console.log('identical solvent 2');
+                            if (singleResult['solvent_3'] == solv3) {
+                                // console.log('identical solvent 3');
+                                if (singleResult['temp'] == temp) {
+                                    // console.log('identical temp');
+                                    if (singleResult['xrpd'] == xrpd) {
+                                        // console.log('identical xrpd');
+                                        if (singleResult['volfrac1'] == vfrac1) {
+                                            // console.log('identical volfrac1');
+                                            if (singleResult['volfrac2'] == vfrac2) {
+                                                // console.log('identical volfrac2');
+                                                if (singleResult['volfrac3'] == vfrac3) {
+                                                    // console.log('identical volfrac3');
+                                                    if (singleResult['wtfrac1'] == wfrac1) {
+                                                        // console.log('identical wfrac1');
+                                                        if (singleResult['wtfrac2'] == wfrac2) {
+                                                            // console.log('identical wfrac2');
+                                                            if (singleResult['wtfrac3'] == wfrac3) {
+                                                                // console.log('identical wfrac3');
+                                                                // console.log('identical primary key'); // we want to remove singleResult
+                                                                this.deleteFromDatabase(singleResult);
+                                                                return false;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return true;
             });
         }
     }
 
-    if (event.checked) {
-        this.selectedItems.push(selectedData);
-        console.log(this.selectedItems);
-    } else {
-        this.selectedItems = this.selectedItems.filter(
-            data => 
-                !(data.compound_name === selectedData.compound_name &&
-                    data.solvent_1 === selectedData.solvent_1 &&
-                    data.solvent_2 === selectedData.solvent_2 &&
-                    data.solvent_3 === selectedData.solvent_3 &&
-                    data.temp === selectedData.temp &&
-                    data.xrpd === selectedData.xrpd &&
-                    data.solubility === selectedData.solubility))
-        ;
-        console.log(this.selectedItems);}
+    deleteFromDatabase(item: any) {
+        // console.log(item);
+        this.flaskConnectionService.deleteRow(item).subscribe(
+            response => {
+                // console.log(response);
+            },
+            error => {
+                // console.log('delete from database failed:', error);
+            }
+        );
     }
-
-
 
     showGraph() {
         let canvas = document.getElementById('chartCanvas') as HTMLCanvasElement;
@@ -679,9 +769,6 @@ export class SearchComponent {
         });
     }
     
-    
-
-
     removeZeros(inputData : any[]){
         inputData.forEach((row: any) => {
             for (let key in row) {

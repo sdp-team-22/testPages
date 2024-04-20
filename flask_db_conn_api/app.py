@@ -201,6 +201,11 @@ def getConstrained():
     from searchHelper import search_restricted_form
     return search_restricted_form(conn, request.json)
 
+@app.route('/api/deleteRow', methods=['POST'])
+def deleteRow():
+    from searchHelper import deleteRow
+    return jsonify(deleteRow(conn, request.json['item']))
+
 @app.route('/api/upload', methods=['GET', 'POST'])
 def api_upload_confirmation():
     if 'files' not in request.files:
