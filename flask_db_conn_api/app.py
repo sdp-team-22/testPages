@@ -176,6 +176,11 @@ def grabAllCompounds():
     from searchHelper import getAllCompoundNames
     return jsonify(getAllCompoundNames(conn))
 
+@app.route('/api/grabAllRestricted', methods=['POST'])
+def grabAllRestricted():
+    from searchHelper import getRestricted
+    return jsonify(getRestricted(conn, request.json['filterContents'], request.json['type'], request.json['exact']))
+
 @app.route('/api/grabAllXRPD', methods=['GET'])
 def grabAllXRPD():
     from searchHelper import getAllXRPD
@@ -195,6 +200,11 @@ def basicSearch2():
 def advancedSearch2():
     from searchHelper import advancedSearch2
     return advancedSearch2(conn, request.json.get('searchQuery'))
+
+@app.route('/api/advancedSearchRestricted', methods=['POST'])
+def advancedSearchRestricted():
+    from searchHelper import advancedSearchRestricted
+    return advancedSearchRestricted(conn, request.json)
 
 @app.route('/api/constrainFilter', methods=['POST'])
 def getConstrained():

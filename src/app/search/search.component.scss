@@ -126,3 +126,12 @@ td {
 tr:nth-child(even) {
     background-color: #f9f9f9;
 }
+
+.constrainedSearchToggle {
+    cursor: pointer;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+    padding-right: 16px;
+    margin-bottom: 1rem;
+}

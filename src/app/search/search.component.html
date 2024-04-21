@@ -16,6 +16,9 @@
     *ngFor creates the divs dynamically
 -->
 <div *ngIf="!useBasicSearch">
+    <div>
+        <mat-checkbox [(ngModel)]="restrictiveSearch" (click)="toggleRestrictedSearch()" color="primary" class="constrainedSearchToggle">Restrictive Filters</mat-checkbox>
+    </div>
     <ng-container>
         <button mat-raised-button class="round give-me-room filter-background" (click)="addFilter()">Add Filter</button>
     </ng-container>

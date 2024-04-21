@@ -27,6 +27,11 @@ export class SearchService {
         return this.http.post(url, selected);
     }
 
+    grabAllRestricted(selected: any) {
+        let url = 'http://127.0.0.1:5000/api/grabAllRestricted';
+        return this.http.post<string[]>(url, selected);
+    }
+
     basicSearch(searchQuery: any) {
         let url = 'http://127.0.0.1:5000/api/basicSearch2';
         return this.http.post(url, { searchQuery });
@@ -35,6 +40,11 @@ export class SearchService {
     advancedSearch(searchQuery: any) {
         let url = 'http://127.0.0.1:5000/api/advancedSearch2';
         return this.http.post(url, { searchQuery });
+    }
+
+    advancedSearchRestricted(searchQuery: any) {
+        let url = 'http://127.0.0.1:5000/api/advancedSearchRestricted';
+        return this.http.post(url, searchQuery);
     }
 
     deleteRow(item: any) {

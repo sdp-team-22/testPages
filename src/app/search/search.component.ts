@@ -55,8 +55,10 @@ export class SearchComponent {
     selectedGraphType: string = 'bar'; //default bar
 
     // basic search variables
+    restrictiveSearch: boolean = true;
     searchQuery: any;
     result: any[] = [];
+
     // advanced search variables
     filters = [
         { 
@@ -108,6 +110,16 @@ export class SearchComponent {
         this.addFilter();
     }
 
+    toggleRestrictedSearch() {
+        this.resetFilters();
+        this._snackBar.open('Restrictive Search has been toggled: ' + this.restrictiveSearch, 'Close', {
+            duration: 2000, 
+            horizontalPosition: 'center', 
+            verticalPosition: 'bottom', 
+            // panelClass: 'error-snackbar' // Custom CSS class for styling
+        });
+    }
+
     /**
      * void addFilter()
      * adds a filter to filters list, which gets shown in frontend
@@ -149,6 +161,12 @@ export class SearchComponent {
     }
 
     onFilterL1Changed(event: MatAutocompleteSelectedEvent, filterId: string) {
+        /**
+         * 1. get values of all other filters
+         * 2. show/hide the responding filters
+         * 3. adjust the values in those filters (if in restrictive mode)
+         *   - here we can only adjust values for compound name and xrpd
+         */
         const option = event.option.value;
         var id = this.getId(filterId);
         // console.log('Option selected:', option, ' | Parent ID:', filterId);
@@ -162,16 +180,18 @@ export class SearchComponent {
                 this.hideElement('solubilityAnyData_' + id);
                 this.resetContains(id);
                 // find compound name options
-                this.flaskConnectionService.grabAllCompounds().subscribe(
-                    (response) => {
-                        // console.log(response);
-                        this.filters[id].compoundNameOptions = response;
-                    },
-                    (error) => {
-                        console.log(error);
-                    }
-                )
-                // find compound name options based on current filters
+                if (!(this.restrictiveSearch && this.filters.length > 1)) {
+                    this.flaskConnectionService.grabAllCompounds().subscribe(
+                        (response) => {
+                            // console.log(response);
+                            this.filters[id].compoundNameOptions = response;
+                            // console.log('original cname setting for', id, this.filters[id].compoundNameOptions)
+                        },
+                        (error) => {
+                            console.log(error);
+                        }
+                    )
+                }
                 break;
             case 'XRPD':
                 //console.log("XRPD Selected");
@@ -181,16 +201,18 @@ export class SearchComponent {
                 this.hideElement('solubilityAnyData_' + id);
                 this.resetContains(id);
                 // find xrpd options
-                this.flaskConnectionService.grabAllXRPD().subscribe(
-                    (response) => {
-                        // console.log(response);
-                        this.filters[id].xrpdOptions = response;
-                    },
-                    (error) => {
-                        console.log(error);
-                    }
-                );
-                // find xrpd options based on current filters
+                if (!(this.restrictiveSearch && this.filters.length > 1)) {
+                    this.flaskConnectionService.grabAllXRPD().subscribe(
+                        (response) => {
+                            // console.log(response);
+                            this.filters[id].xrpdOptions = response;
+                            // console.log('original xrpd setting for', id, this.filters[id].xrpdOptions)
+                        },
+                        (error) => {
+                            console.log(error);
+                        }
+                    );
+                }
                 break;
             case 'Solvent':
                 //console.log("Solvent Selected");
@@ -200,9 +222,39 @@ export class SearchComponent {
                 this.resetContains(id);
                 break;
         }
+        // restrictive filters logic
+        if (this.restrictiveSearch && this.filters.length > 1) {
+            var newOptions: any = [];
+            var tempSelected = this.getFilterData();
+            if (option == 'Compound Name' || option == 'XRPD') {
+                this.flaskConnectionService.grabAllRestricted({ 'filterContents':tempSelected, 'type': event.option.value, 'exact':[] }).subscribe(
+                    response => {
+                        console.log(response);
+                        newOptions = response;
+                        if (option == 'Compound Name') {
+                            // console.log('changing compound name options for', id);
+                            // console.log('old cname:', this.filters[id].compoundNameOptions);
+                            this.filters[id].compoundNameOptions = newOptions;
+                            // console.log('new cname:', this.filters[id].compoundNameOptions);
+                        } else if (option == 'XRPD') {
+                            // console.log('changing xrpd options for', id);
+                            // console.log('old xrpd:', this.filters[id].xrpdOptions);
+                            this.filters[id].xrpdOptions = newOptions;
+                            // console.log('new xrpd:', this.filters[id].xrpdOptions);
+                        }
+                    },
+                    error => {
+
+                    }
+                );
+            }
+        }
     }
 
     onFilterL2SolventChanged(event: MatAutocompleteSelectedEvent, filterId: string) {
+        /**
+         * restrictive mode logic in addSolventExactFilter and addSolventFilter
+         */
         var id = this.getId(filterId);
         switch(event.option.value) {
             case 'has exact combination':
@@ -265,21 +317,46 @@ export class SearchComponent {
      */
     addSolventFilter(event: MatAutocompleteSelectedEvent, i: number, j: number) {
         // console.log(this.filters[i]);
+        /**
+         * Restrictive mode:
+         * 1. get values of all other filters
+         * 2. show/hide the responding filters
+         * 3. adjust the values in those filters
+         */
         var options: string[] = [];
         var tempControl = new FormControl();
         this.filters[i].solventAnyDataOptions.push(options);
+        // console.log(this.filters[i].solventAnyDataOptions);
         this.filters[i].controls.solventAnyDataControl.push(tempControl);
-        this.flaskConnectionService.grabAllSolvents().subscribe(
-            (response) => {
-                // console.log(response);
-                // console.log(j, this.filters[i].solventAnyDataOptions);
-                this.filters[i].solventAnyDataOptions[j] = response;
-                this.filters[i].solventAnyDataCount++;
-            },
-            (error) => {
-                console.log(error);
-            }
-        )
+        // restrictive search check
+        if (!(this.restrictiveSearch && this.filters.length > 1)) {
+            this.flaskConnectionService.grabAllSolvents().subscribe(
+                (response) => {
+                    // console.log(response);
+                    // console.log(j, this.filters[i].solventAnyDataOptions);
+                    this.filters[i].solventAnyDataOptions[j] = response;
+                    this.filters[i].solventAnyDataCount++;
+                },
+                (error) => {
+                    console.log(error);
+                }
+            )
+        } else {
+            var tempSelected = this.getFilterData();
+            this.flaskConnectionService.grabAllRestricted({ 'filterContents':tempSelected, 'type': 'has any', 'exact':[] }).subscribe(
+                (response) => {
+                    // console.log(response);
+                    // console.log(j, this.filters[i].solventAnyDataOptions);
+                    console.log(response);
+                    this.filters[i].solventAnyDataOptions[j] = response;
+                    this.filters[i].solventAnyDataCount++;
+                    console.log(this.filters[i].solventAnyDataCount);
+                },
+                (error) => {
+                    console.log(error);
+                }
+            )
+        }
     }
 
     /**
@@ -297,55 +374,106 @@ export class SearchComponent {
         this.filters[i].controls.solventExactDataControl.push(tempControl);
         if (j == 0) {
             // writing first filter
-            this.flaskConnectionService.grabAllSolvents().subscribe(
-                (response) => {
-                    // console.log(response);
-                    // console.log(j, this.filters[i].solventExactDataOptions);
-                    this.filters[i].solventExactDataOptions[j] = response;
-                    this.filters[i].solventExactDataCount++;
-                },
-                (error) => {
-                    console.log(error);
-                }
-            )
+            if (!(this.restrictiveSearch && this.filters.length > 1)) {
+                this.flaskConnectionService.grabAllSolvents().subscribe(
+                    (response) => {
+                        // console.log(response);
+                        // console.log(j, this.filters[i].solventExactDataOptions);
+                        this.filters[i].solventExactDataOptions[j] = response;
+                        this.filters[i].solventExactDataCount++;
+                    },
+                    (error) => {
+                        console.log(error);
+                    }
+                )
+            } else {
+                // restrictive first exact filter
+                // check compound names, xrpds, has filters
+                var tempSelected = this.getFilterData();
+                this.flaskConnectionService.grabAllRestricted({ 'filterContents':tempSelected, 'type': 'has exact', 'exact':[] }).subscribe(
+                    (response) => {
+                        console.log(response);
+                        this.filters[i].solventExactDataOptions[j] = response;
+                        this.filters[i].solventExactDataCount++;
+                    },
+                    (error) => {
+                        console.log(error);
+                    }
+                )
+            }
         } else if (j == 1) {
             // 1 filter selected, find options for second
             console.log('preparing second filter');
-            this.flaskConnectionService.grabConstrained([this.filters[i].controls.solventExactDataControl[0].value]).subscribe(
-                (response: {[key: string]: any}) => {
-                    var temp = response['solvent_2_options'];
-                    this.filters[i].solventExactDataOptions[j] = temp;
-                    this.filters[i].solventExactDataCount++;
-                },
-                error => {
-
-                }
-            )
+            var value1 = this.filters[i].controls.solventExactDataControl[0].value;
+            if (!(this.restrictiveSearch && this.filters.length > 1)) {
+                this.flaskConnectionService.grabConstrained([value1]).subscribe(
+                    (response: {[key: string]: any}) => {
+                        var temp = response['solvent_2_options'];
+                        this.filters[i].solventExactDataOptions[j] = temp;
+                        this.filters[i].solventExactDataCount++;
+                    },
+                    error => {
+                        console.log(error);
+                    }
+                )
+            } else {
+                // restrictive second exact filter
+                // check compound names, xrpds, has filters, first exact filter
+                var tempSelected = this.getFilterData();
+                this.flaskConnectionService.grabAllRestricted({ 'filterContents':tempSelected, 'type': 'has exact', 'exact':[value1] }).subscribe(
+                    (response) => {
+                        console.log(response);
+                        this.filters[i].solventExactDataOptions[j] = response;
+                        this.filters[i].solventExactDataCount++;
+                    },
+                    (error) => {
+                        console.log(error);
+                    }
+                )
+            }
         } else if (j == 2) {
             // 2 filters selected, find options for third
             console.log('preparing second filter');
             var value1 = this.filters[i].controls.solventExactDataControl[0].value;
             var value2 = this.filters[i].controls.solventExactDataControl[1].value;
-            this.flaskConnectionService.grabConstrained([value1, value2]).subscribe(
-                (response: any) => {
-                    // console.log(response);
-                    var temp = response['solvent_3_options'];
-                    this.filters[i].solventExactDataOptions[j] = temp;
-                    this.filters[i].solventExactDataCount++;
-                }, 
-                error => {
-                    console.log("error with advanced search");
-                }
-            )
+            if (!(this.restrictiveSearch && this.filters.length > 1)) {
+                this.flaskConnectionService.grabConstrained([value1, value2]).subscribe(
+                    (response: any) => {
+                        // console.log(response);
+                        var temp = response['solvent_3_options'];
+                        this.filters[i].solventExactDataOptions[j] = temp;
+                        this.filters[i].solventExactDataCount++;
+                    }, 
+                    error => {
+                        console.log("error with advanced search");
+                    }
+                )
+            } else {
+                // restrictive third exact filter
+                // check compound names, xrpds, has filters, first and second exact filter
+                var tempSelected = this.getFilterData();
+                this.flaskConnectionService.grabAllRestricted({ 'filterContents':tempSelected, 'type': 'has exact', 'exact':[value1, value2] }).subscribe(
+                    (response) => {
+                        console.log(response);
+                        this.filters[i].solventExactDataOptions[j] = response;
+                        this.filters[i].solventExactDataCount++;
+                    },
+                    (error) => {
+                        console.log(error);
+                    }
+                )
+            }
         }
     }
 
     deleteFilter(filterId: string) {
-        console.log("delete:", filterId);
+        // console.log("delete:", filterId);
         if (this.filters.length > 1) {
             var index = this.getId(filterId);
             this.filters[index].controls.mainControl.reset(); // reset control
             this.filters.splice(index, 1);
+        } else {
+            this.resetFilters();
         }
     }
 
@@ -374,6 +502,8 @@ export class SearchComponent {
                     return;
                 }
                 this.result = response;
+                this.selectedItems = [];
+                this.showGraph();
                 this.removeZeros(this.result);
             },            
             error => {
@@ -383,18 +513,18 @@ export class SearchComponent {
         
     }
 
-    advancedSearch() {
-        var advancedQuery = {'Compound Name':[] as string[], 'XRPD':[] as string[], 'Solvent Exact': [[]] as [string[]], 'Solvent Contains': [] as string[]}
+    getFilterData() {
+        var filterData = {'Compound Name':[] as string[], 'XRPD':[] as string[], 'Solvent Exact': [[]] as [string[]], 'Solvent Contains': [] as string[]}
         for (let i = 0; i < this.filters.length; i++) {
             var mainSelection = this.filters[i].controls.mainControl.value;
             switch (mainSelection) {
                 case 'Compound Name':
                     const tempName: string = this.filters[i].controls.compoundNameControl.value;
-                    advancedQuery['Compound Name'].push(tempName);
+                    filterData['Compound Name'].push(tempName);
                     break;
                 case 'XRPD':
                     const tempXRPD: string = this.filters[i].controls.xrpdControl.value;
-                    advancedQuery['XRPD'].push(tempXRPD);
+                    filterData['XRPD'].push(tempXRPD);
                     break;
                 case 'Solvent':
                     const Solvent2: string = this.filters[i].controls.solventControl1.value;
@@ -405,39 +535,71 @@ export class SearchComponent {
                             for (let j = 0; j < tempControls.length; j++) {
                                 tempList.push(tempControls[j].value);
                             }
-                            advancedQuery['Solvent Exact'].push(tempList);
+                            filterData['Solvent Exact'].push(tempList);
                             break;
                         case 'has any data on':
                             var tempControls = this.filters[i].controls.solventAnyDataControl;
                             for (let j = 0; j < tempControls.length; j++) {
-                                advancedQuery['Solvent Contains'].push(tempControls[j].value);
+                                filterData['Solvent Contains'].push(tempControls[j].value);
                             }
                             break;
                     }
                 break;
             }
         }
+        return filterData;
+    }
+
+    advancedSearch() {
+        var advancedQuery = this.getFilterData();
         // console.log(advancedQuery);
-        this.flaskConnectionService.advancedSearch(advancedQuery).subscribe (
-            (response: any) => {
-                // console.log(response);
-                if (response.length == 0) {
-                    // console.log('no results');
-                    this._snackBar.open('No results found', 'Close', {
-                        duration: 2000, 
-                        horizontalPosition: 'center', 
-                        verticalPosition: 'bottom', 
-                        panelClass: 'error-snackbar' // Custom CSS class for styling
-                    });
-                    return;
+        if (!(this.restrictiveSearch)) {
+            this.flaskConnectionService.advancedSearch(advancedQuery).subscribe (
+                (response: any) => {
+                    console.log(response);
+                    if (response.length == 0) {
+                        // console.log('no results');
+                        this._snackBar.open('No results found', 'Close', {
+                            duration: 2000, 
+                            horizontalPosition: 'center', 
+                            verticalPosition: 'bottom', 
+                            panelClass: 'error-snackbar' // Custom CSS class for styling
+                        });
+                        return;
+                    }
+                    this.result = response;
+                    this.selectedItems = [];
+                    this.showGraph();
+                    this.removeZeros(this.result);
+                },
+                (error) => {
+                    console.log('Error search.component.ts: advancedSearch');
                 }
-                this.result = response;
-                this.removeZeros(this.result);
-            },
-            (error) => {
-                console.log('Error search.component.ts: advancedSearch');
-            }
-        );
+            );
+        } else {
+            // restricted advanced search
+            this.flaskConnectionService.advancedSearchRestricted(advancedQuery).subscribe (
+                (response: any) => {
+                    console.log(response);
+                    if (response.length == 0) {
+                        // console.log('no results');
+                        this._snackBar.open('No results found', 'Close', {
+                            duration: 2000, 
+                            horizontalPosition: 'center', 
+                            verticalPosition: 'bottom', 
+                            panelClass: 'error-snackbar' // Custom CSS class for styling
+                        });
+                        return;
+                    }
+                    this.result = response;
+                    // this.selectedItems = [];
+                    // this.removeZeros(this.result);
+                },
+                (error) => {
+                    console.log('Error search.component.ts: advancedSearch2:', error);
+                }
+            );
+        }
     }
 
     /**
@@ -568,7 +730,7 @@ export class SearchComponent {
     }
 
     deleteSelection() {
-        console.log("delete selected items");
+        // console.log("delete selected items");
         for (let singleSelected of this.selectedItems) {
             var cname = singleSelected['compound_name'];
             var solv1 = singleSelected['solvent_1'];
@@ -648,7 +810,7 @@ export class SearchComponent {
         let canvasDiv = document.getElementById('chartCanvasDiv') as HTMLDivElement;
         let canvas = document.getElementById('chartCanvas') as HTMLCanvasElement;
         if (!canvasDiv) {
-            console.error("Canvas element 'chartCanvasDiv' not found.");
+            // console.error("Canvas element 'chartCanvasDiv' not found.");
             return;
         } else if (this.selectedItems.length > 0) {
             canvasDiv.style.display = 'block';
