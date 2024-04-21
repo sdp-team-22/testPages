@@ -130,6 +130,12 @@ export class TableComponent implements OnInit, OnDestroy  {
 
   deleteTable(index: number): void {
     this.tablesData.splice(index, 1); 
+    if (!this.tablesData.length) {
+      if (this.subscription) {
+        this.subscription.unsubscribe();
+      }
+      this.router.navigateByUrl('/upload');
+    }
   }
 
   submitTables(): void {
