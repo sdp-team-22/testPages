@@ -524,7 +524,7 @@ def search_restricted_form(conn, selectedOptions):
         print("Error in searchHelper.py:", e)
 
 def deleteRow(conn, item):
-    print(item)
+    # print(item)
     if (item['solvent_1'] == ''):
         item['solvent_1'] = 'nan'
     if (item['solvent_2'] == ''):

@@ -736,51 +736,57 @@ export class SearchComponent {
     }
 
     deleteSelection() {
-        // console.log("delete selected items");
-        for (let singleSelected of this.selectedItems) {
-            var cname = singleSelected['compound_name'];
-            var solv1 = singleSelected['solvent_1'];
-            var solv2 = singleSelected['solvent_2'];
-            var solv3 = singleSelected['solvent_3'];
-            var temp = singleSelected['temp'];
-            var xrpd = singleSelected['xrpd'];
-            var vfrac1 = singleSelected['fractions'][0]['value'];
-            var vfrac2 = singleSelected['fractions'][1]['value'];
-            var vfrac3 = singleSelected['fractions'][2]['value'];
-            var wfrac1 = singleSelected['fractions'][3]['value'];
-            var wfrac2 = singleSelected['fractions'][4]['value'];
-            var wfrac3 = singleSelected['fractions'][5]['value'];
-            // console.log(singleSelected['fractions']);
-            this.result = this.result.filter(singleResult => {
-                if (singleResult['compound_name'] == cname) {
-                    // console.log('\n\n\n', singleSelected);
-                    // console.log(singleResult);
-                    // console.log('identical compound name');
-                    if (singleResult['solvent_1'] == solv1) {
-                        // console.log('identical solvent 1');
-                        if (singleResult['solvent_2'] == solv2) {
-                            // console.log('identical solvent 2');
-                            if (singleResult['solvent_3'] == solv3) {
-                                // console.log('identical solvent 3');
-                                if (singleResult['temp'] == temp) {
-                                    // console.log('identical temp');
-                                    if (singleResult['xrpd'] == xrpd) {
-                                        // console.log('identical xrpd');
-                                        if (singleResult['volfrac1'] == vfrac1) {
-                                            // console.log('identical volfrac1');
-                                            if (singleResult['volfrac2'] == vfrac2) {
-                                                // console.log('identical volfrac2');
-                                                if (singleResult['volfrac3'] == vfrac3) {
-                                                    // console.log('identical volfrac3');
-                                                    if (singleResult['wtfrac1'] == wfrac1) {
-                                                        // console.log('identical wfrac1');
-                                                        if (singleResult['wtfrac2'] == wfrac2) {
-                                                            // console.log('identical wfrac2');
-                                                            if (singleResult['wtfrac3'] == wfrac3) {
-                                                                // console.log('identical wfrac3');
-                                                                // console.log('identical primary key'); // we want to remove singleResult
-                                                                this.deleteFromDatabase(singleResult);
-                                                                return false;
+        /**
+         * Some admin protocol can be added here
+         */
+        var password = prompt("Confirm deletion from database? type CONFIRM");
+        if (password == 'CONFIRM') {
+            // console.log("delete selected items");
+            for (let singleSelected of this.selectedItems) {
+                var cname = singleSelected['compound_name'];
+                var solv1 = singleSelected['solvent_1'];
+                var solv2 = singleSelected['solvent_2'];
+                var solv3 = singleSelected['solvent_3'];
+                var temp = singleSelected['temp'];
+                var xrpd = singleSelected['xrpd'];
+                var vfrac1 = singleSelected['fractions'][0]['value'];
+                var vfrac2 = singleSelected['fractions'][1]['value'];
+                var vfrac3 = singleSelected['fractions'][2]['value'];
+                var wfrac1 = singleSelected['fractions'][3]['value'];
+                var wfrac2 = singleSelected['fractions'][4]['value'];
+                var wfrac3 = singleSelected['fractions'][5]['value'];
+                // console.log(singleSelected['fractions']);
+                this.result = this.result.filter(singleResult => {
+                    if (singleResult['compound_name'] == cname) {
+                        // console.log('\n\n\n', singleSelected);
+                        // console.log(singleResult);
+                        // console.log('identical compound name');
+                        if (singleResult['solvent_1'] == solv1) {
+                            // console.log('identical solvent 1');
+                            if (singleResult['solvent_2'] == solv2) {
+                                // console.log('identical solvent 2');
+                                if (singleResult['solvent_3'] == solv3) {
+                                    // console.log('identical solvent 3');
+                                    if (singleResult['temp'] == temp) {
+                                        // console.log('identical temp');
+                                        if (singleResult['xrpd'] == xrpd) {
+                                            // console.log('identical xrpd');
+                                            if (singleResult['volfrac1'] == vfrac1) {
+                                                // console.log('identical volfrac1');
+                                                if (singleResult['volfrac2'] == vfrac2) {
+                                                    // console.log('identical volfrac2');
+                                                    if (singleResult['volfrac3'] == vfrac3) {
+                                                        // console.log('identical volfrac3');
+                                                        if (singleResult['wtfrac1'] == wfrac1) {
+                                                            // console.log('identical wfrac1');
+                                                            if (singleResult['wtfrac2'] == wfrac2) {
+                                                                // console.log('identical wfrac2');
+                                                                if (singleResult['wtfrac3'] == wfrac3) {
+                                                                    // console.log('identical wfrac3');
+                                                                    // console.log('identical primary key'); // we want to remove singleResult
+                                                                    this.deleteFromDatabase(singleResult);
+                                                                    return false;
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -792,12 +798,14 @@ export class SearchComponent {
                             }
                         }
                     }
-                }
-                return true;
-            });
+                    return true;
+                });
+            }
+            this.selectedItems = [];
+            this.showGraph();
+        } else {
+            alert("Confirmation failed: deletion did not proceed")
         }
-        this.selectedItems = [];
-        this.showGraph();
     }
 
     deleteFromDatabase(item: any) {
