@@ -503,6 +503,7 @@ export class SearchComponent {
                 );
             }
         });
+        this.showGraph();
         // console.log(this.selectedItems)
     }
 
@@ -563,6 +564,7 @@ export class SearchComponent {
             ;
             // console.log(this.selectedItems);
         }
+        this.showGraph();
     }
 
     deleteSelection() {
@@ -642,7 +644,17 @@ export class SearchComponent {
     }
 
     showGraph() {
+        let canvasDiv = document.getElementById('chartCanvasDiv') as HTMLDivElement;
         let canvas = document.getElementById('chartCanvas') as HTMLCanvasElement;
+        if (!canvasDiv) {
+            console.error("Canvas element 'chartCanvasDiv' not found.");
+            return;
+        } else if (this.selectedItems.length > 0) {
+            canvasDiv.style.display = 'block';
+        } else {
+            canvasDiv.style.display = 'none';
+            return;
+        }
         if (!canvas) {
             console.error("Canvas element 'chartCanvas' not found.");
             return;
