@@ -311,6 +311,8 @@ def deleteRow(conn, item):
         item['solvent_2'] = 'nan'
     if (item['solvent_3'] == ''):
         item['solvent_3'] = 'nan'
+    if (item['xrpd'] == ''):
+        item['xrpd'] = 'nan'
     cur = conn.cursor()
     try:
         cur.execute("""

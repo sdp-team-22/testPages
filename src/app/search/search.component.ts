@@ -629,6 +629,7 @@ export class SearchComponent {
             });
         }
         this.selectedItems = [];
+        this.showGraph();
     }
 
     deleteFromDatabase(item: any) {
