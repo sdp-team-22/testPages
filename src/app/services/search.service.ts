@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { flask_api_url } from './config';
+import { flask_api_url } from '../config';
 @Injectable({
     providedIn: 'root'
 })
@@ -34,12 +34,12 @@ export class SearchService {
     }
 
     basicSearch(searchQuery: any) {
-        let url = flask_api_url + 'basicSearch2';
+        let url = flask_api_url + 'basicSearch';
         return this.http.post(url, { searchQuery });
     }
 
     advancedSearch(searchQuery: any) {
-        let url = flask_api_url + 'advancedSearch2';
+        let url = flask_api_url + 'advancedSearch';
         return this.http.post(url, { searchQuery });
     }
 

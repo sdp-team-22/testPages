@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { SolubilityData, SolubilityDataColumns } from '../model/solubilitydata'; // Import SolubilityDataColumns from the same file
+import { SolubilityData, SolubilityDataColumns } from './solubilitydata'; // Import SolubilityDataColumns from the same file
 import { DataService } from '../services/solubility-data.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -110,6 +110,12 @@ export class TableComponent implements OnInit, OnDestroy  {
         }
       }
     });
+    if (!this.tablesData.length) {
+      if (this.subscription) {
+        this.subscription.unsubscribe();
+      }
+      this.router.navigateByUrl('/upload');
+    }
   }
 
   //clean up 

@@ -1,6 +1,4 @@
-import pandas as pd 
-import json
-import re
+import pandas as pd
 import math
 
 def file_excel_to_json(file):
@@ -127,7 +125,7 @@ def convertToFloat(input):
             return 'nan'
         return fInput
     except:
-        print(f'could not convert {input} to float')
+        # print(f'could not convert {input} to float')
         return input
 
 def find_duplicates(input_json, conn):

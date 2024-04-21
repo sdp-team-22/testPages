@@ -256,7 +256,7 @@ keys = [
     'solute_lot_num', 'eln_sample_num_measure', 'measure_method', 
     'comments']
 
-def basicSearch2(conn, searchQuery):
+def basicSearch(conn, searchQuery):
     try:
         cur = conn.cursor()
         cur.execute("""
@@ -276,7 +276,7 @@ def basicSearch2(conn, searchQuery):
             finalResult.append(tempResult)
         return finalResult
 
-def advancedSearch2(conn, searchQuery):
+def advancedSearch(conn, searchQuery):
     cur = conn.cursor()
     compoundNames = searchQuery['Compound Name']
     xrpd = searchQuery['XRPD']
@@ -455,40 +455,6 @@ def advancedSearchRestricted(conn, searchQuery):
         return finalResult
     except Exception as e:
         return { 'fatal error: searchHelper advancedSearchRestricted:', e }
-
-def search_unique_form(cur):
-    try:
-        # Fetch unique xrpd, compound names, and solvent options
-        cur.execute("SELECT DISTINCT xrpd, compound_name, solvent_1, solvent_2, solvent_3 FROM solubility_data")
-        all_options = cur.fetchall()
-
-        # Separate options into individual lists
-        xrpd_options = set()
-        compound_name_options = set()
-        solvent_1_options = set()
-        solvent_2_options = set()
-        solvent_3_options = set()
-        solvent_combinations_options = set()
-
-        for row in all_options:
-            xrpd_options.add(row[0])
-            compound_name_options.add(row[1])
-            solvent_1_options.add(row[2])
-            solvent_2_options.add(row[3])
-            solvent_3_options.add(row[4])
-            solvent_combinations_options.add(tuple(value if value != 'nan' else '' for value in row[2:5]))
-        
-        return {
-            "xrpd_options": list(xrpd_options),
-            "compound_name_options": list(compound_name_options),
-            "solvent_1_options": list(solvent_1_options),
-            "solvent_2_options": list(solvent_2_options),
-            "solvent_3_options": list(solvent_3_options),
-            "solvent_combinations_options": [list(combination) for combination in solvent_combinations_options]
-        }
-    except Exception as e:
-        print("Error fetching options from the database:", e)
-        return []
     
 def search_restricted_form(conn, selectedOptions):
     cur = conn.cursor()

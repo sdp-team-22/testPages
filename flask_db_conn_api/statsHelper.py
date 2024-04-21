@@ -78,8 +78,7 @@ def incrementToday(conn):
     """, (today, ))
     temp = cur.fetchall()
     if len(temp):
-        # exists
-        print("exists")
+        # print("exists")
         visitsToday = temp[0][1]
         visitsToday += 1
         cur.execute("""
@@ -96,6 +95,18 @@ def incrementToday(conn):
             VALUES (%s, 1);
         """, (today, ))
         conn.commit()
+
+def database_stats(conn):
+    # Fetch total data points
+    try:
+        data_points = getTotalRows(conn)
+        upload_history = getUploadHistory(conn)
+        daily_visits = getToday(conn)
+        monthly_visits = getMonth(conn)
+        return data_points, upload_history, daily_visits, monthly_visits
+    except Exception as e:
+        print('Error database_stats:', e)
+        return -1, [], -1, -1
 
 if __name__=="__main__":
     conn = psycopg2.connect(

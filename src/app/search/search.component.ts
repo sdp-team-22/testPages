@@ -5,7 +5,7 @@ import { FormControl, FormsModule } from '@angular/forms'; // to use ngModel
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
-import { SearchService } from '../search.service';
+import { SearchService } from '../services/search.service';
 // for table
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
@@ -671,7 +671,7 @@ export class SearchComponent {
             }
         });
         this.showGraph();
-        console.log(this.selectedItems)
+        // console.log(this.selectedItems)
     }
 
     /**

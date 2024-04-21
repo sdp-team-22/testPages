@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { StatsService } from '../stats.service';
+import { StatsService } from '../services/stats.service';
 @Component({
   templateUrl: './stats.component.html',
   styleUrls: ['./stats.component.scss'],

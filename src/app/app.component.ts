@@ -28,11 +28,6 @@ export class AppComponent implements OnInit {
     this.router.navigate(['/upload']);
   }
 
-  handleViewDataClick(): void {
-    // Navigate to the "/edit" route
-    this.router.navigate(['/edit']);
-  }
-
   handleStatisticsClick(): void {
     // Navigate to the "/view" route
     this.router.navigate(['/view']);

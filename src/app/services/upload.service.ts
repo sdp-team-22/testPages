@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { flask_api_url } from './config';
+import { flask_api_url } from '../config';
 @Injectable({
   providedIn: 'root'
 })

@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild} from '@angular/core';
-import { UploadService } from '../upload.service';
+import { UploadService } from '../services/upload.service';
 import { DataService } from '../services/solubility-data.service';
 import { NavigationExtras, Router } from '@angular/router';
 

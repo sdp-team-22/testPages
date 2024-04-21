@@ -7,7 +7,6 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home';
 import { UploadComponent } from './upload';
 import { EditComponent } from './edit';
-import { ViewComponent } from './view';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { StatsComponent } from './stats';
 import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule if you're using HttpClient
@@ -23,7 +22,6 @@ import { MatTabsModule } from '@angular/material/tabs';
     HomeComponent,
     UploadComponent,
     EditComponent,
-    // ViewComponent,
     StatsComponent,
     TableComponent,
   ],
