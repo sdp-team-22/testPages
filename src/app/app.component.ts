@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { flask_api_url } from './config';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -12,7 +13,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
       // Flask endpoint request to update visits
-      this.http.post('http://127.0.0.1:5000/api/updateVisits', {}).subscribe(
+      this.http.post(flask_api_url + 'updateVisits', {}).subscribe(
         (response) => {
           // console.log('Visit count incremented successfully');
         },

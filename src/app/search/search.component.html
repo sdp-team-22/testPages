@@ -164,7 +164,7 @@
         <!-- checkbox Column -->
         <ng-container matColumnDef="select">
             <th mat-header-cell *matHeaderCellDef>Select All
-                <mat-checkbox color="primary" class="checkbox" (change)="toggleSelectAll($event)"></mat-checkbox>
+                <mat-checkbox color="primary" class="checkbox" [(ngModel)]="selectAllCheckbox" (change)="toggleSelectAll($event)"></mat-checkbox>
             </th>
             <td mat-cell *matCellDef="let result">
                 <mat-checkbox color="primary" class="checkbox" [(ngModel)]="result.selected" (change)="onCheckboxChange($event, result)"></mat-checkbox>

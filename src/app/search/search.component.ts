@@ -53,6 +53,7 @@ export class SearchComponent {
     selectedFraction: string = 'wtfrac'; //default
     selectedItems: any[] = [];
     selectedGraphType: string = 'bar'; //default bar
+    selectAllCheckbox: boolean = false;
 
     // basic search variables
     restrictiveSearch: boolean = true;
@@ -230,7 +231,7 @@ export class SearchComponent {
             if (option == 'Compound Name' || option == 'XRPD') {
                 this.flaskConnectionService.grabAllRestricted({ 'filterContents':tempSelected, 'type': event.option.value, 'exact':[] }).subscribe(
                     response => {
-                        console.log(response);
+                        // console.log(response);
                         newOptions = response;
                         if (option == 'Compound Name') {
                             // console.log('changing compound name options for', id);
@@ -290,7 +291,6 @@ export class SearchComponent {
         } else if (j < this.filters[i].solventExactDataCount - 1) {
             // selecting older filter (delete all new ones, start from last changed)
             // console.log(this.filters[i].solventExactDataCount - 1, j);
-            console.log("hmmm");
             for (let k = this.filters[i].solventExactDataCount - 1; k > j; k--) {
                 this.filters[i].solventExactDataCount--;
                 this.filters[i].solventExactDataOptions.pop();
@@ -348,10 +348,10 @@ export class SearchComponent {
                 (response) => {
                     // console.log(response);
                     // console.log(j, this.filters[i].solventAnyDataOptions);
-                    console.log(response);
+                    // console.log(response);
                     this.filters[i].solventAnyDataOptions[j] = response;
                     this.filters[i].solventAnyDataCount++;
-                    console.log(this.filters[i].solventAnyDataCount);
+                    // console.log(this.filters[i].solventAnyDataCount);
                 },
                 (error) => {
                     console.log(error);
@@ -393,7 +393,7 @@ export class SearchComponent {
                 var tempSelected = this.getFilterData();
                 this.flaskConnectionService.grabAllRestricted({ 'filterContents':tempSelected, 'type': 'has exact', 'exact':[] }).subscribe(
                     (response) => {
-                        console.log(response);
+                        // console.log(response);
                         this.filters[i].solventExactDataOptions[j] = response;
                         this.filters[i].solventExactDataCount++;
                     },
@@ -404,7 +404,7 @@ export class SearchComponent {
             }
         } else if (j == 1) {
             // 1 filter selected, find options for second
-            console.log('preparing second filter');
+            // console.log('preparing second filter');
             var value1 = this.filters[i].controls.solventExactDataControl[0].value;
             if (!(this.restrictiveSearch && this.filters.length > 1)) {
                 this.flaskConnectionService.grabConstrained([value1]).subscribe(
@@ -423,7 +423,7 @@ export class SearchComponent {
                 var tempSelected = this.getFilterData();
                 this.flaskConnectionService.grabAllRestricted({ 'filterContents':tempSelected, 'type': 'has exact', 'exact':[value1] }).subscribe(
                     (response) => {
-                        console.log(response);
+                        // console.log(response);
                         this.filters[i].solventExactDataOptions[j] = response;
                         this.filters[i].solventExactDataCount++;
                     },
@@ -434,7 +434,7 @@ export class SearchComponent {
             }
         } else if (j == 2) {
             // 2 filters selected, find options for third
-            console.log('preparing second filter');
+            // console.log('preparing third filter');
             var value1 = this.filters[i].controls.solventExactDataControl[0].value;
             var value2 = this.filters[i].controls.solventExactDataControl[1].value;
             if (!(this.restrictiveSearch && this.filters.length > 1)) {
@@ -455,7 +455,7 @@ export class SearchComponent {
                 var tempSelected = this.getFilterData();
                 this.flaskConnectionService.grabAllRestricted({ 'filterContents':tempSelected, 'type': 'has exact', 'exact':[value1, value2] }).subscribe(
                     (response) => {
-                        console.log(response);
+                        // console.log(response);
                         this.filters[i].solventExactDataOptions[j] = response;
                         this.filters[i].solventExactDataCount++;
                     },
@@ -506,6 +506,7 @@ export class SearchComponent {
                 this.selectedItems = [];
                 this.showGraph();
                 this.removeZeros(this.result);
+                this.selectAllCheckbox = false;
             },            
             error => {
                 console.error('Error: search.component.ts basicSearch() failed');
@@ -572,6 +573,7 @@ export class SearchComponent {
                     this.selectedItems = [];
                     this.showGraph();
                     this.removeZeros(this.result);
+                    this.selectAllCheckbox = false;
                 },
                 (error) => {
                     console.log('Error search.component.ts: advancedSearch');
@@ -581,7 +583,7 @@ export class SearchComponent {
             // restricted advanced search
             this.flaskConnectionService.advancedSearchRestricted(advancedQuery).subscribe (
                 (response: any) => {
-                    console.log(response);
+                    // console.log(response);
                     if (response.length == 0) {
                         // console.log('no results');
                         this._snackBar.open('No results found', 'Close', {
@@ -593,8 +595,10 @@ export class SearchComponent {
                         return;
                     }
                     this.result = response;
-                    // this.selectedItems = [];
-                    // this.removeZeros(this.result);
+                    this.selectedItems = [];
+                    this.showGraph();
+                    this.removeZeros(this.result);
+                    this.selectAllCheckbox = false;
                 },
                 (error) => {
                     console.log('Error search.component.ts: advancedSearch2:', error);
@@ -667,7 +671,7 @@ export class SearchComponent {
             }
         });
         this.showGraph();
-        // console.log(this.selectedItems)
+        console.log(this.selectedItems)
     }
 
     /**
@@ -728,6 +732,7 @@ export class SearchComponent {
             // console.log(this.selectedItems);
         }
         this.showGraph();
+        this.selectAllCheckbox = (this.selectedItems.length == this.result.length) ? true : false;
     }
 
     deleteSelection() {
