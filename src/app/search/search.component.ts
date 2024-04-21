@@ -112,7 +112,8 @@ export class SearchComponent {
 
     toggleRestrictedSearch() {
         this.resetFilters();
-        this._snackBar.open('Restrictive Search has been toggled: ' + this.restrictiveSearch, 'Close', {
+        var onOff = this.restrictiveSearch === true ? 'ON': 'OFF';
+        this._snackBar.open('Restrictive Search has been toggled: ' + onOff, 'Close', {
             duration: 2000, 
             horizontalPosition: 'center', 
             verticalPosition: 'bottom', 
