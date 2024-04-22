@@ -170,6 +170,7 @@ def getRestricted(conn, filterContents, type, exact):
                 exactQuery = " AND (LOWER(solvent_1) = LOWER('" + exact[0] + "')"
                 exactQuery = exactQuery + " OR LOWER(solvent_2) = LOWER('" + exact[0] + "')"
                 exactQuery = exactQuery + " OR LOWER(solvent_3) = LOWER('" + exact[0] + "'))"
+                # print(exactQuery)
             elif len(exact) == 2:
                 # print('adjust query for exact filter 3')
                 exactQuery = " AND ((LOWER(solvent_1) = LOWER('" + exact[0] + "') AND LOWER(solvent_2) = LOWER('" + exact[1] + "')) OR"
@@ -201,12 +202,13 @@ def getRestricted(conn, filterContents, type, exact):
                 solventOptions.remove(exact[1])
             # remove anything that's not in contains list
             finalResponse = set()
-            # print(filterContents['Solvent Contains'])
-            if filterContents['Solvent Contains']:
+            if filterContents['Solvent Contains'] and len(exact) == 0:
+                # only give options that are in solvent contains if it's the first dropdown
                 for element in list(solventOptions):
                     if element in filterContents['Solvent Contains']:
                         finalResponse.add(element)
             else:
+                # if it's not the first solvent dropdown, show all options
                 finalResponse = list(solventOptions)
             return list(finalResponse)
 
@@ -424,11 +426,10 @@ def advancedSearchRestricted(conn, searchQuery):
     # add solvent any
     anyQuery = ' AND ('
     for anySolv in searchQuery['Solvent Contains']:
-        if anySolv is None:
-            anySolv = 'nan'
-        anyQuery = anyQuery + " LOWER(solvent_1) = LOWER('" + anySolv + "') OR"
-        anyQuery = anyQuery + " LOWER(solvent_2) = LOWER('" + anySolv + "') OR"
-        anyQuery = anyQuery + " LOWER(solvent_3) = LOWER('" + anySolv + "') OR"
+        if anySolv is not None:
+            anyQuery = anyQuery + " LOWER(solvent_1) = LOWER('" + anySolv + "') OR"
+            anyQuery = anyQuery + " LOWER(solvent_2) = LOWER('" + anySolv + "') OR"
+            anyQuery = anyQuery + " LOWER(solvent_3) = LOWER('" + anySolv + "') OR"
     if anyQuery != ' AND (':
         anyQuery = anyQuery[:-2] + ')'
         query = query + anyQuery
