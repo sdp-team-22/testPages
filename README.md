@@ -1,5 +1,3 @@
-https://sdp-team-22.github.io/website/
-
 ## Prerequisites 
 
 To run the full app, you'll need to have Docker and Docker Compose installed on your machine. You can check if they're already installed by running `docker --version` and `docker-compose --version` in your terminal.
@@ -63,5 +61,8 @@ If for some reason you'd like to spin up each container individually, follow the
     ```
 
     * This will run the container and expose it to the host's port 62000
+
+
+https://sdp-team-22.github.io/website/
 
 
