@@ -821,12 +821,38 @@ export class SearchComponent {
         );
     }
 
-        // math stuff to create unique colors
+    // math stuff to create unique colors
     selectColor() {
         const goldenAngle = 137.508;
         const hue = this.colorCounter * goldenAngle % 360; // Ensure hue stays within [0, 360)
         this.colorCounter++;
         return `hsl(${hue}, 50%, 75%)`;
+    }
+
+    // creates the diagonal pattern for > and < data points
+    createDiagonalPattern(color = 'black') {
+        // create a 10x10 px canvas for the pattern's base shape
+        let shape = document.createElement('canvas');
+        shape.width = 10;
+        shape.height = 10;
+        // get the context for drawing
+        let c = shape.getContext('2d');
+        if (c === null) {
+            throw new Error("Unable to obtain 2D context for canvas.");
+        }
+        // draw 1st line of the shape
+        c.strokeStyle = color;
+        c.beginPath();
+        c.moveTo(2, 0);
+        c.lineTo(10, 8);
+        c.stroke();
+         // draw 2nd line of the shape
+        c.beginPath();
+        c.moveTo(0, 8);
+        c.lineTo(2, 10);
+        c.stroke();
+        // create the pattern from the shape
+        return c.createPattern(shape, 'repeat');
         }
 
 
@@ -866,7 +892,28 @@ export class SearchComponent {
             this.plotScatterPlot(canvas);
         }
     }
+    /**
+     *  takes in the current background color array,
+     *  goes through the array and find the HSL color previously 
+     *  used. Helps with having the same color bar graph with datas that 
+     *  has the same key(compound name and form).
+     *  
+     */
+    findPreviousHSLColor(colors : any[]) {
+        let previousColor = null;
     
+        for (let i = 0; i < colors.length; i++) {
+            if (typeof colors[i] === 'string' && colors[i].startsWith('hsl')) {
+                previousColor = colors[i];
+            } else if (colors[i] instanceof CanvasPattern && previousColor !== null) {
+                return previousColor;
+            }
+        }
+    
+        return previousColor; // Return the last found HSL color value
+    }
+    
+
     plotBarChart(canvas: HTMLCanvasElement) {
         if (this.selectedItems.length === 0) {
             this._snackBar.open('Please select at least one item', 'Close', {
@@ -893,8 +940,8 @@ export class SearchComponent {
             [key: string]: {
                 label: string;
                 data: number[];
-                backgroundColor: string;
-                borderColor: string;
+                backgroundColor: string[];
+                borderColor: string[];
                 borderWidth: number;
             };
         }
@@ -902,10 +949,12 @@ export class SearchComponent {
         const groupedDatasets: GroupedDatasets = {};
         
         this.selectedItems.forEach(item => {
+            const uniqueColor = this.selectColor()
             const key = `${item.compound_name} ${item.xrpd}`;
             const index = labels.indexOf(`${item.solvent_1} ${item.solvent_2} ${item.solvent_3} ${item.temp}°C`);
             let solubility;
 
+            // updates the data on the graph based on the selectedUnit of the user
             switch (this.selectedUnit) {
             case 'solubility_mg_g_solv':
                 solubility = item.solubility_units.find((unit: { unit: string }) => unit.unit === 'solubility_mg_g_solv')?.value;
@@ -922,42 +971,52 @@ export class SearchComponent {
             default:
             }
 
-            console.log(solubility)
-
-            // issue that needs to be fix(couldn't differeniate between > < and a standard entry with the same labels)
-            if(solubility[0] === ">" || solubility[0] == "<"){
+            if (solubility[0] === ">" || solubility[0] === "<") {
+                // create the diagnal canvas 
+                const Color = this.createDiagonalPattern();
+                // get rid of special symbol
                 solubility = solubility.slice(1);
                 if (!groupedDatasets[key]) {
                     groupedDatasets[key] = {
                         label: key,
                         data: Array(labels.length).fill(0), // chart.js issues!!!!
-                        backgroundColor: 'rgba(0,0,0, 0.2)',
-                        borderColor: 'rgba(0,0,0,1)',
+                        borderColor: ['rgba(0,0,0,1)'],
+                        backgroundColor: [Color as unknown as string],
                         borderWidth: 1,
                     };
-                } 
+                }
+
+                groupedDatasets[key].backgroundColor[index] = Color as unknown as string;
+
+                groupedDatasets[key].data[index] = solubility; // Replace 0 with actual solubility at the corresponding index (chart.js issues)
+
             }
+
             else{
                 if (!groupedDatasets[key]) {
                     groupedDatasets[key] = {
                     label: key,
-                    data: Array(labels.length).fill(null), // chart.js issues!!!!
-                    backgroundColor: this.selectColor(),
-                    borderColor: 'rgba(0,0,0,1)',
+                    data: Array(labels.length).fill(0), // chart.js issues!!!!
+                    backgroundColor: [uniqueColor],
+                    borderColor: ['rgba(0,0,0,1)'],
                     borderWidth: 1,
                     };
                 }
+                else{
+                    groupedDatasets[key].backgroundColor[index] = this.findPreviousHSLColor(groupedDatasets[key].backgroundColor);
+                }
+                groupedDatasets[key].data[index] = solubility; // Replace 0 with actual solubility at the corresponding index (chart.js issues)
+
             }
-            groupedDatasets[key].data[index] = solubility; // Replace 0 with actual solubility at the corresponding index (chart.js issues)
+                
         });
 
 
         
         // Convert grouped datasets object to array
         const datasets = Object.values(groupedDatasets);
-        //console.log("datasets",datasets)
 
-        console.log(datasets)
+        //console.log(datasets)
         
         
         this.barChart = new Chart(canvas, {
@@ -978,8 +1037,9 @@ export class SearchComponent {
                 }
             }
         });
+
     }
-    
+
     plotScatterPlot(canvas: HTMLCanvasElement) {
         if (this.selectedItems.length === 0) {
             this._snackBar.open('Please select at least one item', 'Close', {
