@@ -12,7 +12,7 @@ There are 2 main variables to set before starting the app:
 ```
 ./src/app/config.ts 
 ```
-This holds the URL that front end will use to access the backend (flask application). As we hosted it for testing, we setup both containers on the same machine via compose, pointing them to a reverse-proxy that exposed them to two separate urls, with the assumption to be able to scale either one, run each one on a separate machine, or put load balancing behind them, etc. If you'd like, its also possible to use local hostnames that compose provides automatically to have both containers run locally on the same machine and have them communicate correctly. Just make sure to adjust the url in `config.ts` accordingly. More info for this can be found (here)[https://docs.docker.com/compose/networking/#use-auto-provided-hostnames]
+This holds the URL that front end will use to access the backend (flask application). As we hosted it for testing, we setup both containers on the same machine via compose, pointing them to a reverse-proxy that exposed them to two separate urls, with the assumption to be able to scale either one, run each one on a separate machine, or put load balancing behind them, etc. If you'd like, its also possible to use local hostnames that compose provides automatically to have both containers run locally on the same machine and have them communicate correctly. Just make sure to adjust the url in `config.ts` accordingly. More info for this can be found [here](https://docs.docker.com/compose/networking/#use-auto-provided-hostnames)
 
 ```
 ./flask_db_conn_api/app.py --lines 8-16
