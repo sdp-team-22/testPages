@@ -59,6 +59,7 @@ export class SearchComponent {
     restrictiveSearch: boolean = true;
     searchQuery: any;
     result: any[] = [];
+    colorCounter = 0;
 
     // advanced search variables
     filters = [
@@ -820,6 +821,15 @@ export class SearchComponent {
         );
     }
 
+        // math stuff to create unique colors
+    selectColor() {
+        const goldenAngle = 137.508;
+        const hue = this.colorCounter * goldenAngle % 360; // Ensure hue stays within [0, 360)
+        this.colorCounter++;
+        return `hsl(${hue}, 50%, 75%)`;
+        }
+
+
     showGraph() {
         let canvasDiv = document.getElementById('chartCanvasDiv') as HTMLDivElement;
         let canvas = document.getElementById('chartCanvas') as HTMLCanvasElement;
@@ -868,20 +878,93 @@ export class SearchComponent {
             return;
         }
         const labels = this.selectedItems.map(item => `${item.solvent_1} ${item.solvent_2} ${item.solvent_3} ${item.temp}°C`);
-        const data = this.selectedItems.map(item => item.solubility);
-        const datasetsLabels = `${this.selectedItems[0].compound_name} ${this.selectedItems[0].xrpd}`;
-    
+
+        //sort the label in increasing order of temperature
+        labels.sort((a, b) => {
+            const tempA = parseFloat(a.split(" ")[a.split(" ").length - 1]);
+            const tempB = parseFloat(b.split(" ")[b.split(" ").length - 1]); 
+            //console.log(tempA, tempB)
+            return tempA - tempB;
+        });
+
+
+        // define the type of groupedDatasets
+        interface GroupedDatasets {
+            [key: string]: {
+                label: string;
+                data: number[];
+                backgroundColor: string;
+                borderColor: string;
+                borderWidth: number;
+            };
+        }
+        
+        const groupedDatasets: GroupedDatasets = {};
+        
+        this.selectedItems.forEach(item => {
+            const key = `${item.compound_name} ${item.xrpd}`;
+            const index = labels.indexOf(`${item.solvent_1} ${item.solvent_2} ${item.solvent_3} ${item.temp}°C`);
+            let solubility;
+
+            switch (this.selectedUnit) {
+            case 'solubility_mg_g_solv':
+                solubility = item.solubility_units.find((unit: { unit: string }) => unit.unit === 'solubility_mg_g_solv')?.value;
+                break;
+            case 'solubility_mg_g_solvn':
+                solubility = item.solubility_units.find((unit: { unit: string }) => unit.unit === 'solubility_mg_g_solvn')?.value;
+                break;
+            case 'solubility_mg_mL_solv':
+                solubility = item.solubility_units.find((unit: { unit: string }) => unit.unit === 'solubility_mg_mL_solv')?.value;
+                break;
+            case 'solubility_wt':
+                solubility = item.solubility_units.find((unit: { unit: string }) => unit.unit === 'solubility_wt')?.value;
+                break;
+            default:
+            }
+
+            console.log(solubility)
+
+            // issue that needs to be fix(couldn't differeniate between > < and a standard entry with the same labels)
+            if(solubility[0] === ">" || solubility[0] == "<"){
+                solubility = solubility.slice(1);
+                if (!groupedDatasets[key]) {
+                    groupedDatasets[key] = {
+                        label: key,
+                        data: Array(labels.length).fill(0), // chart.js issues!!!!
+                        backgroundColor: 'rgba(0,0,0, 0.2)',
+                        borderColor: 'rgba(0,0,0,1)',
+                        borderWidth: 1,
+                    };
+                } 
+            }
+            else{
+                if (!groupedDatasets[key]) {
+                    groupedDatasets[key] = {
+                    label: key,
+                    data: Array(labels.length).fill(null), // chart.js issues!!!!
+                    backgroundColor: this.selectColor(),
+                    borderColor: 'rgba(0,0,0,1)',
+                    borderWidth: 1,
+                    };
+                }
+            }
+            groupedDatasets[key].data[index] = solubility; // Replace 0 with actual solubility at the corresponding index (chart.js issues)
+        });
+
+
+        
+        // Convert grouped datasets object to array
+        const datasets = Object.values(groupedDatasets);
+        //console.log("datasets",datasets)
+
+        console.log(datasets)
+        
+        
         this.barChart = new Chart(canvas, {
             type: 'bar',
             data: {
                 labels: labels,
-                datasets: [{
-                    label: datasetsLabels,
-                    data: data,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
+                datasets: datasets
             },
             options: {
                 scales: {
@@ -889,11 +972,7 @@ export class SearchComponent {
                         beginAtZero: true,
                         title: {
                             text: this.selectedUnit,
-                            display: true,
-                            font:{
-                                size: 20,
-                                weight: 'bold'
-                            }
+                            display: true
                         }
                     }
                 }

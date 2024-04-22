@@ -135,7 +135,7 @@
         <!--units-->
         <mat-form-field>
             <mat-label>Select Solubility Unit:</mat-label>
-            <mat-select [(ngModel)]="selectedUnit">
+            <mat-select [(ngModel)]="selectedUnit" (selectionChange)="showGraph()">
               <mat-option value="solubility_mg_g_solvn">mg/g solvent</mat-option>
               <mat-option value="solubility_mg_g_solv">mg/g soln</mat-option>
               <mat-option value="solubility_mg_mL_solv">mg/mL solvent</mat-option>
