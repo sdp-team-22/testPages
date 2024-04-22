@@ -1,18 +1,19 @@
 <div class="toolbar" role="banner">
   <a [routerLink]="'/home'">
-    <img
-      width="120"
-      alt="Boehringer Logo"
-      src="https://www.boehringer-ingelheim.com/sites/default/files/2021-10/logo-primary-contrast.svg"
-    />
+  <img
+  width="120"
+  alt="Boehringer Logo"
+  src="https://www.boehringer-ingelheim.com/sites/default/files/2021-10/logo-primary-contrast.svg"/>
   </a>
   <span style="margin-left: 1%;"><h3>Solubility Data Management</h3></span>
-  <div class="spacer"></div>
-  <button class="button" (click)="handleInputDataClick()" title="Upload">Upload</button>
-  <!-- <button class="button" (click)="handleViewDataClick()" title="Edit">Edit</button> -->
-  <button class="button" (click)="handleSearchClick()" title="View">Search</button>
-  <button class="button" (click)="handleStatsClick()" title="Statistics">Statistics</button>
+  <div class="spacer">
+    <ul class="nav-links">
+      <li [routerLinkActive]="['active']"><a [routerLink]="'/upload'">Upload</a></li>
+      <li [routerLinkActive]="['active']"><a [routerLink]="'/search'">Search</a></li>
+      <li [routerLinkActive]="['active']"><a [routerLink]="'/stats'">Statistics</a></li>
+    </ul>
+  </div>
 </div>
 <div class="content" role="main">
-<router-outlet></router-outlet>
+  <router-outlet></router-outlet>
 </div>
