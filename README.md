@@ -57,7 +57,7 @@ If for some reason you'd like to spin up each container individually, follow the
 
 2. Run the Docker container:
     ```bash
-    docker run -d --name my-app -p 62000:80 flask-be-app
+    docker run -d --name my-backend -p 62000:80 flask-be-app
     ```
 
     * This will run the container and expose it to the host's port 62000
