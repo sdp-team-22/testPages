@@ -1036,8 +1036,22 @@ export class SearchComponent {
                         beginAtZero: true,
                         title: {
                             text: this.selectedUnit,
-                            display: true
+                            display: true,
+                            font: {
+                                size: 20,
+                                weight: 800
+                            }
                         }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                weight: 800
+                            }
+                        },
+                        position:'right'
                     }
                 }
             }

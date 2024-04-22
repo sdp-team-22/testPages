@@ -117,44 +117,47 @@
     </ng-container>
 </div>
 
+<!--Toggleable slection box-->
+<div>
+    <!--Vol frac, wt frac-->
+    <mat-form-field>
+        <mat-label>Select Fraction:</mat-label>
+        <mat-select [(ngModel)]="selectedFraction">
+          <mat-option value="volfrac">Volume Fraction</mat-option>
+          <mat-option value="wtfrac">Weight Fraction</mat-option>
+        </mat-select>
+      </mat-form-field>
+    <!--units-->
+    <mat-form-field>
+        <mat-label>Select Solubility Unit:</mat-label>
+        <mat-select [(ngModel)]="selectedUnit" (selectionChange)="showGraph()">
+          <mat-option value="solubility_mg_g_solvn">mg/g solvent</mat-option>
+          <mat-option value="solubility_mg_g_solv">mg/g soln</mat-option>
+          <mat-option value="solubility_mg_mL_solv">mg/mL solvent</mat-option>
+          <mat-option value="solubility_wt">Solubility wt</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+    <!--graph_selection-->
+    <mat-form-field appearance="fill">
+        <mat-label>Graph Type</mat-label>
+        <mat-select [(ngModel)]="selectedGraphType" name="selectedGraphType">
+            <mat-option  (click)="showGraph()" value="bar">Bar Graph</mat-option>
+            <mat-option  (click)="showGraph()" value="scatter">Scatter Plot</mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
 <!--
     Buttons for table as well as table
     Should only show up when table has rows
     *ngIf="result.length > 0"
 -->
-<div *ngIf="result.length > 0">
-    <div>
-        <!--Vol frac, wt frac-->
-        <mat-form-field>
-            <mat-label>Select Fraction:</mat-label>
-            <mat-select [(ngModel)]="selectedFraction">
-              <mat-option value="volfrac">Volume Fraction</mat-option>
-              <mat-option value="wtfrac">Weight Fraction</mat-option>
-            </mat-select>
-          </mat-form-field>
-        <!--units-->
-        <mat-form-field>
-            <mat-label>Select Solubility Unit:</mat-label>
-            <mat-select [(ngModel)]="selectedUnit" (selectionChange)="showGraph()">
-              <mat-option value="solubility_mg_g_solvn">mg/g solvent</mat-option>
-              <mat-option value="solubility_mg_g_solv">mg/g soln</mat-option>
-              <mat-option value="solubility_mg_mL_solv">mg/mL solvent</mat-option>
-              <mat-option value="solubility_wt">Solubility wt</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-        <!--graph_selection-->
-        <mat-form-field appearance="fill">
-            <mat-label>Graph Type</mat-label>
-            <mat-select [(ngModel)]="selectedGraphType" name="selectedGraphType">
-                <mat-option  (click)="showGraph()" value="bar">Bar Graph</mat-option>
-                <mat-option  (click)="showGraph()" value="scatter">Scatter Plot</mat-option>
-            </mat-select>
-        </mat-form-field>
-    </div>
+<div class="search_result_table" *ngIf="result.length > 0">
     <!--plot goes here-->
     <div class="give-me-room start-invisible" id="chartCanvasDiv">
-        <canvas id="chartCanvas"></canvas>
+        <div class="chart_controller">
+            <canvas id="chartCanvas"></canvas>
+        </div>
     </div>
     <!--actual table-->
     <table mat-table [dataSource]="result">
