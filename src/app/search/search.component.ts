@@ -909,6 +909,11 @@ export class SearchComponent {
                 return previousColor;
             }
         }
+
+        // only happens if the entries within colors are all canvas, if so we pick a color
+        if(previousColor === null){
+            previousColor = this.selectColor()
+        }
     
         return previousColor; // Return the last found HSL color value
     }
@@ -1002,9 +1007,9 @@ export class SearchComponent {
                     borderWidth: 1,
                     };
                 }
-                else{
-                    groupedDatasets[key].backgroundColor[index] = this.findPreviousHSLColor(groupedDatasets[key].backgroundColor);
-                }
+               
+                groupedDatasets[key].backgroundColor[index] = this.findPreviousHSLColor(groupedDatasets[key].backgroundColor);
+
                 groupedDatasets[key].data[index] = solubility; // Replace 0 with actual solubility at the corresponding index (chart.js issues)
 
             }
@@ -1016,7 +1021,7 @@ export class SearchComponent {
         // Convert grouped datasets object to array
         const datasets = Object.values(groupedDatasets);
 
-        //console.log(datasets)
+        console.log(datasets)
         
         
         this.barChart = new Chart(canvas, {
