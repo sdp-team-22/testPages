@@ -57,12 +57,13 @@ export class SearchComponent {
     resizeTimeout: any;
 
     // basic search variables
-    restrictiveSearch: boolean = true;
     searchQuery: any;
     result: any[] = [];
     colorCounter = 0;
 
     // advanced search variables
+    restrictiveSearch: boolean = true;
+    autocomplete: boolean = true;
     filters = [
         { 
             mainOptions: ['test option 1', 'test option 2', 'test option 3'],
@@ -71,6 +72,8 @@ export class SearchComponent {
             solventOptions1: ['has exact combination', 'has any data on'],
             solventAnyDataOptions: [['1', '2', '3'],['4', '5', '6'], ['7', '8', '9']],
             solventExactDataOptions: [['1', '2', '3'],['4', '5', '6'], ['7', '8', '9']],
+            originalOptions1: ['hey'],
+            originalOptions2: [['hey']],
             solventAnyDataCount: 0,
             solventExactDataCount: 0,
             controls: { 
@@ -134,6 +137,8 @@ export class SearchComponent {
         var xrpdOptions: string[] = []; // need to populate this
         var solventAnyDataOptions: string[][] = [];
         var solventExactDataOptions: string[][] = [];
+        var originalOpt1: string[] = [];
+        var originalOpt2: string[][] = [];
         // create other requirements for a filter
         var level1Options: string[] = ['Compound Name', 'XRPD', 'Solvent'];
         var solventOptions1: string[] = ['has exact combination', 'has any data on'];
@@ -150,6 +155,8 @@ export class SearchComponent {
             solventOptions1: solventOptions1,
             solventAnyDataOptions: solventAnyDataOptions,
             solventExactDataOptions: solventExactDataOptions,
+            originalOptions1: originalOpt1,
+            originalOptions2: originalOpt2,
             solventAnyDataCount: 0,
             solventExactDataCount: 0,
             controls: { 
@@ -162,6 +169,16 @@ export class SearchComponent {
             },
         }
         this.filters.push(newFilter);
+    }
+
+    // Your _filter function
+    private _filter(value: string, options: string[]): string[] {
+        if (this.autocomplete) {
+            const filterValue = value.toLowerCase();
+            return options.filter(option => option.toLowerCase().includes(filterValue));   
+        } else {
+            return options
+        }
     }
 
     onFilterL1Changed(event: MatAutocompleteSelectedEvent, filterId: string) {
@@ -189,7 +206,11 @@ export class SearchComponent {
                         (response) => {
                             // console.log(response);
                             this.filters[id].compoundNameOptions = response;
-                            // console.log('original cname setting for', id, this.filters[id].compoundNameOptions)
+                            this.filters[id].originalOptions1 = response;
+                            this.filters[id].controls.compoundNameControl.valueChanges.subscribe((value: string) => {
+                                const filteredOptions = this._filter(value, this.filters[id].originalOptions1);
+                                this.filters[id].compoundNameOptions = filteredOptions;
+                            });
                         },
                         (error) => {
                             console.log(error);
@@ -210,7 +231,11 @@ export class SearchComponent {
                         (response) => {
                             // console.log(response);
                             this.filters[id].xrpdOptions = response;
-                            // console.log('original xrpd setting for', id, this.filters[id].xrpdOptions)
+                            this.filters[id].originalOptions1 = response;
+                            this.filters[id].controls.xrpdControl.valueChanges.subscribe((value: string) => {
+                                const filteredOptions = this._filter(value, this.filters[id].originalOptions1);
+                                this.filters[id].xrpdOptions = filteredOptions;
+                            });
                         },
                         (error) => {
                             console.log(error);
@@ -236,15 +261,19 @@ export class SearchComponent {
                         // console.log(response);
                         newOptions = response;
                         if (option == 'Compound Name') {
-                            // console.log('changing compound name options for', id);
-                            // console.log('old cname:', this.filters[id].compoundNameOptions);
                             this.filters[id].compoundNameOptions = newOptions;
-                            // console.log('new cname:', this.filters[id].compoundNameOptions);
+                            this.filters[id].originalOptions1 = response;
+                            this.filters[id].controls.compoundNameControl.valueChanges.subscribe((value: string) => {
+                                const filteredOptions = this._filter(value, this.filters[id].originalOptions1);
+                                this.filters[id].compoundNameOptions = filteredOptions;
+                            });
                         } else if (option == 'XRPD') {
-                            // console.log('changing xrpd options for', id);
-                            // console.log('old xrpd:', this.filters[id].xrpdOptions);
                             this.filters[id].xrpdOptions = newOptions;
-                            // console.log('new xrpd:', this.filters[id].xrpdOptions);
+                            this.filters[id].originalOptions1 = response;
+                            this.filters[id].controls.xrpdControl.valueChanges.subscribe((value: string) => {
+                                const filteredOptions = this._filter(value, this.filters[id].originalOptions1);
+                                this.filters[id].xrpdOptions = filteredOptions;
+                            });
                         }
                     },
                     error => {
@@ -297,6 +326,7 @@ export class SearchComponent {
                 this.filters[i].solventExactDataCount--;
                 this.filters[i].solventExactDataOptions.pop();
                 this.filters[i].controls.solventExactDataControl.pop();
+                this.filters[i].originalOptions2.pop();
             }
             this.addSolventExactFilter(event, i, j + 1);
         }
@@ -329,7 +359,7 @@ export class SearchComponent {
         var options: string[] = [];
         var tempControl = new FormControl();
         this.filters[i].solventAnyDataOptions.push(options);
-        // console.log(this.filters[i].solventAnyDataOptions);
+        this.filters[i].originalOptions2.push(options);
         this.filters[i].controls.solventAnyDataControl.push(tempControl);
         // restrictive search check
         if (!(this.restrictiveSearch && this.filters.length > 1)) {
@@ -338,6 +368,11 @@ export class SearchComponent {
                     // console.log(response);
                     // console.log(j, this.filters[i].solventAnyDataOptions);
                     this.filters[i].solventAnyDataOptions[j] = response;
+                    this.filters[i].originalOptions2[j] = response;
+                    this.filters[i].controls.solventAnyDataControl[j].valueChanges.subscribe((value: string) => {
+                        const filteredOptions = this._filter(value, this.filters[i].originalOptions2[j]);
+                        this.filters[i].solventAnyDataOptions[j] = filteredOptions;
+                    });
                     this.filters[i].solventAnyDataCount++;
                 },
                 (error) => {
@@ -352,6 +387,11 @@ export class SearchComponent {
                     // console.log(j, this.filters[i].solventAnyDataOptions);
                     // console.log(response);
                     this.filters[i].solventAnyDataOptions[j] = response;
+                    this.filters[i].originalOptions2[j] = response;
+                    this.filters[i].controls.solventAnyDataControl[j].valueChanges.subscribe((value: string) => {
+                        const filteredOptions = this._filter(value, this.filters[i].originalOptions2[j]);
+                        this.filters[i].solventAnyDataOptions[j] = filteredOptions;
+                    });
                     this.filters[i].solventAnyDataCount++;
                     // console.log(this.filters[i].solventAnyDataCount);
                 },
@@ -374,6 +414,7 @@ export class SearchComponent {
         var options: string[] = [];
         var tempControl = new FormControl();
         this.filters[i].solventExactDataOptions.push(options);
+        this.filters[i].originalOptions2.push(options);
         this.filters[i].controls.solventExactDataControl.push(tempControl);
         if (j == 0) {
             // writing first filter
@@ -383,6 +424,11 @@ export class SearchComponent {
                         // console.log(response);
                         // console.log(j, this.filters[i].solventExactDataOptions);
                         this.filters[i].solventExactDataOptions[j] = response;
+                        this.filters[i].originalOptions2[j] = response;
+                        this.filters[i].controls.solventExactDataControl[j].valueChanges.subscribe((value: string) => {
+                            const filteredOptions = this._filter(value, this.filters[i].originalOptions2[j]);
+                            this.filters[i].solventExactDataOptions[j] = filteredOptions;
+                        });
                         this.filters[i].solventExactDataCount++;
                     },
                     (error) => {
@@ -397,6 +443,11 @@ export class SearchComponent {
                     (response) => {
                         // console.log(response);
                         this.filters[i].solventExactDataOptions[j] = response;
+                        this.filters[i].originalOptions2[j] = response;
+                        this.filters[i].controls.solventExactDataControl[j].valueChanges.subscribe((value: string) => {
+                            const filteredOptions = this._filter(value, this.filters[i].originalOptions2[j]);
+                            this.filters[i].solventExactDataOptions[j] = filteredOptions;
+                        });
                         this.filters[i].solventExactDataCount++;
                     },
                     (error) => {
@@ -413,6 +464,11 @@ export class SearchComponent {
                     (response: {[key: string]: any}) => {
                         var temp = response['solvent_2_options'];
                         this.filters[i].solventExactDataOptions[j] = temp;
+                        this.filters[i].originalOptions2[j] = temp;
+                        this.filters[i].controls.solventExactDataControl[j].valueChanges.subscribe((value: string) => {
+                            const filteredOptions = this._filter(value, this.filters[i].originalOptions2[j]);
+                            this.filters[i].solventExactDataOptions[j] = filteredOptions;
+                        });
                         this.filters[i].solventExactDataCount++;
                     },
                     error => {
@@ -427,6 +483,11 @@ export class SearchComponent {
                     (response) => {
                         // console.log(response);
                         this.filters[i].solventExactDataOptions[j] = response;
+                        this.filters[i].originalOptions2[j] = response;
+                        this.filters[i].controls.solventExactDataControl[j].valueChanges.subscribe((value: string) => {
+                            const filteredOptions = this._filter(value, this.filters[i].originalOptions2[j]);
+                            this.filters[i].solventExactDataOptions[j] = filteredOptions;
+                        });
                         this.filters[i].solventExactDataCount++;
                     },
                     (error) => {
@@ -445,6 +506,11 @@ export class SearchComponent {
                         // console.log(response);
                         var temp = response['solvent_3_options'];
                         this.filters[i].solventExactDataOptions[j] = temp;
+                        this.filters[i].originalOptions2[j] = temp;
+                        this.filters[i].controls.solventExactDataControl[j].valueChanges.subscribe((value: string) => {
+                            const filteredOptions = this._filter(value, this.filters[i].originalOptions2[j]);
+                            this.filters[i].solventExactDataOptions[j] = filteredOptions;
+                        });
                         this.filters[i].solventExactDataCount++;
                     }, 
                     error => {
@@ -459,6 +525,11 @@ export class SearchComponent {
                     (response) => {
                         // console.log(response);
                         this.filters[i].solventExactDataOptions[j] = response;
+                        this.filters[i].originalOptions2[j] = response;
+                        this.filters[i].controls.solventExactDataControl[j].valueChanges.subscribe((value: string) => {
+                            const filteredOptions = this._filter(value, this.filters[i].originalOptions2[j]);
+                            this.filters[i].solventExactDataOptions[j] = filteredOptions;
+                        });
                         this.filters[i].solventExactDataCount++;
                     },
                     (error) => {
