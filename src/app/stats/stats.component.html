@@ -1,0 +1,43 @@
+<!-- <h1>Statistics Page</h1> -->
+<div class="card-container">
+    <div class="content" role="main">
+        <div class="card">
+            <!-- // make this links url_for in the backend  -->
+            <p><a class="card-child" >Total Data Points as of {{ myDate | date: 'MMMM YYYY'}}: {{ data_points }}  </a></p> <!-- // database storage -->
+            
+            <p><a class="card-child" >Daily Visits: {{ daily_visits }}  </a></p> <!-- // database storage -->
+            
+            <p><a class="card-child" >Monthly Visits: {{ monthly_visits }}  </a></p> <!-- // database storage -->
+
+            <a class="card-child" href="" [hidden]="showDailyVisits || showMonthlyVisits" (click)="toggleUploadHistory($event)">
+                <span *ngIf="!showUploadHistory">Upload History</span>
+                <span class="arrow" *ngIf="showUploadHistory">&#x21e6;</span>
+                    <!-- <span *ngIf="showUploadHistory">&#x21a9;</span> -->
+                    <!-- <span *ngIf="showUploadHistory">&#x21d0;</span> -->
+                </a>
+                <div *ngIf="showUploadHistory">
+                    <h2>Upload History:</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Upload ID</th>
+                                <th>Scientist</th>
+                                <th>Time Uploaded</th>
+                                <th>File Name</th>
+                                <th>Compound Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let upload of upload_history">
+                                <td>{{ upload.id }}</td>
+                                <td>{{ upload.scientist }}</td>
+                                <td>{{ upload.time_uploaded }}</td>
+                                <td>{{ upload.file_name }}</td>
+                                <td>{{ upload.compound_name }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+        </div> 
+    </div>
+</div>

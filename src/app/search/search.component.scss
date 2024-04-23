@@ -1,0 +1,151 @@
+.filter-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center; /* Center vertically */
+}
+
+.filter-div button {
+    height: auto; /* Override the height property to adjust according to content */
+}
+
+.solvent-filters {
+    display: block; /* Use flexbox */
+    flex-wrap: wrap; /* Allow items to wrap onto multiple lines */
+}
+
+.start-invisible {
+    display: none;
+}
+
+button {
+    font-family: var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, Roboto, sans-serif));
+    font-size: var(--mdc-typography-button-font-size, 14px);
+    cursor: pointer;
+    padding: 8px 16px;
+    border: none;
+    background-color: #034426;
+    font-size: 16px;
+}
+
+.round {
+    border-radius: 8px;
+    border: 0px;
+}
+
+.give-me-room {
+    margin-bottom: 1rem;
+    margin-right: 1rem;
+}
+
+/** adjust search button and search input */
+.search-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #055c33;
+    font-size: 16px;
+    width: 100%;
+}
+
+.search-input:focus {
+    outline: #034426;
+    border: solid 1px rgb(0, 189, 101);
+}
+
+.search-button:hover {
+    background-color: #034426;
+    color: white;
+}
+
+.download-color {
+    background-color: #077c46;
+}
+
+.download-color:hover {
+    background-color: #034426;
+}
+
+.filter-background:hover {
+    background-color: rgb(157, 180, 202);
+}
+
+.grey-background:hover {
+    background-color: rgb(170, 170, 170);
+}
+
+.delete-div {
+    width: 30px;
+    height: 40px;
+}
+
+.delete-button {
+    padding: 1.1rem;
+    margin-bottom: 1.3rem;
+    margin-right: 0.3rem;
+}
+
+.delete-color {
+    background-color: rgb(255, 158, 158);
+}
+
+.delete-color:hover {
+    background-color: rgb(255, 0, 0);
+}
+
+.bottom-right {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin-right: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.bottom-right > button {
+    margin-bottom: 1rem;
+    padding: 1.1rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    padding: 8px;
+    background-color: #f2f2f2;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.constrainedSearchToggle {
+    cursor: pointer;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+    padding-right: 16px;
+    margin-bottom: 1rem;
+}
+
+.search_result_table{
+    overflow-y:auto;
+    margin-bottom: 3rem;
+    margin-right: 1rem;
+}
+
+.chart_controller{
+    position:relative;
+    min-height:auto;
+    width:100%;
+    display: flex;
+    flex-grow:1;
+}
