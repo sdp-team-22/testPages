@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common'; // to use *ngIf
 import { FormControl, FormsModule } from '@angular/forms'; // to use ngModel
 // for filters
@@ -54,6 +54,7 @@ export class SearchComponent {
     selectedItems: any[] = [];
     selectedGraphType: string = 'bar'; //default bar
     selectAllCheckbox: boolean = false;
+    resizeTimeout: any;
 
     // basic search variables
     restrictiveSearch: boolean = true;
@@ -853,8 +854,18 @@ export class SearchComponent {
         c.stroke();
         // create the pattern from the shape
         return c.createPattern(shape, 'repeat');
-        }
+    }
 
+    @HostListener('window:resize', ['$event'])
+    onResize() {
+        clearTimeout(this.resizeTimeout);
+        this.resizeTimeout = setTimeout(() => {
+        // Do something when the resize operation is over
+        if (this.selectedItems.length > 0) {
+            this.showGraph();
+        }
+        }, 500); // Adjust the delay as needed
+    }
 
     showGraph() {
         let canvasDiv = document.getElementById('chartCanvasDiv') as HTMLDivElement;
@@ -984,7 +995,7 @@ export class SearchComponent {
                 if (!groupedDatasets[key]) {
                     groupedDatasets[key] = {
                         label: key,
-                        data: Array(labels.length).fill(0), // chart.js issues!!!!
+                        data: Array(labels.length).fill(0),
                         borderColor: ['rgba(0,0,0,1)'],
                         backgroundColor: [Color as unknown as string],
                         borderWidth: 1,
@@ -1001,7 +1012,7 @@ export class SearchComponent {
                 if (!groupedDatasets[key]) {
                     groupedDatasets[key] = {
                     label: key,
-                    data: Array(labels.length).fill(0), // chart.js issues!!!!
+                    data: Array(labels.length).fill(0),
                     backgroundColor: [uniqueColor],
                     borderColor: ['rgba(0,0,0,1)'],
                     borderWidth: 1,
@@ -1021,7 +1032,7 @@ export class SearchComponent {
         // Convert grouped datasets object to array
         const datasets = Object.values(groupedDatasets);
 
-        console.log(datasets)
+        // console.log(datasets)
         
         
         this.barChart = new Chart(canvas, {
@@ -1031,6 +1042,7 @@ export class SearchComponent {
                 datasets: datasets
             },
             options: {
+                responsive: true,
                 scales: {
                     y: {
                         beginAtZero: true,
@@ -1044,16 +1056,16 @@ export class SearchComponent {
                         }
                     }
                 },
-                plugins: {
-                    legend: {
-                        labels: {
-                            font: {
-                                weight: 800
-                            }
-                        },
-                        position:'right'
-                    }
-                }
+                // plugins: {
+                //     legend: {
+                //         labels: {
+                //             font: {
+                //                 weight: 800
+                //             }
+                //         },
+                //         position:'right'
+                //     }
+                // }
             }
         });
 
