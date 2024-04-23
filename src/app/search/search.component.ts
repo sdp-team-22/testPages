@@ -62,6 +62,7 @@ export class SearchComponent {
     colorCounter = 0;
 
     // advanced search variables
+    additionalButtons: boolean = false;
     restrictiveSearch: boolean = true;
     autocomplete: boolean = true;
     filters = [

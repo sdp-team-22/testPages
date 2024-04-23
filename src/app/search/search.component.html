@@ -23,6 +23,9 @@
         <div>
             <mat-checkbox [(ngModel)]="autocomplete" color="primary" class="constrainedSearchToggle">Autocomplete</mat-checkbox>
         </div>
+        <div>
+            <mat-checkbox [(ngModel)]="additionalButtons" color="primary" class="constrainedSearchToggle">Extra tool buttons</mat-checkbox>
+        </div>
     </div>
     <ng-container>
         <button mat-raised-button class="round give-me-room filter-background" (click)="addFilter()">Add Filter</button>
@@ -111,15 +114,17 @@
             </mat-form-field>
         </div>
     </div>
-    <ng-container>
-        <button mat-raised-button class="round give-me-room filter-background" (click)="addFilter()">Add Filter</button>
-    </ng-container>
-    <ng-container>
-        <button mat-raised-button class="round give-me-room filter-background" (click)="resetFilters()">Reset Filters</button>
-    </ng-container>
-    <ng-container>
-        <button mat-raised-button class="round give-me-room search-button" (click)="advancedSearch()">Search</button>
-    </ng-container>
+    <div *ngIf="additionalButtons">
+        <ng-container>
+            <button mat-raised-button class="round give-me-room filter-background" (click)="addFilter()">Add Filter</button>
+        </ng-container>
+        <ng-container>
+            <button mat-raised-button class="round give-me-room filter-background" (click)="resetFilters()">Reset Filters</button>
+        </ng-container>
+        <ng-container>
+            <button mat-raised-button class="round give-me-room search-button" (click)="advancedSearch()">Search</button>
+        </ng-container>
+    </div>
 </div>
 
 <!--Toggleable slection box-->
