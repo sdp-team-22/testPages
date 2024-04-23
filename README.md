@@ -2,7 +2,7 @@
 
 ### Link is hosted here: [https://sdpflaskv1.basicoverflow.com](https://sdpflaskv1.basicoverflow.com)
 
-### Code is from Angular4 branch [link here](https://github.com/sdp-team-22/website/tree/angular4)
+### Code is from develop branch [link here](https://github.com/sdp-team-22/website/tree/develop)
 
 ## Prerequisites 
 
