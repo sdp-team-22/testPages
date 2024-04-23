@@ -1015,7 +1015,7 @@ export class SearchComponent {
         const colorMapping: { [key: string]: string } = {};
         
         this.selectedItems.forEach(item => {
-            const uniqueColor = this.selectColor()
+            const uniqueColor = this.selectColor();
             const key = `${item.compound_name} ${item.xrpd}`;
             const index = labels.indexOf(`${item.solvent_1} ${item.solvent_2} ${item.solvent_3} ${item.temp}°C`);
             let solubility;
@@ -1038,7 +1038,7 @@ export class SearchComponent {
             }
 
             if (solubility[0] === ">" || solubility[0] === "<") {
-                
+
                 let Color;
                 if(colorMapping[key]){
                     Color = this.createDiagonalPattern('black', colorMapping[key]);
@@ -1092,9 +1092,6 @@ export class SearchComponent {
         
         // Convert grouped datasets object to array
         const datasets = Object.values(groupedDatasets);
-
-        console.log(datasets)
-        
         
         this.barChart = new Chart(canvas, {
             type: 'bar',
@@ -1142,25 +1139,82 @@ export class SearchComponent {
             });
             return;
         }
-        const data = this.selectedItems.map(item => {
-            return {
-                x: item.temp,
-                y: item.solubility
+        interface GroupedDatasets {
+            [key: string]: {
+                label: string;
+                data: any[];
+                backgroundColor: string;
+                borderColor: string;
             };
-        });
-        const datasetsLabels = `${this.selectedItems[0].compound_name} ${this.selectedItems[0].xrpd}`;
-    
+        }
+        const groupedDatasets: GroupedDatasets = {} 
+        this.selectedItems.forEach(item => {
+            const uniqueColor = this.selectColor();
+            const key = `${item.compound_name} ${item.xrpd}`;
+            let solubility;
+            
+            // updates the data on the graph based on the selectedUnit of the user
+            switch (this.selectedUnit) {
+                case 'solubility_mg_g_solv':
+                    solubility = item.solubility_units.find((unit: { unit: string }) => unit.unit === 'solubility_mg_g_solv')?.value;
+                    break;
+                case 'solubility_mg_g_solvn':
+                    solubility = item.solubility_units.find((unit: { unit: string }) => unit.unit === 'solubility_mg_g_solvn')?.value;
+                    break;
+                case 'solubility_mg_mL_solv':
+                    solubility = item.solubility_units.find((unit: { unit: string }) => unit.unit === 'solubility_mg_mL_solv')?.value;
+                    break;
+                case 'solubility_wt':
+                    solubility = item.solubility_units.find((unit: { unit: string }) => unit.unit === 'solubility_wt')?.value;
+                    break;
+                default:
+                }
+            if (solubility[0] === ">" || solubility[0] === "<") {
+                solubility = solubility.slice(1);
+                if (!groupedDatasets[key]) {
+                    groupedDatasets[key] = {
+                        label: key,
+                        data: [{x: item.temp, y: solubility}],
+                        backgroundColor: uniqueColor,
+                        borderColor: uniqueColor,
+                    }
+                }
+                else{
+                    groupedDatasets[key].data.push({x: item.temp, y: solubility});
+                }
+            }
+
+            else{
+                if (!groupedDatasets[key]) {
+                    groupedDatasets[key] = {
+                        label: key,
+                        data: [{x: item.temp, y: solubility}],
+                        backgroundColor: uniqueColor,
+                        borderColor: uniqueColor,
+                    }
+                }
+                else{
+                    groupedDatasets[key].data.push({x: item.temp, y: solubility});
+                }
+            }
+
+        })
+        // creates the acceptable object by scatterplot 
+        const datasets = {
+            datasets: Object.values(groupedDatasets).map(dataset => ({
+                label: dataset.label,
+                data: dataset.data,
+                backgroundColor: dataset.backgroundColor,
+                borderColor: dataset.borderColor
+            }))
+        };
+
+        console.log(datasets)
+
+
         this.scatterChart = new Chart(canvas, {
             type: 'scatter',
-            data: {
-                datasets: [{
-                    label: datasetsLabels,
-                    data: data,
-                    backgroundColor: 'rgba(3, 68, 38, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 7
-                }]
-            },
+            data: datasets,
             options: {
                 scales: {
                     x: {
@@ -1190,7 +1244,7 @@ export class SearchComponent {
                 }
             }
         });
-    }
+    } 
     
     removeZeros(inputData : any[]) {
         inputData.forEach((row: any) => {
