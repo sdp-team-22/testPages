@@ -69,6 +69,3 @@ If for some reason you'd like to spin up each container individually, follow the
     * This will run the container and expose it to the host's port 62000
 
 
-https://sdp-team-22.github.io/website/
-
-
