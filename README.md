@@ -1,3 +1,9 @@
+# SDP Team 22 Solubility Data Management
+
+### Link is hosted here: [https://sdpflaskv1.basicoverflow.com](https://sdpflaskv1.basicoverflow.com)
+
+### Code is from Angular4 branch [link here](https://github.com/sdp-team-22/website/tree/angular4)
+
 ## Prerequisites 
 
 To run the full app, you'll need to have Docker and Docker Compose installed on your machine. You can check if they're already installed by running `docker --version` and `docker-compose --version` in your terminal.
