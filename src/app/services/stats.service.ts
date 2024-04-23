@@ -9,7 +9,7 @@ export class StatsService {
   constructor(private http: HttpClient) { }
 
   getData() {
-    let url = flask_api_url + 'data';
+    let url = flask_api_url + 'api/data';
     return this.http.get(url);
   }
 

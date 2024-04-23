@@ -560,7 +560,7 @@ export class SearchComponent {
         if (!(this.restrictiveSearch)) {
             this.flaskConnectionService.advancedSearch(advancedQuery).subscribe (
                 (response: any) => {
-                    console.log(response);
+                    // console.log(response);
                     if (response.length == 0) {
                         // console.log('no results');
                         this._snackBar.open('No results found', 'Close', {

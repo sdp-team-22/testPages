@@ -13,7 +13,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
       // Flask endpoint request to update visits
-      this.http.post(flask_api_url + 'updateVisits', {}).subscribe(
+      this.http.post(flask_api_url + 'api/updateVisits', {}).subscribe(
         (response) => {
           // console.log('Visit count incremented successfully');
         },

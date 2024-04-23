@@ -17,7 +17,7 @@ export class DataService {
   }
 
   sendDataToBackend(dataToSend : any){
-    let url = flask_api_url + 'db_upload';
+    let url = flask_api_url + 'api/db_upload';
     return this.http.post(url, dataToSend);
   }
 
