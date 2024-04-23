@@ -903,7 +903,7 @@ export class SearchComponent {
     }
 
     // creates the diagonal pattern for > and < data points
-    createDiagonalPattern(color = 'black') {
+    createDiagonalPattern(color = 'black', uniqueColor : any) {
         // create a 10x10 px canvas for the pattern's base shape
         let shape = document.createElement('canvas');
         shape.width = 10;
@@ -913,6 +913,9 @@ export class SearchComponent {
         if (c === null) {
             throw new Error("Unable to obtain 2D context for canvas.");
         }
+
+        c.fillStyle = uniqueColor;
+        c.fillRect(0, 0, shape.width, shape.height);
         // draw 1st line of the shape
         c.strokeStyle = color;
         c.beginPath();
@@ -975,32 +978,6 @@ export class SearchComponent {
             this.plotScatterPlot(canvas);
         }
     }
-    /**
-     *  takes in the current background color array,
-     *  goes through the array and find the HSL color previously 
-     *  used. Helps with having the same color bar graph with datas that 
-     *  has the same key(compound name and form).
-     *  
-     */
-    findPreviousHSLColor(colors : any[]) {
-        let previousColor = null;
-    
-        for (let i = 0; i < colors.length; i++) {
-            if (typeof colors[i] === 'string' && colors[i].startsWith('hsl')) {
-                previousColor = colors[i];
-            } else if (colors[i] instanceof CanvasPattern && previousColor !== null) {
-                return previousColor;
-            }
-        }
-
-        // only happens if the entries within colors are all canvas, if so we pick a color
-        if(previousColor === null){
-            previousColor = this.selectColor()
-        }
-    
-        return previousColor; // Return the last found HSL color value
-    }
-    
 
     plotBarChart(canvas: HTMLCanvasElement) {
         if (this.selectedItems.length === 0) {
@@ -1035,6 +1012,7 @@ export class SearchComponent {
         }
         
         const groupedDatasets: GroupedDatasets = {};
+        const colorMapping: { [key: string]: string } = {};
         
         this.selectedItems.forEach(item => {
             const uniqueColor = this.selectColor()
@@ -1060,8 +1038,17 @@ export class SearchComponent {
             }
 
             if (solubility[0] === ">" || solubility[0] === "<") {
-                // create the diagnal canvas 
-                const Color = this.createDiagonalPattern();
+                
+                let Color;
+                if(colorMapping[key]){
+                    Color = this.createDiagonalPattern('black', colorMapping[key]);
+                }
+
+                else{
+                    Color = this.createDiagonalPattern('black', uniqueColor);
+                    colorMapping[key] = uniqueColor;
+                } 
+
                 // get rid of special symbol
                 solubility = solubility.slice(1);
                 if (!groupedDatasets[key]) {
@@ -1073,10 +1060,9 @@ export class SearchComponent {
                         borderWidth: 1,
                     };
                 }
-
+                
                 groupedDatasets[key].backgroundColor[index] = Color as unknown as string;
-
-                groupedDatasets[key].data[index] = solubility; // Replace 0 with actual solubility at the corresponding index (chart.js issues)
+                groupedDatasets[key].data[index] = solubility; // Replace 0 with actual solubility at the corresponding index 
 
             }
 
@@ -1089,11 +1075,14 @@ export class SearchComponent {
                     borderColor: ['rgba(0,0,0,1)'],
                     borderWidth: 1,
                     };
+
+                    if (!colorMapping[key]) {
+                        colorMapping[key] = uniqueColor;
+                    }
                 }
                
-                groupedDatasets[key].backgroundColor[index] = this.findPreviousHSLColor(groupedDatasets[key].backgroundColor);
-
-                groupedDatasets[key].data[index] = solubility; // Replace 0 with actual solubility at the corresponding index (chart.js issues)
+                groupedDatasets[key].backgroundColor[index] = colorMapping[key];
+                groupedDatasets[key].data[index] = solubility; // Replace 0 with actual solubility at the corresponding index 
 
             }
                 
@@ -1104,7 +1093,7 @@ export class SearchComponent {
         // Convert grouped datasets object to array
         const datasets = Object.values(groupedDatasets);
 
-        // console.log(datasets)
+        console.log(datasets)
         
         
         this.barChart = new Chart(canvas, {
