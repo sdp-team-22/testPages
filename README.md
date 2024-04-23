@@ -1,6 +1,6 @@
 # SDP Team 22 Solubility Data Management
 
-### Link is hosted here: [https://sdpflaskv1.basicoverflow.com](https://sdpflaskv1.basicoverflow.com)
+### Link is hosted here: [https://sdpflaskv1.basicoverflow.com/](https://sdpflaskv1.basicoverflow.com/)
 
 ### Code is from develop branch [link here](https://github.com/sdp-team-22/website/tree/develop)
 
