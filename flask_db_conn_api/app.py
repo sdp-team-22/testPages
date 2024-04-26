@@ -1,20 +1,28 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import psycopg2
+import psycopg2, sqlalchemy
 from helper import file_excel_to_json, find_duplicates
+from solubility import Base as solubility_base
+
 
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://sdp-dev:sdp123@24.62.166.59:5432/postgres'
+url = 'postgresql://sdp-dev:sdp123@24.62.166.59:5432/test-fresh'
+app.config['SQLALCHEMY_DATABASE_URI'] = url
 
 conn = conn = psycopg2.connect(
-        database="postgres",
+        # database="postgres",
+        database="test-fresh",
         user="sdp-dev",
         password="sdp123",
         host="24.62.166.59",
         port="5432"
     )
 cur = conn.cursor()
+
+# create tables if they dont exist
+engine = sqlalchemy.create_engine(url)
+solubility_base.metadata.create_all(engine)
 
 
 @app.route('/api/updateVisits', methods=['POST'])
@@ -177,6 +185,8 @@ def databaseUpload():
     except Exception as e:
         print(e)
         return jsonify('it did not work')
+
+
 
 if __name__ == '__main__':
     app.run(
