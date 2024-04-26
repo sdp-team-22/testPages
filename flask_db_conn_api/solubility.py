@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, DateTime
 from sqlalchemy.orm import declarative_base
 
 # from filestore import Base as FileBase
@@ -47,3 +47,16 @@ class Solubility_Data(Base):
     eln_sample_num_measure= Column(Float)
     measure_method= Column(String)
     comments= Column(String)
+
+class file_store(Base):
+    __tablename__ = 'filestore'
+    id = Column(Integer, primary_key=True)
+    file_name = Column(String)
+    time_uploaded = Column(DateTime)
+    compound_name = Column(String)
+    scientist = Column(String)
+
+class visits(Base):
+    __tablename__ = 'visits'
+    date = Column(String, primary_key=True, nullable=False)
+    visits = Column(Integer, default=0)
