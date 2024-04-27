@@ -1025,6 +1025,7 @@ export class SearchComponent {
         
         const groupedDatasets: GroupedDatasets = {};
         const colorMapping: { [key: string]: string } = {};
+        const specialSymbol: {[key:string]:[index:number,symbol:string]} = {}
         
         this.selectedItems.forEach(item => {
             const uniqueColor = this.selectColor();
@@ -1050,9 +1051,7 @@ export class SearchComponent {
             }
 
             if (solubility[0] === ">" || solubility[0] === "<") {
-
-                const prefix = solubility[0];
-
+                specialSymbol[key] = [index, solubility[0]]
                 let Color;
                 if(colorMapping[key]){
                     Color = this.createDiagonalPattern('black', colorMapping[key]);
@@ -1062,6 +1061,7 @@ export class SearchComponent {
                     Color = this.createDiagonalPattern('black', uniqueColor);
                     colorMapping[key] = uniqueColor;
                 } 
+
 
                 // get rid of special symbol
                 solubility = solubility.slice(1);
@@ -1128,21 +1128,28 @@ export class SearchComponent {
                         }
                     }
                 },
-                // plugins: {
-                //     legend: {
-                //         labels: {
-                //             font: {
-                //                 weight: 800
-                //             }
-                //         },
-                //         position:'right'
-                //     }
-                // }
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const dataset = context.dataset;
+                                const value = context.parsed.y;
+                                const label = dataset.label || '';
+                                const index = context.dataIndex;
+                                if (specialSymbol.hasOwnProperty(label)) {
+                                    const [specialIndex, symbol] = specialSymbol[label];
+                                    if (index === specialIndex) {
+                                        return label + ": " + symbol + value;
+                                    }
+                                }
+                                return label + ": " + value;
+                            }
+                        }
+                    }
+                }
             }
         });
-
     }
-
     plotScatterPlot(canvas: HTMLCanvasElement) {
         if (this.selectedItems.length === 0) {
             this._snackBar.open('Please select at least one item', 'Close', {
