@@ -894,13 +894,25 @@ export class SearchComponent {
         );
     }
 
-    // math stuff to create unique colors
-    selectColor() {
-        const goldenAngle = 137.508;
-        const hue = this.colorCounter * goldenAngle % 360; // Ensure hue stays within [0, 360)
-        this.colorCounter++;
-        return `hsl(${hue}, 50%, 75%)`;
+     // math stuff to create unique bright colors
+     selectColor() {
+        const colors = [
+            'red',
+            'blue',
+            'yellow',
+            'green',
+            'orange',
+            'purple',
+            'cyan',
+            'magenta',
+            'lime',
+            'pink'
+        ];
+        const color = colors[this.colorCounter % colors.length];
+        this.colorCounter = (this.colorCounter + 1) % colors.length;
+        return color;
     }
+    
 
     // creates the diagonal pattern for > and < data points
     createDiagonalPattern(color = 'black', uniqueColor : any) {
@@ -1039,6 +1051,8 @@ export class SearchComponent {
 
             if (solubility[0] === ">" || solubility[0] === "<") {
 
+                const prefix = solubility[0];
+
                 let Color;
                 if(colorMapping[key]){
                     Color = this.createDiagonalPattern('black', colorMapping[key]);
@@ -1145,6 +1159,7 @@ export class SearchComponent {
                 data: any[];
                 backgroundColor: string;
                 borderColor: string;
+                // pointStyle: string[];
             };
         }
         const groupedDatasets: GroupedDatasets = {} 
@@ -1170,20 +1185,30 @@ export class SearchComponent {
                 default:
                 }
             if (solubility[0] === ">" || solubility[0] === "<") {
+                const prefix = solubility[0];
                 solubility = solubility.slice(1);
+
+                // let pointStyle;
+                // if (prefix === ">") {
+                //     pointStyle = "triangle";
+                // } else if (prefix === "<") {
+                //     pointStyle = "star";
+                // } else {
+                //     pointStyle = "star";}
+
                 if (!groupedDatasets[key]) {
                     groupedDatasets[key] = {
                         label: key,
                         data: [{x: item.temp, y: solubility}],
                         backgroundColor: uniqueColor,
                         borderColor: uniqueColor,
+                        // pointStyle: [pointStyle]
                     }
                 }
                 else{
                     groupedDatasets[key].data.push({x: item.temp, y: solubility});
                 }
             }
-
             else{
                 if (!groupedDatasets[key]) {
                     groupedDatasets[key] = {
@@ -1191,6 +1216,7 @@ export class SearchComponent {
                         data: [{x: item.temp, y: solubility}],
                         backgroundColor: uniqueColor,
                         borderColor: uniqueColor,
+                        // pointStyle: []
                     }
                 }
                 else{
