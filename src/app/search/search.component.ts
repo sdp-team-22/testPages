@@ -1067,7 +1067,7 @@ export class SearchComponent {
                 solubility = solubility.slice(1);
                 if (!groupedDatasets[key]) {
                     groupedDatasets[key] = {
-                        label: key,
+                        label: key + " (" + prefix + solubility + ")",
                         data: Array(labels.length).fill(0),
                         borderColor: ['rgba(0,0,0,1)'],
                         backgroundColor: [Color as unknown as string],
@@ -1159,7 +1159,7 @@ export class SearchComponent {
                 data: any[];
                 backgroundColor: string;
                 borderColor: string;
-                // pointStyle: string[];
+                pointStyle: string[];
             };
         }
         const groupedDatasets: GroupedDatasets = {} 
@@ -1188,13 +1188,13 @@ export class SearchComponent {
                 const prefix = solubility[0];
                 solubility = solubility.slice(1);
 
-                // let pointStyle;
-                // if (prefix === ">") {
-                //     pointStyle = "triangle";
-                // } else if (prefix === "<") {
-                //     pointStyle = "star";
-                // } else {
-                //     pointStyle = "star";}
+                let pointStyle;
+                if (prefix === ">") {
+                    pointStyle = "triangle";
+                } else if (prefix === "<") {
+                    pointStyle = "star";
+                } else {
+                    pointStyle = "star";}
 
                 if (!groupedDatasets[key]) {
                     groupedDatasets[key] = {
@@ -1202,7 +1202,7 @@ export class SearchComponent {
                         data: [{x: item.temp, y: solubility}],
                         backgroundColor: uniqueColor,
                         borderColor: uniqueColor,
-                        // pointStyle: [pointStyle]
+                        pointStyle: [pointStyle]
                     }
                 }
                 else{
@@ -1216,7 +1216,7 @@ export class SearchComponent {
                         data: [{x: item.temp, y: solubility}],
                         backgroundColor: uniqueColor,
                         borderColor: uniqueColor,
-                        // pointStyle: []
+                        pointStyle: []
                     }
                 }
                 else{
@@ -1242,6 +1242,13 @@ export class SearchComponent {
             type: 'scatter',
             data: datasets,
             options: {
+                plugins: {
+                    legend: {
+                        labels: {
+                            usePointStyle: true,
+                        }
+                    }
+                },
                 scales: {
                     x: {
                         beginAtZero: true,
