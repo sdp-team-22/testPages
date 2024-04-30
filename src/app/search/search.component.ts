@@ -1150,32 +1150,35 @@ export class SearchComponent {
             }
         });
     }
-    plotScatterPlot(canvas: HTMLCanvasElement) {
+    
+  plotScatterPlot(canvas: HTMLCanvasElement) {
         if (this.selectedItems.length === 0) {
             this._snackBar.open('Please select at least one item', 'Close', {
-                duration: 3000, 
-                horizontalPosition: 'center', 
-                verticalPosition: 'bottom', 
-                panelClass: 'error-snackbar' 
+                duration: 3000,
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                panelClass: 'error-snackbar'
             });
             return;
         }
+        
         interface GroupedDatasets {
-            [key: string]: {
-                label: string;
-                data: any[];
-                backgroundColor: string;
-                borderColor: string;
-                // pointStyle: string[];
-            };
-        }
-        const groupedDatasets: GroupedDatasets = {} 
+                    [key: string]: {
+                        label: string;
+                        data: any[];
+                        backgroundColor: string;
+                        borderColor: string;
+                        pointStyle: string[];
+                    };
+                }
+        // Initialize grouped datasets
+        const groupedDatasets: GroupedDatasets = {};
+    
         this.selectedItems.forEach(item => {
             const uniqueColor = this.selectColor();
             const key = `${item.compound_name} ${item.xrpd}`;
+    
             let solubility;
-            
-            // updates the data on the graph based on the selectedUnit of the user
             switch (this.selectedUnit) {
                 case 'solubility_mg_g_solv':
                     solubility = item.solubility_units.find((unit: { unit: string }) => unit.unit === 'solubility_mg_g_solv')?.value;
@@ -1190,72 +1193,94 @@ export class SearchComponent {
                     solubility = item.solubility_units.find((unit: { unit: string }) => unit.unit === 'solubility_wt')?.value;
                     break;
                 default:
-                }
-            if (solubility[0] === ">" || solubility[0] === "<") {
+                    break;
+            }
+    
+            if (solubility && (solubility.startsWith('<') || solubility.startsWith('>'))) {
+                // Handle values with special symbols (< or >)
                 const prefix = solubility[0];
-                solubility = solubility.slice(1);
-
-                let pointStyle;
-                if (prefix === ">") {
-                    pointStyle = "triangle";
-                } else if (prefix === "<") {
-                    pointStyle = "star";
-                } else {
-                    pointStyle = "star";}
-
+                const value = parseFloat(solubility.slice(1));
+    
+                if (prefix === '<') {
+                    // Add data point to the '< Values' dataset
+                    if (!groupedDatasets['lessThanValues']) {
+                        groupedDatasets['lessThanValues'] = {
+                            label: key + '<',
+                            data: [],
+                            backgroundColor: 'purple',
+                            borderColor: 'purple',
+                            pointStyle: ['crossRot']
+                        };
+                    }
+                    groupedDatasets['lessThanValues'].data.push({ x: item.temp, y: value });
+                } else if (prefix === '>') {
+                    // Add data point to the '> Values' dataset
+                    if (!groupedDatasets['greaterThanValues']) {
+                        groupedDatasets['greaterThanValues'] = {
+                            label: key + '>',
+                            data: [],
+                            backgroundColor: 'green',
+                            borderColor: 'green',
+                            pointStyle: ['triangle']
+                        };
+                    }
+                    groupedDatasets['greaterThanValues'].data.push({ x: item.temp, y: value });
+                }
+            } else {
+                // Handle plain numbers
+                const value = parseFloat(solubility);
+    
                 if (!groupedDatasets[key]) {
                     groupedDatasets[key] = {
                         label: key,
-                        data: [{x: item.temp, y: solubility}],
+                        data: [],
                         backgroundColor: uniqueColor,
                         borderColor: uniqueColor,
-                        // pointStyle: [pointStyle]
-                    }
+                        pointStyle: ['circle']
+                    };
                 }
-                else{
-                    groupedDatasets[key].data.push({x: item.temp, y: solubility});
-                }
+    
+                groupedDatasets[key].data.push({ x: item.temp, y: value });
             }
-            else{
-                if (!groupedDatasets[key]) {
-                    groupedDatasets[key] = {
-                        label: key,
-                        data: [{x: item.temp, y: solubility}],
-                        backgroundColor: uniqueColor,
-                        borderColor: uniqueColor,
-                        // pointStyle: []
-                    }
-                }
-                else{
-                    groupedDatasets[key].data.push({x: item.temp, y: solubility});
-                }
-            }
-
-        })
-        // creates the acceptable object by scatterplot 
+        });
+    
         const datasets = {
-            datasets: Object.values(groupedDatasets).map(dataset => ({
-                label: dataset.label,
-                data: dataset.data,
-                backgroundColor: dataset.backgroundColor,
-                borderColor: dataset.borderColor
-            }))
+            datasets: Object.values(groupedDatasets)
         };
-
-        console.log(datasets)
-
-
+    
         this.scatterChart = new Chart(canvas, {
             type: 'scatter',
             data: datasets,
             options: {
-                // plugins: {
-                //     legend: {
-                //         labels: {
-                //             usePointStyle: true,
-                //         }
-                //     }
-                // },
+                plugins: {
+                    legend: {
+                        labels: {
+                            usePointStyle: true,
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const datasetLabel = context.dataset.label || '';
+                                const value = context.parsed.y;
+                                let specialSymbol = '';
+    
+                                let key = '';
+                                if (datasetLabel.includes('<')) {
+                                    specialSymbol = '<';
+                                    key = datasetLabel.replace('< ', '').trim(); // Extract key part
+                                } else if (datasetLabel.includes('>')) {
+                                    specialSymbol = '>';
+                                    key = datasetLabel.replace('>', '').trim(); // Extract key part
+                                }
+                    
+                                // Combine key, special symbol, and value
+                                const displayLabel = key ? `${key}: ${specialSymbol}${value}` : `${datasetLabel}: ${specialSymbol}${value}`;
+                                return displayLabel;
+                                }
+                        }
+                    }
+                },
                 scales: {
                     x: {
                         beginAtZero: true,
@@ -1264,7 +1289,7 @@ export class SearchComponent {
                         title: {
                             text: 'Temperature (°C)',
                             display: true,
-                            font:{
+                            font: {
                                 size: 20,
                                 weight: 'bold'
                             }
@@ -1275,7 +1300,7 @@ export class SearchComponent {
                         title: {
                             text: this.selectedUnit,
                             display: true,
-                            font:{
+                            font: {
                                 size: 20,
                                 weight: 'bold'
                             }
@@ -1284,7 +1309,7 @@ export class SearchComponent {
                 }
             }
         });
-    } 
+    }
     
     removeZeros(inputData : any[]) {
         inputData.forEach((row: any) => {
