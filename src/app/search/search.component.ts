@@ -1322,31 +1322,26 @@ export class SearchComponent {
                     tooltip: {
                         usePointStyle: true,
                         callbacks: {
+                            title: function(context){
+                                return ""
+                            },
                             label: function(context) {
-                                const datasetLabel = context.dataset.label || '';
-                                const dataset = context.dataset;
-                                const value = context.parsed.y;
+                                const label = context.dataset.label || '';
+                                const value_y = context.parsed.y;
+                                const value_x = context.parsed.x;
 
-                                console.log("datasetLabel", datasetLabel)
-                                console.log("dataset", dataset)
-                                console.log("value", value)
-/*                                 let specialSymbol = '';
-    
-                                let key = '';
-                                if (datasetLabel.includes('<')) {
-                                    specialSymbol = '<';
-                                    key = datasetLabel.replace('< ', '').trim(); // Extract key part
-                                } else if (datasetLabel.includes('>')) {
-                                    specialSymbol = '>';
-                                    key = datasetLabel.replace('>', '').trim(); // Extract key part
+                                const index = context.dataIndex;
+                                if (specialSymbol.hasOwnProperty(label)) {
+                                    const [specialIndex, symbol] = specialSymbol[label];
+                                    if (index === specialIndex) {
+                                        return label + ": " + "(" + value_x + "," + symbol + value_y + ")";
+                                    }
                                 }
-                    
-                                // Combine key, special symbol, and value
-                                const displayLabel = key ? `${key}: ${specialSymbol}${value}` : `${datasetLabel}: ${specialSymbol}${value}`;
-                                return displayLabel; */
-                                }
+
+                                return label + ": " + "(" + value_x + "," + value_y + ")";
                         }
                     }
+                }
                 },
                 scales: {
                     x: {
