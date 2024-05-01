@@ -813,8 +813,8 @@ export class SearchComponent {
         /**
          * Some admin protocol can be added here
          */
-        var password = prompt("Confirm deletion from database? type CONFIRM");
-        if (password == 'CONFIRM') {
+        var password = prompt("Please enter your password to delete selected items: ");
+        if (password == 'sdp2024') {
             // console.log("delete selected items");
             for (let singleSelected of this.selectedItems) {
                 var cname = singleSelected['compound_name'];
