@@ -894,7 +894,6 @@ export class SearchComponent {
         );
     }
 
-     // math stuff to create unique bright colors
      selectColor() {
         const colors = [
             'red',
@@ -1053,6 +1052,7 @@ export class SearchComponent {
             if (solubility[0] === ">" || solubility[0] === "<") {
                 specialSymbol[key] = [index, solubility[0]]
                 let Color;
+
                 if(colorMapping[key]){
                     Color = this.createDiagonalPattern('black', colorMapping[key]);
                 }
@@ -1173,8 +1173,10 @@ export class SearchComponent {
                 }
         // Initialize grouped datasets
         const groupedDatasets: GroupedDatasets = {};
+        const specialSymbol: {[key:string]:[index:number,symbol:string]} = {}
     
         this.selectedItems.forEach(item => {
+
             const uniqueColor = this.selectColor();
             const key = `${item.compound_name} ${item.xrpd}`;
     
@@ -1196,39 +1198,9 @@ export class SearchComponent {
                     break;
             }
     
-            if (solubility && (solubility.startsWith('<') || solubility.startsWith('>'))) {
+            if (solubility[0] === ">") {
                 // Handle values with special symbols (< or >)
-                const prefix = solubility[0];
-                const value = parseFloat(solubility.slice(1));
-    
-                if (prefix === '<') {
-                    // Add data point to the '< Values' dataset
-                    if (!groupedDatasets['lessThanValues']) {
-                        groupedDatasets['lessThanValues'] = {
-                            label: key + '<',
-                            data: [],
-                            backgroundColor: 'purple',
-                            borderColor: 'purple',
-                            pointStyle: ['crossRot']
-                        };
-                    }
-                    groupedDatasets['lessThanValues'].data.push({ x: item.temp, y: value });
-                } else if (prefix === '>') {
-                    // Add data point to the '> Values' dataset
-                    if (!groupedDatasets['greaterThanValues']) {
-                        groupedDatasets['greaterThanValues'] = {
-                            label: key + '>',
-                            data: [],
-                            backgroundColor: 'green',
-                            borderColor: 'green',
-                            pointStyle: ['triangle']
-                        };
-                    }
-                    groupedDatasets['greaterThanValues'].data.push({ x: item.temp, y: value });
-                }
-            } else {
-                // Handle plain numbers
-                const value = parseFloat(solubility);
+                const value = solubility.slice(1);
     
                 if (!groupedDatasets[key]) {
                     groupedDatasets[key] = {
@@ -1236,34 +1208,129 @@ export class SearchComponent {
                         data: [],
                         backgroundColor: uniqueColor,
                         borderColor: uniqueColor,
-                        pointStyle: ['circle']
+                        pointStyle: []
+                    };
+                    groupedDatasets[key].data.push({ 
+                        x: item.temp, 
+                        y: value,  
+                        pointStyle: {
+                            rotation: 0, 
+                            style: 'triangle'
+                        }
+                    });
+                    let index = groupedDatasets[key].data.findIndex(d => d.x === item.temp && d.y === value);
+                    specialSymbol[key] = [index, solubility[0]]
+                }
+
+                else{
+                    groupedDatasets[key].data.push({ 
+                        x: item.temp, 
+                        y: value,  
+                        pointStyle: {
+                            rotation: 0, 
+                            style: 'triangle'
+                        }
+                    });
+                    let index = groupedDatasets[key].data.findIndex(d => d.x === item.temp && d.y === value);
+                    specialSymbol[key] = [index, solubility[0]]
+                }
+            } 
+            else if(solubility[0] === "<"){
+                const value = solubility.slice(1);
+                if (!groupedDatasets[key]) {
+                    groupedDatasets[key] = {
+                        label: key,
+                        data: [],
+                        backgroundColor: uniqueColor,
+                        borderColor: uniqueColor,
+                        pointStyle: []
+                    };
+                    groupedDatasets[key].data.push({ 
+                        x: item.temp, 
+                        y: value,  
+                        pointStyle: {
+                            rotation: 180, 
+                            style: 'triangle'
+                        }
+                    });
+                    let index = groupedDatasets[key].data.findIndex(d => d.x === item.temp && d.y === value);
+                    specialSymbol[key] = [index, solubility[0]]
+                }
+
+                else{
+                    groupedDatasets[key].data.push({ 
+                        x: item.temp, 
+                        y: value,  
+                        pointStyle: {
+                            rotation: 180,
+                            style: 'triangle'
+                        }
+                    });
+                    let index = groupedDatasets[key].data.findIndex(d => d.x === item.temp && d.y === value);
+                    specialSymbol[key] = [index, solubility[0]]
+                }
+            }
+            else {
+                // Handle plain numbers
+                const value = solubility;
+    
+                if (!groupedDatasets[key]) {
+                    groupedDatasets[key] = {
+                        label: key,
+                        data: [],
+                        backgroundColor: uniqueColor,
+                        borderColor: uniqueColor,
+                        pointStyle: []
                     };
                 }
-    
-                groupedDatasets[key].data.push({ x: item.temp, y: value });
+                groupedDatasets[key].data.push({ 
+                    x: item.temp, 
+                    y: value,  
+                    pointStyle: {
+                        rotation: 0,
+                        style: 'circle'
+                    }
+                });
             }
         });
+
     
-        const datasets = {
-            datasets: Object.values(groupedDatasets)
-        };
-    
+        const datasets = Object.values(groupedDatasets)
+        
         this.scatterChart = new Chart(canvas, {
-            type: 'scatter',
-            data: datasets,
+            type: 'line',
+            data: {
+                datasets: datasets.map(dataset => {
+                    return {
+                        label: dataset.label,
+                        data: dataset.data,
+                        backgroundColor: dataset.backgroundColor,
+                        borderColor: dataset.borderColor,
+                        pointStyle: dataset.data.map(point => point.pointStyle.style),
+                        rotation: dataset.data.map(point => point.pointStyle.rotation)
+                    };
+                })
+            },
             options: {
+                showLine: false,
                 plugins: {
-                    legend: {
+/*                     legend: {
                         labels: {
                             usePointStyle: true,
                         }
-                    },
+                    }, */
                     tooltip: {
+                        usePointStyle: true,
                         callbacks: {
                             label: function(context) {
                                 const datasetLabel = context.dataset.label || '';
+                                const dataset = context.dataset;
                                 const value = context.parsed.y;
-                                let specialSymbol = '';
+
+                                console.log("datasetLabel", datasetLabel)
+                                console.log("dataset", dataset)
+                                console.log("value", value)
+/*                                 let specialSymbol = '';
     
                                 let key = '';
                                 if (datasetLabel.includes('<')) {
@@ -1276,7 +1343,7 @@ export class SearchComponent {
                     
                                 // Combine key, special symbol, and value
                                 const displayLabel = key ? `${key}: ${specialSymbol}${value}` : `${datasetLabel}: ${specialSymbol}${value}`;
-                                return displayLabel;
+                                return displayLabel; */
                                 }
                         }
                     }
