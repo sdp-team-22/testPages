@@ -918,7 +918,7 @@ export class SearchComponent {
             "#bfef45",
             "#3cb44b",
         ];
-        if(this.colorCounter == Colors.length - 1){
+        if(this.colorCounter <= Colors.length - 1){
             const color = Colors[this.colorCounter];
             this.colorCounter = (this.colorCounter + 1) % Colors.length;
             return color;
