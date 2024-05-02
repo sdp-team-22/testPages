@@ -924,7 +924,7 @@ export class SearchComponent {
             return color;
         }
         else{
-            this._snackBar.open('Only have different 20 colors for graphing.', 'Close', {
+            this._snackBar.open('Only have 20 unique colors for graphing.', 'Close', {
                 duration: 3000,
                 horizontalPosition: 'center',
                 verticalPosition: 'bottom',
