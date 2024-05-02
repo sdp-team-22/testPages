@@ -918,10 +918,21 @@ export class SearchComponent {
             "#bfef45",
             "#3cb44b",
         ];
-        const color = Colors[this.colorCounter];
-        this.colorCounter = (this.colorCounter + 1) % Colors.length;
-        return color;
+        if(this.colorCounter == Colors.length - 1){
+            const color = Colors[this.colorCounter];
+            this.colorCounter = (this.colorCounter + 1) % Colors.length;
+            return color;
         }
+        else{
+            this._snackBar.open('Only have different 20 colors for graphing.', 'Close', {
+                duration: 3000,
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+                panelClass: 'error-snackbar'
+            });
+            return "red";
+        }
+    }
     
     // creates the diagonal pattern for > and < data points
     createDiagonalPattern(color = 'black', uniqueColor : any) {
