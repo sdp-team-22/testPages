@@ -55,7 +55,7 @@ export class SearchComponent {
     selectedGraphType: string = 'bar'; //default bar
     selectAllCheckbox: boolean = false;
     resizeTimeout: any;
-    previousHues = new Set<number>();
+    colorCounter = 0;
 
     // basic search variables
     searchQuery: any;
@@ -896,37 +896,32 @@ export class SearchComponent {
 
     // Generate unique color
     selectColor() {
-        const goldenAngle = 137.508;
-        let hue;
-        let saturation;
-        
-        while (true) {
-            const colorCounter = Math.random() * 360;
-            hue = (colorCounter * goldenAngle) % 360;
-            saturation = Math.random() * 50 + 50; // Random saturation between 50% and 100%
-            if (!this.isHueTooSimilar(hue)) {
-                break;
-            }
+        const Colors = [
+            "#42d4f4",
+            "#4363d8",
+            "#911eb4",
+            "#f032e6",
+            "#a9a9a9",
+            "#fabed4",
+            "#fffac8",
+            "#aaffc3",
+            "#dcbeff",
+            "#800000",
+            "#9A6324",
+            "#808000",
+            "#469990",
+            "#000075",
+            "#000000",
+            "#e6194B",
+            "#f58231",
+            "#ffe119",
+            "#bfef45",
+            "#3cb44b",
+        ];
+        const color = Colors[this.colorCounter];
+        this.colorCounter = (this.colorCounter + 1) % Colors.length;
+        return color;
         }
-
-        this.previousHues.add(hue);
-        return `hsl(${hue}, ${saturation}%, 75%)`;
-    }
-
-    isHueTooSimilar(newHue : number) : boolean{
-        // Adjust this threshold as needed
-        const hueThreshold = 25; 
-        const normalizedNewHue = (newHue + 360) % 360;
-    
-        for (const prevHue of this.previousHues) {
-            const normalizedPrevHue = (prevHue + 360) % 360;
-            const hueDiff = Math.abs(normalizedNewHue - normalizedPrevHue);
-            if (hueDiff < hueThreshold) {
-                return true;
-            }
-        }
-        return false;
-    }
     
     // creates the diagonal pattern for > and < data points
     createDiagonalPattern(color = 'black', uniqueColor : any) {
@@ -1015,9 +1010,6 @@ export class SearchComponent {
             });
             return;
         }
-
-        this.previousHues = new Set<number>();
-
         const labels = this.selectedItems.map(item => `${item.solvent_1} ${item.solvent_2} ${item.solvent_3} ${item.temp}°C`);
 
         //sort the label in increasing order of temperature
@@ -1043,6 +1035,8 @@ export class SearchComponent {
         const groupedDatasets: GroupedDatasets = {};
         const colorMapping: { [key: string]: string } = {};
         const specialSymbol: {[key:string]:[index:number,symbol:string]} = {}
+
+        this.colorCounter = 0;
         
         this.selectedItems.forEach(item => {
             const key = `${item.compound_name} ${item.xrpd}`;
@@ -1193,8 +1187,7 @@ export class SearchComponent {
         // Initialize grouped datasets
         const groupedDatasets: GroupedDatasets = {};
         const specialSymbol: {[key:string]:[index:number,symbol:string]} = {}
-
-        this.previousHues = new Set<number>();
+        this.colorCounter = 0;
     
         this.selectedItems.forEach(item => {
             const key = `${item.compound_name} ${item.xrpd}`;
