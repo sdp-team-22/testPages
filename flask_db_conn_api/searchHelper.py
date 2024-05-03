@@ -273,9 +273,8 @@ def basicSearch(conn, searchQuery):
             finalResult.append(tempResult)
         return finalResult
     except Exception as e:
-        for i in range(len(temp)):
-            tempResult = {key: value for key, value in zip(keys, None)}
-            finalResult.append(tempResult)
+        tempResult = {key: value for key, value in zip(keys, None)}
+        finalResult.append(tempResult)
         return finalResult
 
 def advancedSearch(conn, searchQuery):
