@@ -4,7 +4,7 @@
 
 ### Code is from develop branch [link here](https://github.com/sdp-team-22/website/tree/develop)
 
-## Prerequisites 
+## Prerequisites
 
 To run the full app, you'll need to have Docker and Docker Compose installed on your machine. You can check if they're already installed by running `docker --version` and `docker-compose --version` in your terminal.
 
@@ -19,7 +19,8 @@ There are 2 main variables to set before starting the app:
 This holds the URL that front end will use to access the backend (flask app). As we hosted it for testing, we setup both containers on the same machine via compose, pointing them to a reverse-proxy that exposed them to two separate urls. We then configured the front-end container to reach the backend via that public url. This was with the assumption to be able to scale either one, run each one on a separate machine, or put load balancing behind them, etc. If you'd like, its also possible to configure the urls to use local hostnames that compose provides automatically to have both containers run locally on the same machine and have them communicate correctly. Just make sure to adjust the url in `config.ts` accordingly. More info for this can be found [here](https://docs.docker.com/compose/networking/#use-auto-provided-hostnames)
 
 ```
-./flask_db_conn_api/app.py --lines 8-16
+./flask_db_conn_api/app.py --line 10
+./flask_db_conn_api/connectionHelper.py --lines 4-8
 ```
 Here can be configured the url/credentials for connecting the flask instance to a database. For our testing, we used an external posgres instance. While the ORM we used says it supports other SQL versions like mySQL, SQLite, etc, we only tested with Posgres. Upon connecting to a new database, our flask app will automatically populate it with the necessary tables, if they don't exist already. 
 
