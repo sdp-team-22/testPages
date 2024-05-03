@@ -3,22 +3,14 @@ from flask_cors import CORS
 import psycopg2, sqlalchemy
 from helper import file_excel_to_json, find_duplicates
 from solubility import Base as solubility_base
-
+from connectionHelper import getConn
 
 app = Flask(__name__)
 CORS(app)
 url = 'postgresql://sdp-dev:sdp123@24.62.166.59:5432/test-fresh'
 app.config['SQLALCHEMY_DATABASE_URI'] = url
 
-conn = psycopg2.connect(
-        # database="postgres",
-        database="test-fresh",
-        user="sdp-dev",
-        password="sdp123",
-        host="24.62.166.59",
-        port="5432"
-    )
-
+conn = getConn()
 
 # create tables if they dont exist
 engine = sqlalchemy.create_engine(url)

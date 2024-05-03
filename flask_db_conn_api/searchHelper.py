@@ -1,7 +1,8 @@
 import psycopg2
+from connectionHelper import getCursor
 
 def getAllCompoundNames(conn):
-    cur = conn.cursor()
+    cur = getCursor(conn)
     cur.execute("""
         SELECT DISTINCT(compound_name) FROM solubility_data
         WHERE compound_name != 'nan'
@@ -9,7 +10,7 @@ def getAllCompoundNames(conn):
     return [t[0] for t in cur.fetchall()]
 
 def getRestricted(conn, filterContents, type, exact):
-    cur = conn.cursor()
+    cur = getCursor(conn)
     if (filterContents is None):
         return 'No filters with content'
     if type == 'Compound Name':
@@ -213,7 +214,7 @@ def getRestricted(conn, filterContents, type, exact):
             return list(finalResponse)
 
 def getAllXRPD(conn):
-    cur = conn.cursor()
+    cur = getCursor(conn)
     cur.execute("""
         SELECT DISTINCT(xrpd) FROM solubility_data
         WHERE xrpd != 'nan'
@@ -221,7 +222,7 @@ def getAllXRPD(conn):
     return [t[0] for t in cur.fetchall()]
 
 def getAllSolvent(conn):
-    cur = conn.cursor()
+    cur = getCursor(conn)
     distinctSolvents = set()
     # go through solvent 1
     cur.execute("""
@@ -260,7 +261,7 @@ keys = [
 
 def basicSearch(conn, searchQuery):
     try:
-        cur = conn.cursor()
+        cur = getCursor(conn)
         cur.execute("""
             SELECT * FROM solubility_data
             WHERE LOWER(compound_name) LIKE LOWER(%s)
@@ -278,7 +279,7 @@ def basicSearch(conn, searchQuery):
         return finalResult
 
 def advancedSearch(conn, searchQuery):
-    cur = conn.cursor()
+    cur = getCursor(conn)
     compoundNames = searchQuery['Compound Name']
     xrpd = searchQuery['XRPD']
     solvExact = searchQuery['Solvent Exact']
@@ -374,7 +375,7 @@ def advancedSearch(conn, searchQuery):
     return finalResult
 
 def advancedSearchRestricted(conn, searchQuery):
-    cur = conn.cursor()
+    cur = getCursor(conn)
     # print(searchQuery)
     query = "SELECT * FROM solubility_data WHERE 1 = 1"
     # add compound names
@@ -457,7 +458,7 @@ def advancedSearchRestricted(conn, searchQuery):
         return { 'fatal error: searchHelper advancedSearchRestricted:', e }
     
 def search_restricted_form(conn, selectedOptions):
-    cur = conn.cursor()
+    cur = getCursor(conn)
     try:
         # Fetch unique xrpd, compound names, and solvent options
         # cur.execute("SELECT DISTINCT xrpd, compound_name, solvent_1, solvent_2, solvent_3 FROM solubility_data")
@@ -533,7 +534,7 @@ def deleteRow(conn, item):
         item['solvent_3'] = 'nan'
     if (item['xrpd'] == ''):
         item['xrpd'] = 'nan'
-    cur = conn.cursor()
+    cur = getCursor(conn)
     try:
         cur.execute("""
             DELETE FROM solubility_data

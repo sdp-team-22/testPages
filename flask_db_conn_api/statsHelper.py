@@ -1,9 +1,10 @@
 import psycopg2
 from datetime import date
+from connectionHelper import getCursor
 
 # total data points
 def getTotalRows(conn):
-    cur = conn.cursor()
+    cur = getCursor(conn)
     cur.execute("""
         SELECT COUNT(*) FROM solubility_data
     """)
@@ -11,7 +12,7 @@ def getTotalRows(conn):
 
 # upload history
 def getUploadHistory(conn):
-    cur = conn.cursor()
+    cur = getCursor(conn)
     cur.execute("""
         SELECT  id, scientist, time_uploaded, file_name, compound_name
         FROM filestore
@@ -23,7 +24,7 @@ def getUploadHistory(conn):
 def getToday(conn):
     today = date.today()
     today = today.strftime("%m%d%Y")
-    cur = conn.cursor()
+    cur = getCursor(conn)
     # make multiple queries as needed
     cur.execute("""
         SELECT * FROM visits
@@ -38,7 +39,7 @@ def getMonth(conn):
     thisMonth = today.strftime("%m")
     thisYear = today.strftime("%Y")
     monthPattern = f"%{thisMonth}%%{thisYear}"
-    cur = conn.cursor()
+    cur = getCursor(conn)
     # make multiple queries as needed
     cur.execute("""
         SELECT * FROM visits
@@ -55,7 +56,7 @@ def getYear(conn):
     today = date.today()
     thisYear = today.strftime("%Y")
     yearPattern = f"%%{thisYear}"
-    cur = conn.cursor()
+    cur = getCursor(conn)
     # make multiple queries as needed
     cur.execute("""
         SELECT * FROM visits
@@ -70,7 +71,7 @@ def getYear(conn):
 def incrementToday(conn):
     today = date.today()
     today = today.strftime("%m%d%Y")
-    cur = conn.cursor()
+    cur = getCursor(conn)
     # check if today exists
     cur.execute("""
         SELECT * FROM visits
