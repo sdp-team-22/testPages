@@ -10,7 +10,7 @@ CORS(app)
 url = 'postgresql://sdp-dev:sdp123@24.62.166.59:5432/test-fresh'
 app.config['SQLALCHEMY_DATABASE_URI'] = url
 
-conn = conn = psycopg2.connect(
+conn = psycopg2.connect(
         # database="postgres",
         database="test-fresh",
         user="sdp-dev",
@@ -18,7 +18,7 @@ conn = conn = psycopg2.connect(
         host="24.62.166.59",
         port="5432"
     )
-cur = conn.cursor()
+
 
 # create tables if they dont exist
 engine = sqlalchemy.create_engine(url)
