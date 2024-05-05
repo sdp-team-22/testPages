@@ -165,20 +165,22 @@ def find_duplicates(input_json, conn):
             #         """
             #     )
             
-            
-            cur.execute(
-            """
-            SELECT * FROM solubility_data
-            WHERE compound_name = %s
-            AND solvent_1 = %s AND solvent_2 = %s AND solvent_3 = %s
-            AND ((volfrac1 = %s AND volfrac2 = %s AND volfrac3 = %s) 
-            OR (wtfrac1 = %s AND wtfrac2 = %s AND wtfrac3 = %s))
-            AND temp = %s AND xrpd = %s
-            """, (compound_name, solvent_1, solvent_2, solvent_3, volfrac1, volfrac2, volfrac3, wtfrac1, wtfrac2, wtfrac3, temp, xrpd))
-            
-            duplicate = cur.fetchone()
-            
-            if duplicate is not None:
-                row_duplicates.append(i)
+            try:
+                cur.execute(
+                """
+                SELECT * FROM solubility_data
+                WHERE compound_name = %s
+                AND solvent_1 = %s AND solvent_2 = %s AND solvent_3 = %s
+                AND ((volfrac1 = %s AND volfrac2 = %s AND volfrac3 = %s) 
+                OR (wtfrac1 = %s AND wtfrac2 = %s AND wtfrac3 = %s))
+                AND temp = %s AND xrpd = %s
+                """, (compound_name, solvent_1, solvent_2, solvent_3, volfrac1, volfrac2, volfrac3, wtfrac1, wtfrac2, wtfrac3, temp, xrpd))
+                
+                duplicate = cur.fetchone()
+                
+                if duplicate is not None:
+                    row_duplicates.append(i)
+            except Exception as e:
+                pass
     
     return row_duplicates
