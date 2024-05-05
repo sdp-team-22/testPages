@@ -4,12 +4,15 @@ from connectionHelper import getCursor
 
 def printData(cur):
     cur = getCursor(conn)
-    cur.execute("""
-        SELECT * FROM solubility_data        
-    """)
-    data = cur.fetchall()
-    for row in data:
-        print(row, "\n")
+    try:
+        cur.execute("""
+            SELECT * FROM solubility_data        
+        """)
+        data = cur.fetchall()
+        for row in data:
+            print(row, "\n")
+    except Exception as e:
+        pass
 
 def uploadMultiple(conn, data):
     cur = getCursor(conn)

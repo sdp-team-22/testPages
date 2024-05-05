@@ -5,33 +5,42 @@ from connectionHelper import getCursor
 # total data points
 def getTotalRows(conn):
     cur = getCursor(conn)
-    cur.execute("""
-        SELECT COUNT(*) FROM solubility_data
-    """)
-    return cur.fetchone()[0]
+    try:
+        cur.execute("""
+            SELECT COUNT(*) FROM solubility_data
+        """)
+        return cur.fetchone()[0]
+    except Exception as e:
+        return -2
 
 # upload history
 def getUploadHistory(conn):
     cur = getCursor(conn)
-    cur.execute("""
-        SELECT  id, scientist, time_uploaded, file_name, compound_name
-        FROM filestore
-        ORDER BY time_uploaded DESC
-    """)
-    return cur.fetchall()
+    try:
+        cur.execute("""
+            SELECT  id, scientist, time_uploaded, file_name, compound_name
+            FROM filestore
+            ORDER BY time_uploaded DESC
+        """)
+        return cur.fetchall()
+    except Exception as e:
+        return []
 
 # total number of user visits today
 def getToday(conn):
     today = date.today()
     today = today.strftime("%m%d%Y")
     cur = getCursor(conn)
-    # make multiple queries as needed
-    cur.execute("""
-        SELECT * FROM visits
-        WHERE date = %s;
-    """, (today, ))
-    # print(cur.fetchone()[1])
-    return cur.fetchone()[1]
+    try:
+        # make multiple queries as needed
+        cur.execute("""
+            SELECT * FROM visits
+            WHERE date = %s;
+        """, (today, ))
+        # print(cur.fetchone()[1])
+        return cur.fetchone()[1]
+    except Exception as e:
+        return -2
 
 # total number of user visits this month
 def getMonth(conn):
@@ -40,16 +49,19 @@ def getMonth(conn):
     thisYear = today.strftime("%Y")
     monthPattern = f"%{thisMonth}%%{thisYear}"
     cur = getCursor(conn)
-    # make multiple queries as needed
-    cur.execute("""
-        SELECT * FROM visits
-        WHERE date LIKE %s;
-    """, (monthPattern, ))
-    sum = 0
-    for element in cur.fetchall():
-        sum += element[1]
-    # print(sum)
-    return sum
+    try:
+        # make multiple queries as needed
+        cur.execute("""
+            SELECT * FROM visits
+            WHERE date LIKE %s;
+        """, (monthPattern, ))
+        sum = 0
+        for element in cur.fetchall():
+            sum += element[1]
+        # print(sum)
+        return sum
+    except Exception as e:
+        return -2
 
 # total number of user visits this year
 def getYear(conn):
@@ -57,45 +69,51 @@ def getYear(conn):
     thisYear = today.strftime("%Y")
     yearPattern = f"%%{thisYear}"
     cur = getCursor(conn)
-    # make multiple queries as needed
-    cur.execute("""
-        SELECT * FROM visits
-        WHERE date LIKE %s;
-    """, (yearPattern, ))
-    sum = 0
-    for element in cur.fetchall():
-        sum += element[1]
-    # print(sum)
-    return sum
+    try:
+        # make multiple queries as needed
+        cur.execute("""
+            SELECT * FROM visits
+            WHERE date LIKE %s;
+        """, (yearPattern, ))
+        sum = 0
+        for element in cur.fetchall():
+            sum += element[1]
+        # print(sum)
+        return sum
+    except Exception as e:
+        return -2
 
 def incrementToday(conn):
     today = date.today()
     today = today.strftime("%m%d%Y")
     cur = getCursor(conn)
-    # check if today exists
-    cur.execute("""
-        SELECT * FROM visits
-        WHERE date = %s;
-    """, (today, ))
-    temp = cur.fetchall()
-    if len(temp):
-        # print("exists")
-        visitsToday = temp[0][1]
-        visitsToday += 1
+    try:
+        # check if today exists
         cur.execute("""
-            UPDATE visits
-            SET visits = %s
+            SELECT * FROM visits
             WHERE date = %s;
-        """, (visitsToday, today))
-        conn.commit()
-    else:
-        # doesn't exist
-        print("doesn't exist")
-        cur.execute("""
-            INSERT INTO VISITS(date, visits)
-            VALUES (%s, 1);
         """, (today, ))
-        conn.commit()
+        temp = cur.fetchall()
+        if len(temp):
+            # print("exists")
+            visitsToday = temp[0][1]
+            visitsToday += 1
+            cur.execute("""
+                UPDATE visits
+                SET visits = %s
+                WHERE date = %s;
+            """, (visitsToday, today))
+            conn.commit()
+        else:
+            # doesn't exist
+            print("doesn't exist")
+            cur.execute("""
+                INSERT INTO VISITS(date, visits)
+                VALUES (%s, 1);
+            """, (today, ))
+            conn.commit()
+    except Exception as e:
+        pass
 
 def database_stats(conn):
     # Fetch total data points

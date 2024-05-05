@@ -3,11 +3,14 @@ from connectionHelper import getCursor
 
 def getAllCompoundNames(conn):
     cur = getCursor(conn)
-    cur.execute("""
-        SELECT DISTINCT(compound_name) FROM solubility_data
-        WHERE compound_name != 'nan'
-    """)
-    return [t[0] for t in cur.fetchall()]
+    try:
+        cur.execute("""
+            SELECT DISTINCT(compound_name) FROM solubility_data
+            WHERE compound_name != 'nan'
+        """)
+        return [t[0] for t in cur.fetchall()]
+    except Exception as e:
+        return ['db failed']
 
 def getRestricted(conn, filterContents, type, exact):
     cur = getCursor(conn)
@@ -112,19 +115,22 @@ def getRestricted(conn, filterContents, type, exact):
                     query2 = query2 + f' AND ({xrpdQuery})'
                     query3 = query3 + f' AND ({xrpdQuery})'
                 # make all necessary queries
-                cur.execute(query1)
-                response = cur.fetchall()
-                response = [responseTup[0] for responseTup in response if responseTup[0] != 'nan']
-                solventOptions.update(response)
-                cur.execute(query2)
-                response = cur.fetchall()
-                response = [responseTup[0] for responseTup in response if responseTup[0] != 'nan']
-                solventOptions.update(response)
-                cur.execute(query3)
-                response = cur.fetchall()
-                response = [responseTup[0] for responseTup in response if responseTup[0] != 'nan']
-                solventOptions.update(response)
-                return list(solventOptions)
+                try:
+                    cur.execute(query1)
+                    response = cur.fetchall()
+                    response = [responseTup[0] for responseTup in response if responseTup[0] != 'nan']
+                    solventOptions.update(response)
+                    cur.execute(query2)
+                    response = cur.fetchall()
+                    response = [responseTup[0] for responseTup in response if responseTup[0] != 'nan']
+                    solventOptions.update(response)
+                    cur.execute(query3)
+                    response = cur.fetchall()
+                    response = [responseTup[0] for responseTup in response if responseTup[0] != 'nan']
+                    solventOptions.update(response)
+                    return list(solventOptions)
+                except Exception as e:
+                    return ['db failed']
             else:
                 solventOptions = set()
                 for exactCombos in filterContents['Solvent Exact']:
@@ -185,17 +191,20 @@ def getRestricted(conn, filterContents, type, exact):
             query2 = query2 + exactQuery
             query3 = query3 + exactQuery
             # make all necessary queries
-            cur.execute(query1)
-            response = cur.fetchall()
-            response = [responseTup[0] for responseTup in response if responseTup[0] != 'nan']
-            solventOptions.update(response)
-            cur.execute(query2)
-            response = cur.fetchall()
-            response = [responseTup[0] for responseTup in response if responseTup[0] != 'nan']
-            solventOptions.update(response)
-            cur.execute(query3)
-            response = cur.fetchall()
-            response = [responseTup[0] for responseTup in response if responseTup[0] != 'nan']
+            try:
+                cur.execute(query1)
+                response = cur.fetchall()
+                response = [responseTup[0] for responseTup in response if responseTup[0] != 'nan']
+                solventOptions.update(response)
+                cur.execute(query2)
+                response = cur.fetchall()
+                response = [responseTup[0] for responseTup in response if responseTup[0] != 'nan']
+                solventOptions.update(response)
+                cur.execute(query3)
+                response = cur.fetchall()
+                response = [responseTup[0] for responseTup in response if responseTup[0] != 'nan']
+            except Exception as e:
+                response = ['db failed']
             solventOptions.update(response)
             if len(exact) > 0:
                 solventOptions.remove(exact[0])
@@ -215,37 +224,43 @@ def getRestricted(conn, filterContents, type, exact):
 
 def getAllXRPD(conn):
     cur = getCursor(conn)
-    cur.execute("""
-        SELECT DISTINCT(xrpd) FROM solubility_data
-        WHERE xrpd != 'nan'
-    """)
-    return [t[0] for t in cur.fetchall()]
+    try:
+        cur.execute("""
+            SELECT DISTINCT(xrpd) FROM solubility_data
+            WHERE xrpd != 'nan'
+        """)
+        return [t[0] for t in cur.fetchall()]
+    except:
+        return ['db failed']
 
 def getAllSolvent(conn):
     cur = getCursor(conn)
     distinctSolvents = set()
-    # go through solvent 1
-    cur.execute("""
-        SELECT DISTINCT(solvent_1) FROM solubility_data
-        WHERE solvent_1 != 'nan'
-    """)
-    for element in cur.fetchall():
-        distinctSolvents.add(element[0])
-    # go through solvent 2
-    cur.execute("""
-        SELECT DISTINCT(solvent_2) FROM solubility_data
-        WHERE solvent_2 != 'nan'
-    """)
-    for element in cur.fetchall():
-        distinctSolvents.add(element[0])
-    # go through solvent 3
-    cur.execute("""
-        SELECT DISTINCT(solvent_3) FROM solubility_data
-        WHERE solvent_3 != 'nan'
-    """)
-    for element in cur.fetchall():
-        distinctSolvents.add(element[0])
-    return list(distinctSolvents)
+    try:
+        # go through solvent 1
+        cur.execute("""
+            SELECT DISTINCT(solvent_1) FROM solubility_data
+            WHERE solvent_1 != 'nan'
+        """)
+        for element in cur.fetchall():
+            distinctSolvents.add(element[0])
+        # go through solvent 2
+        cur.execute("""
+            SELECT DISTINCT(solvent_2) FROM solubility_data
+            WHERE solvent_2 != 'nan'
+        """)
+        for element in cur.fetchall():
+            distinctSolvents.add(element[0])
+        # go through solvent 3
+        cur.execute("""
+            SELECT DISTINCT(solvent_3) FROM solubility_data
+            WHERE solvent_3 != 'nan'
+        """)
+        for element in cur.fetchall():
+            distinctSolvents.add(element[0])
+        return list(distinctSolvents)
+    except Exception as e:
+        return ['db failed']
 
 keys = [
     'id', 'file_name', 'project_name', 
