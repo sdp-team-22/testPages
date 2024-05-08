@@ -10,7 +10,7 @@ port = "5432"
 
 
 
-connection_pool = pool.SimpleConnectionPool(1, 10,
+connection_pool = pool.SimpleConnectionPool(1, 100,
                                         database=database,
                                         user=user,
                                         password=password,
