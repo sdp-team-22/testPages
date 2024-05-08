@@ -1,5 +1,6 @@
 import psycopg2
 import time
+from psycopg2 import pool
 
 database = "test-fresh"
 user = "sdp-dev"
@@ -7,64 +8,32 @@ password = "sdp123"
 host = "24.62.166.59"
 port = "5432"
 
+
+
+connection_pool = pool.SimpleConnectionPool(1, 10,
+                                        database=database,
+                                        user=user,
+                                        password=password,
+                                        host=host,
+                                        port=port
+                                    )
+
 def getConn():
     try:
-        conn = psycopg2.connect(
-            database=database,
-            user=user,
-            password=password,
-            host=host,
-            port=port
-        )
+        # Acquire a connection from the pool
+        conn = connection_pool.getconn()
         return conn
     except Exception as e:
-        print("Intitial DB connection failed:", e)
-        # db connection failure, retry connection every 10 sec
-        while True:
-            # sleep for 10 seconds before retrying connection
-            time.sleep(10)
-            # try to make connection
-            try:
-                conn = psycopg2.connect(
-                    database=database,
-                    user=user,
-                    password=password,
-                    host=host,
-                    port=port
-                )
-                return conn
-            except Exception as e:
-                print("Initial DB connection failed:", e)
+        print("Error occurred while obtaining connection:", e)
+        return None
 
-def getCursor(conn):
-    try:
-        # try to get a cursor from db connection
-        cur = conn.cursor()
-        return cur
-    except Exception as e:
-        print("DB connection failed:", e)
-        # db connection failure, retry connection every 10 sec
-        while True:
-            # sleep for 10 seconds before retrying connection
-            time.sleep(10)
-            # close current conn
-            try:
-                if conn:
-                    conn.close()
-            except Exception as e:
-                pass
-            # open new conn
-            try:
-                conn = psycopg2.connect(
-                    database=database,
-                    user=user,
-                    password=password,
-                    host=host,
-                    port=port
-                )
-                cur = conn.cursor()
-                # automatically kicks out of loop if cur is successful
-                return cur
-            except Exception as e:
-                print("DB connection failed:", e)
-                pass
+# Release connection back to the pool
+def releaseConn(conn):
+    if conn:
+        connection_pool.putconn(conn)
+
+# Close all connections in the pool
+def closePool():
+    global connection_pool
+    if connection_pool:
+        connection_pool.closeall()

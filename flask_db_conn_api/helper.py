@@ -1,6 +1,5 @@
 import pandas as pd
 import math
-from connectionHelper import getCursor
 
 def file_excel_to_json(file):
     DATASET_JSON = dict()
@@ -133,7 +132,7 @@ def find_duplicates(input_json, conn):
     row_duplicates = []
     compound_name = input_json['Compound Name']
     
-    with getCursor(conn) as cur:
+    with conn.cursor() as cur:
         for i, row in enumerate(input_json['Row Data']):    
             solvent_1 = row['Solvent 1']
             solvent_2 = row['Solvent 2']

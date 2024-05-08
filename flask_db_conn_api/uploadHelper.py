@@ -1,9 +1,8 @@
 import psycopg2
 from datetime import datetime
-from connectionHelper import getCursor
 
 def printData(cur):
-    cur = getCursor(conn)
+    cur = conn.cursor()
     try:
         cur.execute("""
             SELECT * FROM solubility_data        
@@ -15,7 +14,7 @@ def printData(cur):
         pass
 
 def uploadMultiple(conn, data):
-    cur = getCursor(conn)
+    cur = conn.cursor()
     projectInfo = data['projectInfo']
     for i in range(len(data['rowData'])):
         # get projectInfo
@@ -205,7 +204,7 @@ def getFromDICT(data, searchTerm):
 
 def uploadToFilestore(conn, data):
     try:
-        cur = getCursor(conn)
+        cur = conn.cursor()
         cur.execute("""
             SELECT max(id) FROM filestore
         """)
